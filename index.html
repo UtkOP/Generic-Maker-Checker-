@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fyscal Technologies — Backoffice</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%;font-family:-apple-system,'Segoe UI','Inter',sans-serif;background:#f9fafb;color:#111827;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useRef,useEffect}=React;
+
+/* ═══════════════════════════════════════
+   COLOUR TOKENS
+═══════════════════════════════════════ */
+const C={
+  blue:"#3B56F0",blueL:"#EEF0FD",blueM:"#C5CBF9",
+  green:"#16a34a",greenL:"#f0fdf4",greenB:"#bbf7d0",greenT:"#15803d",
+  red:"#dc2626",redL:"#fef2f2",redB:"#fecaca",redT:"#b91c1c",
+  amber:"#d97706",amberL:"#fffbeb",amberB:"#fde68a",amberT:"#92400e",
+  purple:"#7c3aed",purpleL:"#f5f3ff",purpleB:"#ddd6fe",
+  gray:"#6b7280",grayL:"#f3f4f6",grayB:"#e5e7eb",
+  border:"#e5e7eb",bg:"#ffffff",bg2:"#f9fafb",
+  text:"#111827",t2:"#6b7280",t3:"#9ca3af",
+};
+
+/* ═══════════════════════════════════════
+   SIDEBAR ICONS — 14×14, monochrome SVG
+═══════════════════════════════════════ */
+const ICONS={
+  home:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  kyc:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  goods:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+  comm:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+  alert:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+  pay:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
+  aml:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  admin:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>,
+  audit:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+  ledger:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
+  analytics:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+  auth:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+  hier:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="2" y="18" width="6" height="4" rx="1"/><rect x="9" y="18" width="6" height="4" rx="1"/><rect x="16" y="18" width="6" height="4" rx="1"/><line x1="12" y1="6" x2="12" y2="13"/><line x1="5" y1="20" x2="12" y2="13"/><line x1="12" y1="13" x2="12" y2="20"/><line x1="19" y1="20" x2="12" y2="13"/></svg>,
+  ontology:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
+  gmc:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,
+  warn:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>,
+};
+
+/* ═══════════════════════════════════════
+   BADGE COMPONENT
+═══════════════════════════════════════ */
+const TS={Email:{bg:C.blueL,c:C.blue,b:C.blueM},Push:{bg:C.purpleL,c:C.purple,b:C.purpleB},Sms:{bg:C.greenL,c:C.greenT,b:C.greenB},SMS:{bg:C.greenL,c:C.greenT,b:C.greenB}};
+const SS={Active:{bg:C.greenL,c:C.greenT,b:C.greenB},Inactive:{bg:C.grayL,c:C.gray,b:C.grayB},Error:{bg:C.redL,c:C.redT,b:C.redB},Yes:{bg:C.greenL,c:C.greenT,b:C.greenB},No:{bg:C.redL,c:C.redT,b:C.redB}};
+function Badge({v,sx={}}){const s=TS[v]||SS[v]||{bg:C.grayL,c:C.gray,b:C.grayB};return<span style={{display:"inline-flex",alignItems:"center",padding:"2px 8px",borderRadius:4,fontSize:12,fontWeight:500,background:s.bg,color:s.c,border:`1px solid ${s.b}`,...sx}}>{v}</span>;}
+
+/* ═══════════════════════════════════════
+   SHARED ATOMS
+═══════════════════════════════════════ */
+function Btn({children,variant="dark",onClick,sx={},disabled}){
+  const vs={dark:{background:"#111827",color:"#fff",border:"none"},outline:{background:C.bg,border:`1px solid ${C.grayB}`,color:C.t2},blue:{background:C.blue,color:"#fff",border:"none"},ghost:{background:"transparent",border:"none",color:C.t2}};
+  return<button disabled={disabled} onClick={onClick} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,fontWeight:500,borderRadius:7,cursor:disabled?"not-allowed":"pointer",fontSize:13,padding:"7px 16px",transition:"opacity .12s",opacity:disabled?.5:1,...vs[variant],...sx}} onMouseEnter={e=>{if(!disabled)e.currentTarget.style.opacity=".85"}} onMouseLeave={e=>{if(!disabled)e.currentTarget.style.opacity="1"}}>{children}</button>;
+}
+function Inp({placeholder,type="text",value,onChange,sx={}}){
+  return<input type={type} placeholder={placeholder} value={value} onChange={onChange}
+    style={{width:"100%",padding:"7px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",...sx}}
+    onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`}}
+    onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none"}}/>;
+}
+function Sel({options,value,onChange,sx={}}){
+  return<select value={value} onChange={onChange}
+    style={{width:"100%",padding:"7px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",...sx}}>
+    {options.map(o=><option key={o}>{o}</option>)}
+  </select>;
+}
+
+/* ═══════════════════════════════════════
+   DOT MENU
+═══════════════════════════════════════ */
+function DotMenu({items}){
+  const [open,setOpen]=useState(false);const ref=useRef();
+  useEffect(()=>{const h=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h);},[]);
+  return<div ref={ref} style={{position:"relative",display:"inline-block"}} onClick={e=>e.stopPropagation()}>
+    <button onClick={()=>setOpen(o=>!o)} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3,padding:"1px 6px",letterSpacing:"2px",lineHeight:1,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background="none"}>⋮</button>
+    {open&&<div style={{position:"absolute",right:0,top:24,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,boxShadow:"0 4px 20px rgba(0,0,0,.1)",minWidth:165,zIndex:100,padding:"4px 0"}}>
+      {items.map(([l,col,fn])=><button key={l} onClick={()=>{fn&&fn();setOpen(false)}} style={{width:"100%",display:"flex",alignItems:"center",gap:8,padding:"7px 14px",fontSize:12.5,color:col||C.blue,background:"none",border:"none",cursor:"pointer",textAlign:"left"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background="none"}>{l}</button>)}
+    </div>}
+  </div>;
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+   Add your feature's sidebar items inside
+   the nav section below. Follow the NavRow
+   pattern for consistent styling.
+═══════════════════════════════════════ */
+function Sidebar({page,onPage,pendingCount}){
+  const [commOpen,setCommOpen]=useState(false);
+  const [gmcOpen,setGmcOpen]=useState(false);
+
+  const NavRow=({icon,label,active,indent=0,hasArrow,onClick,badge})=>(
+    <div onClick={onClick} style={{display:"flex",alignItems:"center",gap:8,padding:`6px 14px 6px ${14+indent}px`,cursor:"pointer",color:active?C.blue:C.text,fontWeight:active?600:400,fontSize:13,background:active?C.blueL:"transparent",borderLeft:active?`3px solid ${C.blue}`:"3px solid transparent",transition:"background .1s"}}
+      onMouseEnter={e=>{if(!active)e.currentTarget.style.background=C.bg2}} onMouseLeave={e=>{if(!active)e.currentTarget.style.background="transparent"}}>
+      {icon&&<span style={{color:active?C.blue:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{icon}</span>}
+      <span style={{flex:1}}>{label}</span>
+      {badge>0&&<span style={{background:C.red,color:"#fff",fontSize:10,fontWeight:700,borderRadius:10,padding:"1px 6px",marginRight:hasArrow?4:0,lineHeight:1.6}}>{badge}</span>}
+      {hasArrow&&<span style={{fontSize:11,color:active?C.blue:C.t3}}>›</span>}
+    </div>
+  );
+
+  return(
+    <aside style={{width:220,flexShrink:0,background:C.bg2,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",height:"100%",overflowY:"auto"}}>
+      {/* Brand */}
+      <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px 10px",borderBottom:`1px solid ${C.border}`}}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="118" height="20" viewBox="0 0 150 26" style={{flexShrink:0}}>
+          <path d="M34.7162 0.00390625L33.3928 7.74895H3.05469L4.38788 0.00390625H34.7162Z" fill="#352EFF"/>
+          <path d="M25.7969 25.4749H17.625L20.2741 9.96875H28.4518L25.7969 25.4749Z" fill="#352EFF"/>
+          <path d="M16.3974 17.7556L2.59153 17.72L9.30472 18.8613L8.17194 25.4759H0L2.67042 9.96978L17.7306 9.95312L16.3974 17.7556Z" fill="#352EFF"/>
+          <path d="M41.4297 10.0039L42.9704 0H48.6141L48.2604 2.29605H45.225L44.9648 3.94266H47.8067L47.4667 6.1018H44.6383L44.038 10.0033H41.4297V10.0039Z" fill="#05005D"/>
+          <path d="M50.3922 10.0027L51.0987 5.54108L48.2734 0H51.2635L52.3609 2.5558C52.4204 2.68786 52.4806 2.83687 52.5426 3.00346C52.6046 3.17005 52.6648 3.34633 52.7244 3.53292C52.8478 3.24577 52.9476 3.02406 53.0229 2.86656C53.0983 2.70966 53.1591 2.59638 53.2047 2.52853L54.9879 0.000606373H58.0807L53.7945 5.56956L53.0953 10.0039H50.3935L50.3922 10.0027Z" fill="#05005D"/>
+          <path d="M58.0278 6.48491C58.4257 6.91454 58.8052 7.22653 59.1658 7.42146C59.5269 7.61638 59.8995 7.71441 60.2848 7.71441C60.6045 7.71441 60.8598 7.63656 61.0502 7.48028C61.2405 7.324 61.3354 7.11811 61.3354 6.86264C61.3354 6.51547 60.9507 6.14063 60.1807 5.73752C60.1071 5.6983 60.049 5.66831 60.0059 5.6464C59.2578 5.25598 58.7454 4.88113 58.4688 4.52127C58.1922 4.16141 58.0537 3.72313 58.0537 3.20699C58.0537 2.26583 58.3705 1.49652 59.0036 0.897914C59.6367 0.299307 60.4533 0 61.4521 0C61.9794 0 62.4866 0.0934298 62.9731 0.279701C63.4596 0.465973 63.919 0.741629 64.3515 1.10552L63.2618 2.98554C62.9202 2.69085 62.6091 2.4717 62.3279 2.32868C62.0467 2.18566 61.7874 2.11416 61.5493 2.11416C61.29 2.11416 61.0738 2.18913 60.9007 2.33849C60.7276 2.48785 60.6413 2.67124 60.6413 2.88808C60.6413 3.15682 60.9656 3.45842 61.6143 3.79233C61.8431 3.9094 62.0208 4.00513 62.1462 4.07837C62.8121 4.44688 63.275 4.82288 63.5343 5.20696C63.7937 5.59103 63.9236 6.07084 63.9236 6.64753C63.9236 7.66655 63.5711 8.48084 62.8661 9.08983C62.1611 9.69939 61.2037 10.0039 59.9927 10.0039C59.3573 10.0039 58.7627 9.86837 58.2089 9.59732C57.6552 9.32628 57.156 8.92374 56.7109 8.39087L58.0278 6.48491Z" fill="#05005D"/>
+          <path d="M73.7029 0.677318L73.2771 3.30864C72.9154 2.99163 72.5217 2.75201 72.0959 2.58917C71.6701 2.42634 71.2266 2.34492 70.7665 2.34492C69.983 2.34492 69.3374 2.62093 68.8298 3.17179C68.3222 3.72323 68.0681 4.42654 68.0681 5.2817C68.0681 6.05488 68.281 6.65251 68.7073 7.07576C69.1331 7.49901 69.7358 7.71093 70.5147 7.71093C70.8506 7.71093 71.1957 7.66994 71.5505 7.58736C71.9053 7.50479 72.279 7.38122 72.6705 7.21608L72.2768 9.68456C71.954 9.7885 71.598 9.86819 71.2083 9.92247C70.8185 9.97675 70.3979 10.0039 69.9464 10.0039C68.5992 10.0039 67.5204 9.58294 66.7089 8.74048C65.8979 7.89802 65.4922 6.78012 65.4922 5.38621C65.4922 4.71351 65.5963 4.072 65.8052 3.46166C66.0141 2.8519 66.3203 2.297 66.7249 1.79752C67.1982 1.21548 67.7888 0.770863 68.4967 0.462518C69.2047 0.154173 69.9973 0 70.8752 0C71.3742 0 71.8584 0.0565837 72.3277 0.169182C72.797 0.282357 73.2548 0.451545 73.7029 0.677318Z" fill="#05005D"/>
+          <path d="M73.1328 10.0039L78.2005 0H81.5882L83.7383 10.0039H80.9936L80.586 8.11797H77.0464L76.0786 10.0039H73.1334H73.1328ZM78.062 5.89037H80.198L79.7347 3.55313C79.6887 3.3211 79.6538 3.1133 79.6311 2.93156C79.6078 2.7492 79.5943 2.57837 79.5894 2.41904C79.4926 2.69226 79.4037 2.93276 79.3234 3.13995C79.2425 3.34714 79.1794 3.50103 79.1334 3.60099L78.062 5.89037Z" fill="#05005D"/>
+          <path d="M84.1953 10.0039L85.7779 0H88.4776L87.2651 7.61211H90.5814L90.2048 10.0039H84.1953Z" fill="#05005D"/>
+          <path d="M40.8717 25.4648L42.1009 17.7842H39.8359L40.2228 15.4609H47.3624L46.9756 17.7842H44.8146L43.5854 25.4648H40.8717Z" fill="#05005D"/>
+          <path d="M50.3444 23.2372H53.5164L53.1595 25.4648H47.25L48.867 15.4609H54.7765L54.4053 17.7703H51.2339L50.9751 19.4036H53.9155L53.5722 21.5767H50.6175L50.3444 23.2372Z" fill="#05005D"/>
+          <path d="M63.8951 16.1383L63.4634 18.7696C63.0967 18.4526 62.6974 18.2129 62.2657 18.0501C61.834 17.8873 61.3844 17.8059 60.9178 17.8059C60.1235 17.8059 59.469 18.0819 58.9543 18.6327C58.4396 19.1842 58.182 19.8875 58.182 20.7426C58.182 21.5158 58.3978 22.1134 58.8301 22.5367C59.2618 22.96 59.8728 23.1719 60.6625 23.1719C61.0031 23.1719 61.353 23.1309 61.7128 23.0483C62.0725 22.9657 62.4514 22.8422 62.8483 22.677L62.4491 25.1455C62.1218 25.2494 61.7609 25.3291 61.3658 25.3834C60.9706 25.4377 60.5442 25.4648 60.0864 25.4648C58.7205 25.4648 57.6267 25.0439 56.8039 24.2014C55.9817 23.359 55.5703 22.2411 55.5703 20.8472C55.5703 20.1745 55.6759 19.5329 55.8877 18.9226C56.0995 18.3128 56.4099 17.7579 56.8202 17.2585C57.3 16.6764 57.8988 16.2318 58.6166 15.9235C59.3344 15.6151 60.138 15.4609 61.0281 15.4609C61.5341 15.4609 62.0249 15.5175 62.5007 15.6301C62.9765 15.7433 63.4407 15.9125 63.8951 16.1383Z" fill="#05005D"/>
+          <path d="M64.2422 25.4648L65.8431 15.4609H68.5742L67.9437 19.3218H71.4928L72.1098 15.4609H74.8477L73.2394 25.4648H70.5015L71.1529 21.3786H67.618L66.9665 25.4648H64.2422Z" fill="#05005D"/>
+          <path d="M75.4141 25.4642L77.0013 15.4609H80.0733L82.1966 20.4011C82.2149 20.4423 82.2448 20.5125 82.2862 20.6131C82.5195 21.1553 82.6822 21.629 82.7742 22.0343V21.7817C82.7742 21.5993 82.7846 21.3982 82.8053 21.1771C82.826 20.956 82.8571 20.6888 82.8979 20.3744L83.6747 15.4615H86.3617L84.7739 25.4648H81.8189L79.5645 20.3744C79.3994 20.0055 79.2745 19.7002 79.1898 19.4591C79.1051 19.218 79.0326 18.9763 78.9735 18.7346V19.0145C78.9735 19.1968 78.9656 19.3894 78.9497 19.5918C78.9339 19.7947 78.9053 20.0643 78.8638 20.4017L78.101 25.4648H75.4141V25.4642Z" fill="#05005D"/>
+          <path d="M92.4863 25.4648C91.81 25.4648 91.1956 25.3713 90.6424 25.1848C90.0893 24.9983 89.5974 24.7182 89.1667 24.3446C88.7149 23.945 88.3616 23.4525 88.1074 22.8664C87.8531 22.2803 87.7266 21.6573 87.7266 20.9973C87.7266 20.2853 87.8354 19.6196 88.053 19.0011C88.2706 18.3821 88.5947 17.8215 89.0253 17.3174C89.5292 16.718 90.1437 16.2589 90.8692 15.9396C91.5947 15.6203 92.3815 15.4609 93.2302 15.4609C94.6509 15.4609 95.7996 15.8738 96.6758 16.6984C97.5519 17.5235 97.99 18.5958 97.99 19.9158C97.99 20.6237 97.8789 21.2889 97.6573 21.9119C97.4356 22.535 97.1115 23.0962 96.6849 23.5957C96.1638 24.2078 95.5482 24.6726 94.8376 24.9896C94.1269 25.3066 93.3436 25.4648 92.4863 25.4648ZM93.0676 17.7932C92.2968 17.7932 91.6508 18.0732 91.1297 18.6333C90.6086 19.1934 90.3481 19.8881 90.3481 20.7172C90.3481 21.4511 90.556 22.0372 90.9711 22.4755C91.3869 22.9143 91.9412 23.1332 92.6341 23.1332C93.3917 23.1332 94.0359 22.8433 94.565 22.2636C95.0947 21.6838 95.3593 20.9771 95.3593 20.1439C95.3593 19.4579 95.1439 18.8943 94.7133 18.4537C94.2827 18.0132 93.7335 17.7926 93.0664 17.7926L93.0676 17.7932Z" fill="#05005D"/>
+          <path d="M99.25 25.4648L100.833 15.4609H103.532L102.32 23.073H105.636L105.259 25.4648H99.25Z" fill="#05005D"/>
+          <path d="M111.768 25.4648C111.091 25.4648 110.477 25.3713 109.924 25.1848C109.371 24.9983 108.879 24.7182 108.448 24.3446C107.996 23.945 107.643 23.4525 107.389 22.8664C107.134 22.2803 107.008 21.6573 107.008 20.9973C107.008 20.2853 107.117 19.6196 107.334 19.0011C107.552 18.3821 107.876 17.8215 108.307 17.3174C108.81 16.718 109.425 16.2589 110.15 15.9396C110.876 15.6203 111.663 15.4609 112.511 15.4609C113.932 15.4609 115.081 15.8738 115.957 16.6984C116.833 17.5235 117.271 18.5958 117.271 19.9158C117.271 20.6237 117.16 21.2889 116.939 21.9119C116.717 22.535 116.393 23.0962 115.966 23.5957C115.445 24.2078 114.829 24.6726 114.119 24.9896C113.408 25.3066 112.625 25.4648 111.768 25.4648ZM112.349 17.7932C111.578 17.7932 110.932 18.0732 110.411 18.6333C109.89 19.1934 109.629 19.8881 109.629 20.7172C109.629 21.4511 109.837 22.0372 110.252 22.4755C110.668 22.9143 111.222 23.1332 111.915 23.1332C112.673 23.1332 113.317 22.8433 113.846 22.2636C114.376 21.6838 114.641 20.9771 114.641 20.1439C114.641 19.4579 114.425 18.8943 113.995 18.4537C113.564 18.0132 113.015 17.7926 112.348 17.7926L112.349 17.7932Z" fill="#05005D"/>
+          <path d="M124.309 20.0203L129.129 20.0266C129.09 21.7243 128.62 23.0552 127.719 24.019C126.818 24.9827 125.596 25.4648 124.053 25.4648C122.509 25.4648 121.33 25.0543 120.435 24.2338C119.541 23.4132 119.094 22.3121 119.094 20.9315C119.094 20.1716 119.232 19.4498 119.507 18.7661C119.783 18.0825 120.178 17.4819 120.695 16.9651C121.184 16.4789 121.765 16.1065 122.436 15.8484C123.107 15.5903 123.834 15.4609 124.617 15.4609C125.535 15.4609 126.337 15.6434 127.024 16.0078C127.71 16.3727 128.305 16.9328 128.808 17.6881L126.762 19.0756C126.521 18.6454 126.223 18.3244 125.866 18.1119C125.51 17.8994 125.094 17.7926 124.617 17.7926C123.812 17.7926 123.147 18.0813 122.623 18.6587C122.098 19.2361 121.835 19.9654 121.835 20.8472C121.835 21.5764 122.043 22.162 122.459 22.6025C122.874 23.0431 123.423 23.2637 124.105 23.2637C124.359 23.2637 124.598 23.2342 124.823 23.1759C125.048 23.1176 125.257 23.0316 125.449 22.9184C125.62 22.8144 125.766 22.6828 125.889 22.5246C126.011 22.3664 126.11 22.1804 126.184 21.9679H124L124.309 20.0203Z" fill="#05005D"/>
+          <path d="M130.039 25.4648L131.633 15.4609H134.372L132.779 25.4648H130.039Z" fill="#05005D"/>
+          <path d="M138.102 23.2372H141.226L140.875 25.4648H135.055L136.647 15.4609H142.467L142.102 17.7703H138.978L138.723 19.4036H141.619L141.281 21.5767H138.371L138.102 23.2372Z" fill="#05005D"/>
+          <path d="M143.579 21.9458C143.983 22.3755 144.368 22.6875 144.734 22.8824C145.1 23.0773 145.478 23.1754 145.869 23.1754C146.194 23.1754 146.453 23.0975 146.646 22.9412C146.839 22.7849 146.936 22.5791 146.936 22.3236C146.936 21.9764 146.545 21.6016 145.764 21.1984C145.689 21.1592 145.63 21.1293 145.586 21.1073C144.827 20.7169 144.307 20.3421 144.026 19.9822C143.746 19.6224 143.605 19.1841 143.605 18.6679C143.605 17.7268 143.927 16.9575 144.569 16.3589C145.212 15.7602 146.04 15.4609 147.054 15.4609C147.589 15.4609 148.104 15.5544 148.598 15.7406C149.092 15.9269 149.558 16.2026 149.997 16.5665L148.891 18.4465C148.544 18.1518 148.228 17.9326 147.943 17.7896C147.658 17.6466 147.394 17.5751 147.153 17.5751C146.89 17.5751 146.67 17.6501 146.494 17.7994C146.319 17.9488 146.231 18.1322 146.231 18.349C146.231 18.6178 146.56 18.9194 147.219 19.2533C147.451 19.3703 147.631 19.4661 147.759 19.5393C148.434 19.9078 148.904 20.2838 149.167 20.6679C149.431 21.052 149.563 21.5318 149.563 22.1085C149.563 23.1275 149.205 23.9418 148.489 24.5508C147.774 25.1603 146.802 25.4648 145.573 25.4648C144.928 25.4648 144.325 25.3293 143.763 25.0583C143.2 24.7872 142.694 24.3847 142.242 23.8518L143.579 21.9458Z" fill="#05005D"/>
+        </svg>
+        <button style={{marginLeft:"auto",background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:16,padding:3}}>☰</button>
+      </div>
+
+      <nav style={{flex:1,padding:"6px 0",overflowY:"auto"}}>
+        <div style={{fontSize:10.5,fontWeight:600,color:C.t3,padding:"8px 14px 3px",letterSpacing:".07em",textTransform:"uppercase"}}>Platform</div>
+        <NavRow icon={ICONS.home} label="Homepage"/>
+        <NavRow icon={ICONS.kyc} label="Customers & KYC" hasArrow/>
+        <NavRow icon={ICONS.goods} label="Digital Goods" hasArrow/>
+        <div onClick={()=>setCommOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
+          onMouseEnter={e=>e.currentTarget.style.background=C.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+          <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.comm}</span>
+          <span style={{flex:1}}>Communication</span>
+          <span style={{fontSize:11,color:C.t3,transform:commOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+        </div>
+        {commOpen&&<>
+          <NavRow label="Notification Logs" indent={14}/>
+          <NavRow label="Manage Template" indent={14} active={page==="manage-template"} onClick={()=>onPage("manage-template")}/>
+          <NavRow label="Config" indent={14} hasArrow/>
+          <NavRow label="Connectra" indent={14}/>
+        </>}
+        <NavRow icon={ICONS.alert} label="Alerts" hasArrow/>
+        <NavRow icon={ICONS.pay} label="Payments" hasArrow/>
+        <NavRow icon={ICONS.aml} label="AML" hasArrow/>
+        <NavRow icon={ICONS.admin} label="Admin" hasArrow/>
+        <NavRow icon={ICONS.audit} label="Audit Trails"/>
+        <NavRow icon={ICONS.ledger} label="Ledger" hasArrow/>
+        <NavRow icon={ICONS.analytics} label="Analytics" hasArrow/>
+        <NavRow icon={ICONS.auth} label="Auth" hasArrow/>
+        <NavRow icon={ICONS.hier} label="Hierarchy Management"/>
+        <NavRow icon={ICONS.ontology} label="Ontology"/>
+
+        {/* GMC standalone section */}
+        <div onClick={()=>setGmcOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
+          onMouseEnter={e=>{if(!gmcOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!gmcOpen)e.currentTarget.style.background="transparent"}}>
+          <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.gmc}</span>
+          <span style={{flex:1}}>GMC</span>
+          <span style={{fontSize:11,color:C.t3,transform:gmcOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+        </div>
+        {gmcOpen&&<>
+          <NavRow label="Configs" indent={14} active={page==="gmc-configs"} onClick={()=>onPage("gmc-configs")}/>
+          <NavRow label="Logs" indent={14} active={page==="gmc-logs"} onClick={()=>onPage("gmc-logs")} badge={pendingCount}/>
+        </>}
+
+      </nav>
+
+      {/* User footer */}
+      <div style={{padding:"10px 14px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:8}}>
+        <div style={{width:26,height:26,borderRadius:"50%",background:C.blue,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"#fff",flexShrink:0}}>UG</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:12.5,fontWeight:500,color:C.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Utkarsh Giri</div>
+          <div style={{fontSize:11,color:C.t3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>ut*****@*****ech.com</div>
+        </div>
+        <span style={{fontSize:11,color:C.t3}}>›</span>
+      </div>
+    </aside>
+  );
+}
+
+/* ═══════════════════════════════════════
+   TABLE STYLE HELPERS
+   Copy these into any view that has a table
+═══════════════════════════════════════ */
+// const thS={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"10px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase",backgroundImage:"linear-gradient(to bottom, #e0e0e0 0%, #e0e0e0 65%, transparent 65%)",backgroundRepeat:"no-repeat",backgroundPosition:"right 0 top 0",backgroundSize:"1px 100%"};
+// const thSL={...thS,backgroundImage:"none"};
+// const tdS={padding:"14px 16px",borderBottom:`1px solid ${C.border}`,verticalAlign:"middle",fontSize:13,color:C.text};
+
+/* ═══════════════════════════════════════
+   YOUR FEATURE VIEWS GO HERE
+   Each view is a React function component.
+   Example structure:
+
+   function MyFeatureView(){
+     return(
+       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+         Page header (title + breadcrumb + button)
+         Warning banner if needed
+         Search + filters
+         Table
+         Pagination
+       </div>
+     );
+   }
+═══════════════════════════════════════ */
+
+/* ═══════════════════════════════════════
+   SHARED TABLE STYLES
+════════════════════════════════
+
+
+/* ═══════════════════════════════════════
+   SHARED TABLE STYLES
+═══════════════════════════════════════ */
+const thS={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"10px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase",backgroundImage:"linear-gradient(to bottom, #e0e0e0 0%, #e0e0e0 65%, transparent 65%)",backgroundRepeat:"no-repeat",backgroundPosition:"right 0 top 0",backgroundSize:"1px 100%"};
+const thSL={...thS,backgroundImage:"none"};
+const tdS={padding:"14px 16px",borderBottom:`1px solid ${C.border}`,verticalAlign:"middle",fontSize:13,color:C.text};
+
+/* ═══════════════════════════════════════
+   STATUS BADGE EXTENDED
+═══════════════════════════════════════ */
+const GMC_STATUS={
+  Pending:{bg:C.amberL,c:C.amberT,b:C.amberB},
+  Approved:{bg:C.greenL,c:C.greenT,b:C.greenB},
+  Rejected:{bg:C.redL,c:C.redT,b:C.redB},
+  "Auto Expired":{bg:C.grayL,c:C.gray,b:C.grayB},
+};
+function GBadge({v}){const s=GMC_STATUS[v]||{bg:C.grayL,c:C.gray,b:C.grayB};return<span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"2px 8px",borderRadius:4,fontSize:12,fontWeight:500,background:s.bg,color:s.c,border:`1px solid ${s.b}`}}><span style={{width:5,height:5,borderRadius:"50%",background:s.c,display:"inline-block"}}/>{v}</span>;}
+
+/* ═══════════════════════════════════════
+   PERM TAG
+═══════════════════════════════════════ */
+function PermTag({v}){return<span style={{display:"inline-flex",padding:"2px 7px",borderRadius:4,fontSize:11,fontWeight:500,background:C.blueL,color:C.blue,border:`1px solid ${C.blueM}`,fontFamily:"monospace"}}>{v}</span>;}
+
+/* ═══════════════════════════════════════
+   MANAGE TEMPLATE DATA
+═══════════════════════════════════════ */
+const INIT_TEMPLATES=[
+  {id:101,uid:"tmp_email_d822g64k...",title:"[AML] Data Ingestion Failure",client:"smart_app_consumer",type:"Email",status:"Active",silentDelivery:"No",createdAt:"May 13, 2026 12:58",notifType:"Email",subject:"[AML] Data Ingestion Failure",body:"<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"UTF-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\\n<title>Data Ingestion Failed</title>\\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\">\\n<style>\\nbody {\\n    font-family: 'Inter', sans-serif;\\n    margin: 0;\\n    padding: 40px 20px;\\n    background-color: #F9F9FB;\\n    -webkit-font-smoothing: antialiased;\\n}\\n.wrapper {\\n    max-width: 600px;\\n    margin: auto;\\n    background: #ffffff;\\n    border: 1px solid #E5E7EB;\\n    border-radius: 8px;\\n}\\n.header {\\n    padding: 32px 40px 24px;\\n    border-top: 4px solid #3B3FFF;\\n}\\n.content {\\n    padding: 0 40px 32px;\\n}\\nh1 {\\n    font-size: 18px;\\n    font-weight: 600;\\n    color: #111827;\\n    margin: 0 0 20px 0;\\n}\\np {\\n    font-size: 15px;\\n    color: #4B5563;\\n    margin: 0 0 16px 0;\\n}\\n.section-title {\\n    font-size: 12px;\\n    text-transform: uppercase;\\n    color: #9CA3AF;\\n    margin: 28px 0 10px;\\n}\\n.data-table {\\n    width: 100%;\\n    border-collapse: collapse;\\n    font-size: 14px;\\n}\\n.data-table td {\\n    padding: 12px 0;\\n    border-bottom: 1px solid #F3F4F6;\\n}\\n.label {\\n    color: #6B7280;\\n}\\n.value {\\n    text-align: right;\\n    font-weight: 500;\\n    color: #111827;\\n}\\n.info-text {\\n    color: #3B3FFF;\\n    font-weight: 600;\\n}\\n.footer {\\n    text-align: center;\\n    font-size: 13px;\\n    color: #9CA3AF;\\n    padding: 20px;\\n    border-top: 1px solid #E5E7EB;\\n}\\n.footer a {\\n    color: #3B3FFF;\\n    text-decoration: none;\\n}\\n</style>\\n</head>\\n<body>\\n<div class=\"wrapper\">\\n<div class=\"header\">\\n<img src=\"https://stg-backoffice.fyscal.ai/assets/favicon-96x96-DLkJ5XdS.png\" height=\"24\" alt=\"Fyscal Technologies\">\\n</div>\\n<div class=\"content\">\\n<h1>Data Ingestion Failed</h1>\\n<p>Dear {{client_name}},</p>\\n<p class=\"info-text\">Ingestion of {{data_type}} data failed due to {{failure_reason}} at {{failed_time}}.</p>\\n<div class=\"section-title\">Failure Summary</div>\\n<table class=\"data-table\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\\n<tr><td class=\"label\">Data Type</td><td class=\"value\">{{data_type}}</td></tr>\\n<tr><td class=\"label\">Failure Reason</td><td class=\"value\">{{failure_reason}}</td></tr>\\n<tr><td class=\"label\">Failed At</td><td class=\"value\">{{failed_time}}</td></tr>\\n<tr><td class=\"label\">Job ID</td><td class=\"value\">{{job_id}}</td></tr>\\n</table>\\n<p style=\"margin-top:24px;\">Kind regards,<br><b>Fyscal Technologies Support</b></p>\\n</div>\\n<div class=\"footer\">Need assistance? <a href=\"{{support_link}}\">Contact Support</a></div>\\n</div>\\n</body>\\n</html>",validity:"1",iconUrl:"https://stg-backoffice.fyscal.ai/assets/favicon-96x96-DLkJ5XdS.png",name:""},
+  {id:100,uid:"tmp_email_d822fdck...",title:"[AML] Manual Termina...",client:"smart_app_consumer",type:"Email",status:"Active",silentDelivery:"No",createdAt:"May 13, 2026 12:56",notifType:"Email",subject:"[AML] Manual Termination",body:"<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"UTF-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\\n<title>Manual Termination</title>\\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\">\\n<style>\\nbody {\\n    font-family: 'Inter', sans-serif;\\n    margin: 0;\\n    padding: 40px 20px;\\n    background-color: #F9F9FB;\\n    -webkit-font-smoothing: antialiased;\\n}\\n.wrapper {\\n    max-width: 600px;\\n    margin: auto;\\n    background: #ffffff;\\n    border: 1px solid #E5E7EB;\\n    border-radius: 8px;\\n}\\n.header {\\n    padding: 32px 40px 24px;\\n    border-top: 4px solid #3B3FFF;\\n}\\n.content {\\n    padding: 0 40px 32px;\\n}\\nh1 {\\n    font-size: 18px;\\n    font-weight: 600;\\n    color: #111827;\\n    margin: 0 0 20px 0;\\n}\\np {\\n    font-size: 15px;\\n    color: #4B5563;\\n    margin: 0 0 16px 0;\\n}\\n.section-title {\\n    font-size: 12px;\\n    text-transform: uppercase;\\n    color: #9CA3AF;\\n    margin: 28px 0 10px;\\n}\\n.data-table {\\n    width: 100%;\\n    border-collapse: collapse;\\n    font-size: 14px;\\n}\\n.data-table td {\\n    padding: 12px 0;\\n    border-bottom: 1px solid #F3F4F6;\\n}\\n.label {\\n    color: #6B7280;\\n}\\n.value {\\n    text-align: right;\\n    font-weight: 500;\\n    color: #111827;\\n}\\n.info-text {\\n    color: #3B3FFF;\\n    font-weight: 600;\\n}\\n.footer {\\n    text-align: center;\\n    font-size: 13px;\\n    color: #9CA3AF;\\n    padding: 20px;\\n    border-top: 1px solid #E5E7EB;\\n}\\n.footer a {\\n    color: #3B3FFF;\\n    text-decoration: none;\\n}\\n</style>\\n</head>\\n<body>\\n<div class=\"wrapper\">\\n<div class=\"header\">\\n<img src=\"https://stg-backoffice.fyscal.ai/assets/favicon-96x96-DLkJ5XdS.png\" height=\"24\" alt=\"Fyscal Technologies\">\\n</div>\\n<div class=\"content\">\\n<h1>Manual Termination</h1>\\n<p>Dear {{client_name}},</p>\\n<p class=\"info-text\">Ingestion of {{data_type}} data failed due to {{failure_reason}} at {{failed_time}}.</p>\\n<div class=\"section-title\">Failure Summary</div>\\n<table class=\"data-table\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\\n<tr><td class=\"label\">Data Type</td><td class=\"value\">{{data_type}}</td></tr>\\n<tr><td class=\"label\">Failure Reason</td><td class=\"value\">{{failure_reason}}</td></tr>\\n<tr><td class=\"label\">Failed At</td><td class=\"value\">{{failed_time}}</td></tr>\\n<tr><td class=\"label\">Job ID</td><td class=\"value\">{{job_id}}</td></tr>\\n</table>\\n<p style=\"margin-top:24px;\">Kind regards,<br><b>Fyscal Technologies Support</b></p>\\n</div>\\n<div class=\"footer\">Need assistance? <a href=\"{{support_link}}\">Contact Support</a></div>\\n</div>\\n</body>\\n</html>",validity:"1",iconUrl:"https://stg-backoffice.fyscal.ai/assets/favicon-96x96-DLkJ5XdS.png",name:""},
+  {id:71,uid:"tmp_sms_d7m6hnqdi...",title:"sdss",client:"smart_app_consumer",type:"Sms",status:"Active",silentDelivery:"No",createdAt:"Apr 25, 2026 12:40",notifType:"Sms",subject:"sdss",body:"Hello {{name}}, your OTP is {{otp}}",validity:"60",iconUrl:"",name:"sdss"},
+  {id:70,uid:"tmp_email_d7ln4qqdi...",title:"Skipped Run Warning",client:"smart_app_consumer",type:"Email",status:"Active",silentDelivery:"No",createdAt:"Apr 24, 2026 07:08",notifType:"Email",subject:"Skipped Run Warning",body:"<!DOCTYPE html>\n<html><body>Warning</body></html>",validity:"1",iconUrl:"https://.png",name:""},
+  {id:69,uid:"tmp_email_d7ln4e2di...",title:"Customer Screening C...",client:"smart_app_consumer",type:"Email",status:"Active",silentDelivery:"No",createdAt:"Apr 24, 2026 07:08",notifType:"Email",subject:"Customer Screening Complete",body:"<!DOCTYPE html>\n<html><body>Screening done</body></html>",validity:"1",iconUrl:"https://.png",name:""},
+  {id:68,uid:"tmp_email_d7ln39idik...",title:"Customer File Ingeste...",client:"smart_app_consumer",type:"Email",status:"Active",silentDelivery:"No",createdAt:"Apr 24, 2026 07:05",notifType:"Email",subject:"Customer File Ingested",body:"<!DOCTYPE html>\n<html><body>File ingested</body></html>",validity:"1",iconUrl:"https://.png",name:""},
+];
+
+/* ═══════════════════════════════════════
+   GMC LOG DATA
+═══════════════════════════════════════ */
+const INIT_LOGS=[
+  {id:"REQ_1089",activityId:"ACT_CT_001",flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",makerPermission:"gmc:view",date:"May 13, 2026 12:58",status:"Pending",
+   category:"Communication",action:"Manage Template Edit",reason:"",context:"",atts:[],
+   diff:[{field:"Body",old:"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">",nw:"PENDING_NEW_VALUE",changed:true}],
+   ctxData:[{l:"Template Type",v:"Email"},{l:"Client",v:"smart_app_consumer"},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:"Email"},{l:"Template Status",v:"Active"},{l:"Silent Delivery",v:"No"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+];
+
+/* ═══════════════════════════════════════
+   GMC REASONING MODAL
+═══════════════════════════════════════ */
+function GMCReasoningModal({diff,onConfirm,onCancel}){
+  const [reason,setReason]=useState("");
+  const [ctx,setCtx]=useState("");
+  const [err,setErr]=useState(false);
+  const handleConfirm=()=>{if(!reason.trim()){setErr(true);return;}onConfirm(reason,ctx);};
+  return(
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300}}>
+      <div style={{background:C.bg,borderRadius:8,width:520,maxWidth:"96%",maxHeight:"88vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px 12px"}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>Submit Request</span>
+          <button onClick={onCancel} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3,lineHeight:1}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"0 20px 16px"}}>
+          {/* Diff preview */}
+          <div style={{marginBottom:16,padding:"10px 14px",background:C.bg2,borderRadius:6,border:`1px solid ${C.border}`}}>
+            <div style={{fontSize:11,fontWeight:600,color:C.t2,textTransform:"uppercase",letterSpacing:".06em",marginBottom:8}}>Changes Detected</div>
+            {diff.map((d,i)=><div key={i} style={{fontSize:12.5,color:C.text,marginBottom:4}}><span style={{fontWeight:600}}>{d.field}:</span> <span style={{color:C.t3,textDecoration:"line-through",marginRight:6}}>{d.old.length>40?d.old.substring(0,40)+"...":d.old}</span><span style={{color:C.green}}>→ Modified</span></div>)}
+          </div>
+          {/* Reason */}
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Reason <span style={{color:C.red}}>*</span></div>
+            <textarea value={reason} onChange={e=>{setReason(e.target.value);setErr(false);}} placeholder="Enter reason for this change..." style={{width:"100%",padding:"8px 10px",border:`1px solid ${err?C.red:C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",minHeight:80,fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=err?C.red:C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            {err&&<div style={{fontSize:12,color:C.red,marginTop:4}}>Reason is required.</div>}
+          </div>
+          {/* Context */}
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Context <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional)</span></div>
+            <textarea value={ctx} onChange={e=>setCtx(e.target.value)} placeholder="Include all evidences and links. May be used for audit purposes." style={{width:"100%",padding:"8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",minHeight:70,fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+          </div>
+          {/* Attachments */}
+          <div>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Supporting Documents <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional · up to 3 files)</span></div>
+            <div style={{border:`1.5px dashed ${C.grayB}`,borderRadius:6,padding:"16px",textAlign:"center",cursor:"pointer",color:C.t3,fontSize:12.5}} onMouseEnter={e=>e.currentTarget.style.borderColor=C.blue} onMouseLeave={e=>e.currentTarget.style.borderColor=C.grayB}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom:6,display:"block",margin:"0 auto 6px"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Attach Document
+              <div style={{fontSize:11,marginTop:3,color:C.t3}}>PDF, PNG, JPG up to 10MB each</div>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onCancel}>Cancel</Btn>
+          <Btn variant="dark" onClick={handleConfirm}>Confirm</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   EDIT TEMPLATE MODAL
+═══════════════════════════════════════ */
+function EditTemplateModal({tmpl,onClose,onSave}){
+  const [form,setForm]=useState({notifType:tmpl.notifType,client:tmpl.client,subject:tmpl.subject,body:tmpl.body,validity:tmpl.validity,status:tmpl.status,iconUrl:tmpl.iconUrl,name:tmpl.name||""});
+  const [showGMC,setShowGMC]=useState(false);
+  const dirty=JSON.stringify(form)!==JSON.stringify({notifType:tmpl.notifType,client:tmpl.client,subject:tmpl.subject,body:tmpl.body,validity:tmpl.validity,status:tmpl.status,iconUrl:tmpl.iconUrl,name:tmpl.name||""});
+  const up=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const diff=[];
+  if(form.body!==tmpl.body)diff.push({field:"Body",old:tmpl.body,nw:form.body,changed:true});
+  if(form.subject!==tmpl.subject)diff.push({field:"Subject",old:tmpl.subject,nw:form.subject,changed:true});
+  if(form.status!==tmpl.status)diff.push({field:"Status",old:tmpl.status,nw:form.status,changed:true});
+  if(form.notifType!==tmpl.notifType)diff.push({field:"Notification Type",old:tmpl.notifType,nw:form.notifType,changed:true});
+  const handleSave=()=>{if(dirty)setShowGMC(true);};
+  const handleGMCConfirm=(reason,ctx)=>{onSave(tmpl.id,form,diff,reason,ctx);setShowGMC(false);onClose();};
+  const labelS={fontSize:12.5,fontWeight:500,color:C.text,marginBottom:5,display:"block"};
+  const inputS={width:"100%",padding:"7px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const selS={...inputS,cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
+  return(
+    <>
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
+      <div style={{background:C.bg,borderRadius:8,width:680,maxWidth:"96%",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px 10px",borderBottom:`1px solid ${C.border}`}}>
+          <div>
+            <div style={{fontSize:15,fontWeight:600,color:C.text}}>Edit Template</div>
+            <div style={{fontSize:12,color:C.t3,marginTop:2}}>Fill out the form below to update the template.</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3,lineHeight:1}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"18px 20px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div>
+              <label style={labelS}>Notification Type <span style={{color:C.red}}>*</span></label>
+              <div style={{position:"relative"}}>
+                <select value={form.notifType} onChange={e=>up("notifType",e.target.value)} style={selS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                  <option>Email</option><option>Sms</option><option>Push</option>
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div>
+              <label style={labelS}>Client <span style={{color:C.red}}>*</span></label>
+              <div style={{position:"relative"}}>
+                <select value={form.client} onChange={e=>up("client",e.target.value)} style={selS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                  <option>smart_app_consumer</option><option>smart_app_merchant</option>
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div>
+              <label style={labelS}>Subject <span style={{color:C.red}}>*</span></label>
+              <input value={form.subject} onChange={e=>up("subject",e.target.value)} style={inputS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div>
+              <label style={labelS}>Body <span style={{color:C.red}}>*</span></label>
+              <textarea value={form.body} onChange={e=>up("body",e.target.value)} style={{...inputS,resize:"vertical",minHeight:90,fontFamily:"monospace",fontSize:12}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:12.5,color:C.text}}>Send only to verified users</span>
+              <div style={{width:36,height:20,borderRadius:10,background:C.grayB,cursor:"pointer",position:"relative"}}><div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:2,boxShadow:"0 1px 3px rgba(0,0,0,.2)"}}/></div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:12.5,color:C.text}}>Notification Center Visibility</span>
+              <div style={{width:36,height:20,borderRadius:10,background:C.grayB,cursor:"pointer",position:"relative"}}><div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:2,boxShadow:"0 1px 3px rgba(0,0,0,.2)"}}/></div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div>
+              <label style={labelS}>Validity (sec) <span style={{color:C.red}}>*</span></label>
+              <input value={form.validity} onChange={e=>up("validity",e.target.value)} style={inputS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div>
+              <label style={labelS}>Status</label>
+              <div style={{position:"relative"}}>
+                <select value={form.status} onChange={e=>up("status",e.target.value)} style={selS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                  <option>Active</option><option>Inactive</option>
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <div>
+              <label style={labelS}>Icon URL <span style={{color:C.red}}>*</span></label>
+              <input value={form.iconUrl} onChange={e=>up("iconUrl",e.target.value)} style={inputS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div>
+              <label style={labelS}>Name</label>
+              <input placeholder="Name" value={form.name} onChange={e=>up("name",e.target.value)} style={inputS} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <button onClick={handleSave} disabled={!dirty} style={{padding:"7px 24px",background:dirty?"#111827":C.grayB,color:dirty?"#fff":C.t3,border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:dirty?"pointer":"not-allowed",transition:"all .12s"}}>Save</button>
+        </div>
+      </div>
+    </div>
+    {showGMC&&<GMCReasoningModal diff={diff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════
+   MANAGE TEMPLATE VIEW
+═══════════════════════════════════════ */
+function ManageTemplateView({templates,onTemplateUpdate,onLogAdd}){
+  const [editTmpl,setEditTmpl]=useState(null);
+  const [toast,setToast]=useState(null);
+  const handleSave=(id,form,diff,reason,ctx)=>{
+    onTemplateUpdate(id,form);
+    onLogAdd({id:`REQ_${1090+Math.floor(Math.random()*100)}`,activityId:"ACT_CT_001",flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",makerPermission:"gmc:view",date:(()=>{const n=new Date();const d=n.getDate();const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][n.getMonth()];const y=n.getFullYear();let h=n.getHours();const min=String(n.getMinutes()).padStart(2,"0");const ampm=h>=12?"PM":"AM";h=h%12||12;return`${d} ${m} ${y}, ${h}:${min} ${ampm}`;})(),status:"Pending",category:"Communication",action:"Manage Template Edit",reason,context:ctx,atts:[],diff,ctxData:[{l:"Template Type",v:form.notifType},{l:"Client",v:form.client},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:form.notifType},{l:"Template Status",v:form.status},{l:"Silent Delivery",v:"No"}],checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:id});
+    setToast("Request submitted for approval. Checker has been notified.");
+  };
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>Manage Templates</div>
+          <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3}}>
+            <span onMouseEnter={e=>e.currentTarget.style.color=C.blue} onMouseLeave={e=>e.currentTarget.style.color=C.t3} style={{cursor:"pointer"}}>Communications</span>
+            <span style={{fontSize:11}}>›</span>
+            <span style={{color:C.t2}}>Manage Template</span>
+          </div>
+        </div>
+        <Btn variant="dark" sx={{marginTop:4}}>+ Add Template</Btn>
+      </div>
+      {/* Search */}
+      <div style={{padding:"0 24px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,overflow:"hidden",background:C.bg,height:34}}>
+          <select style={{padding:"0 10px",border:"none",background:C.bg2,color:C.t2,fontSize:12.5,outline:"none",borderRight:`1px solid ${C.grayB}`,cursor:"pointer",height:"100%"}}><option>Search by</option><option>Title</option><option>UID</option></select>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input placeholder="Search here..." style={{border:"none",outline:"none",fontSize:13,width:180,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,color:C.t2,fontSize:12.5,cursor:"pointer"}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+          Show Filters
+        </button>
+      </div>
+      {/* Table */}
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead>
+            <tr>
+              <th style={thS}>ID</th><th style={thS}>UID</th><th style={thS}>Title</th>
+              <th style={thS}>Client Name</th><th style={thS}>Type</th><th style={thS}>Status</th>
+              <th style={thS}>Silent Delivery</th><th style={thS}>Created At</th><th style={thSL}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {templates.map(t=>(
+              <tr key={t.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+                <td style={tdS}>{t.id}</td>
+                <td style={{...tdS,color:C.t2,fontSize:12,fontFamily:"monospace"}}>{t.uid}</td>
+                <td style={tdS}>{t.title}</td>
+                <td style={{...tdS,color:C.t2}}>{t.client}</td>
+                <td style={tdS}><Badge v={t.type}/></td>
+                <td style={tdS}><Badge v={t.status}/></td>
+                <td style={tdS}><Badge v={t.silentDelivery}/></td>
+                <td style={{...tdS,color:C.t2,fontSize:12}}>{t.createdAt}</td>
+                <td style={{...tdS,textAlign:"right"}}>
+                  <DotMenu items={[
+                    ["Edit",C.blue,()=>setEditTmpl(t)],
+                    ["View",C.blue,null],
+                    ["Test",C.blue,null],
+                    ["Preview",C.blue,null],
+                  ]}/>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {/* Pagination */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",background:C.bg,borderTop:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{fontSize:12.5,color:C.t2}}>Showing 1–{templates.length} of 353</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12.5,color:C.t2}}>
+          <span>Rows per page</span>
+          <select style={{border:`1px solid ${C.grayB}`,borderRadius:5,padding:"2px 6px",fontSize:12.5,color:C.text,background:C.bg,outline:"none",cursor:"pointer",marginLeft:4}}><option>20</option><option>10</option><option>50</option></select>
+          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 18</span></div>
+          {["›","»"].map(a=><button key={a} style={{width:26,height:26,border:`1px solid ${C.grayB}`,borderRadius:4,background:C.bg,color:C.t3,cursor:"pointer",fontSize:13}}>{a}</button>)}
+        </div>
+      </div>
+      {editTmpl&&<EditTemplateModal tmpl={editTmpl} onClose={()=>setEditTmpl(null)} onSave={handleSave}/>}
+      {toast&&<div style={{position:"fixed",bottom:24,right:24,background:"#111827",color:"#fff",padding:"11px 16px",borderRadius:8,fontSize:12.5,boxShadow:"0 4px 20px rgba(0,0,0,.25)",zIndex:999,display:"flex",alignItems:"center",gap:8}}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {toast}
+        <button onClick={()=>setToast(null)} style={{marginLeft:8,background:"none",border:"none",color:"#9ca3af",cursor:"pointer",fontSize:14,lineHeight:1}}>×</button>
+      </div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   GMC LOG REQUEST DETAIL MODAL
+═══════════════════════════════════════ */
+function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
+  const [tab,setTab]=useState("maker");
+  const [remark,setRemark]=useState("");
+  const isChecker=viewerPerm==="gmc:manage";
+  const isClosed=req.status!=="Pending";
+  const pHdr={background:"#EDE9FF",padding:"10px 14px",fontWeight:600,fontSize:13,color:"#3B3FFF",border:"1px solid #DDD6FE"};
+  const pCell={padding:"11px 14px",borderBottom:`1px solid ${C.border}`,fontSize:13,color:C.text,verticalAlign:"top"};
+  const ctxHdr={background:"#EDE9FF",padding:"8px 12px",fontWeight:600,fontSize:12.5,color:"#3B3FFF",border:"1px solid #DDD6FE"};
+  const ctxCell={padding:"10px 12px",borderBottom:`1px solid ${C.border}`,fontSize:13,color:C.text};
+  return(
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200,padding:"20px 0"}}>
+      <div style={{background:C.bg,borderRadius:8,width:780,maxWidth:"96%",maxHeight:"92vh",display:"flex",flexDirection:"column",boxShadow:"0 8px 40px rgba(0,0,0,.22)",overflow:"hidden"}}>
+        {/* ── HEADER: back arrow + meta ── */}
+        <div style={{padding:"16px 24px 14px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:16}}>
+              {/* Left: back + id + status */}
+              <div>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                  <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:16,color:C.t2,padding:0,lineHeight:1,display:"flex",alignItems:"center"}}>←</button>
+                  <span style={{fontSize:16,fontWeight:700,color:C.text}}>Request Details</span>
+                </div>
+                <div style={{fontSize:12,color:C.blue,fontWeight:500,marginBottom:3}}>ID {req.id}</div>
+                <GBadge v={req.status}/>
+              </div>
+              {/* Right of header: requested by + date + category + action */}
+              <div style={{marginLeft:32}}>
+                <div style={{fontSize:12.5,color:C.t2,marginBottom:2}}>Requested by <span style={{color:C.blue,fontWeight:600}}>{req.maker}</span></div>
+                <div style={{fontSize:11.5,color:C.t3,marginBottom:8}}>{req.date}</div>
+                <div style={{display:"flex",gap:24}}>
+                  <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Category</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.category}</div></div>
+                  <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Action</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.action}</div></div>
+                  {req.checkerName&&<div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approved by</span><div style={{fontSize:13,color:C.blue,marginTop:2}}>{req.checkerName}</div></div>}
+                </div>
+              </div>
+            </div>
+            <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3,lineHeight:1,flexShrink:0}}>×</button>
+          </div>
+        </div>
+
+        {/* ── TABS for closed requests ── */}
+        {isClosed&&(
+          <div style={{display:"flex",borderBottom:`1px solid ${C.border}`,padding:"0 24px",flexShrink:0}}>
+            {["maker","checker"].map(t=><button key={t} onClick={()=>setTab(t)} style={{padding:"10px 16px",fontSize:13,border:"none",background:"none",cursor:"pointer",color:tab===t?C.blue:C.t2,fontWeight:tab===t?600:400,borderBottom:tab===t?`2px solid ${C.blue}`:"2px solid transparent",marginBottom:-1}}>{t==="maker"?"Maker Submission":"Checker Remarks"}</button>)}
+          </div>
+        )}
+
+        <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+          {(!isClosed||tab==="maker")&&<>
+            {/* ── SECTION A: Reason + Attachments ── */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24,marginBottom:20}}>
+              <div>
+                <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:8}}>Reason</div>
+                <div style={{fontSize:13,color:C.t2,lineHeight:1.7}}>{req.reason||"No reason provided."}</div>
+              </div>
+              <div>
+                <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:8}}>Attachments</div>
+                {req.atts&&req.atts.length>0?(
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    {req.atts.map((a,i)=>(
+                      <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",border:`1px solid ${C.border}`,borderRadius:6,background:C.bg2,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg} onMouseLeave={e=>e.currentTarget.style.background=C.bg2}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.t2} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span style={{fontSize:12.5,color:C.text}}>{a.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                ):(
+                  <div style={{fontSize:12.5,color:C.t3}}>No attachments</div>
+                )}
+              </div>
+            </div>
+
+            {/* Context text */}
+            {req.context&&<div style={{marginBottom:20}}>
+              <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:6}}>Context</div>
+              <div style={{fontSize:13,color:C.t2,lineHeight:1.7}}>{req.context}</div>
+            </div>}
+
+            {/* ── SECTION B: Data Difference Review ── */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Data Difference Review</div>
+              <table style={{width:"100%",borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
+                <thead><tr>
+                  <th style={pHdr}>Field</th>
+                  <th style={pHdr}>Current Value</th>
+                  <th style={{...pHdr,borderLeft:`1px solid #DDD6FE`}}>Proposed Value</th>
+                </tr></thead>
+                <tbody>{req.diff.map((d,i)=>{
+                  const buildDiff=(oldStr,newStr)=>{
+                    if(!d.changed)return{oldEl:<span style={{color:C.t2,fontSize:12.5}}>{oldStr}</span>,newEl:<span style={{color:C.t2,fontSize:12.5}}>{newStr}</span>};
+                    /* Find common prefix and suffix to isolate the exact changed region */
+                    const o=oldStr||"";const nv=newStr||"";
+                    let pLen=0;while(pLen<o.length&&pLen<nv.length&&o[pLen]===nv[pLen])pLen++;
+                    let oSuf=o.length,nSuf=nv.length;
+                    while(oSuf>pLen&&nSuf>pLen&&o[oSuf-1]===nv[nSuf-1]){oSuf--;nSuf--;}
+                    const CONTEXT=40;
+                    const prefixStart=Math.max(0,pLen-CONTEXT);
+                    const suffixEnd=Math.min(o.length,oSuf+CONTEXT);
+                    const nSuffixEnd=Math.min(nv.length,nSuf+CONTEXT);
+                    const oldChanged=o.slice(pLen,oSuf);
+                    const newChanged=nv.slice(pLen,nSuf);
+                    const ctxBefore=o.slice(prefixStart,pLen);
+                    const ctxAfterOld=o.slice(oSuf,suffixEnd);
+                    const ctxAfterNew=nv.slice(nSuf,nSuffixEnd);
+                    const ellipsisBefore=prefixStart>0;
+                    const ellipsisAfterOld=suffixEnd<o.length;
+                    const ellipsisAfterNew=nSuffixEnd<nv.length;
+                    const codeStyle={fontFamily:"monospace",fontSize:12,lineHeight:1.8,display:"block",wordBreak:"break-word",whiteSpace:"pre-wrap"};
+                    const oldEl=(
+                      <span style={codeStyle}>
+                        {ellipsisBefore&&<span style={{color:C.t3}}>…</span>}
+                        <span style={{color:C.t2}}>{ctxBefore}</span>
+                        {oldChanged&&<span style={{background:"#ffd7d5",color:"#b91c1c",fontWeight:600,borderRadius:3,padding:"0 2px",textDecoration:"line-through"}}>{oldChanged}</span>}
+                        <span style={{color:C.t2}}>{ctxAfterOld}</span>
+                        {ellipsisAfterOld&&<span style={{color:C.t3}}>…</span>}
+                      </span>
+                    );
+                    const newEl=(
+                      <span style={codeStyle}>
+                        {ellipsisBefore&&<span style={{color:C.t3}}>…</span>}
+                        <span style={{color:C.t2}}>{ctxBefore}</span>
+                        {newChanged&&<span style={{background:"#ccffd8",color:"#15803d",fontWeight:600,borderRadius:3,padding:"0 2px"}}>{newChanged}</span>}
+                        <span style={{color:C.t2}}>{ctxAfterNew}</span>
+                        {ellipsisAfterNew&&<span style={{color:C.t3}}>…</span>}
+                      </span>
+                    );
+                    return{oldEl,newEl};
+                  };
+                  const {oldEl,newEl}=buildDiff(d.old,d.nw);
+                  const isLong=d.old&&d.old.length>120;
+                  return(
+                  <tr key={i} style={{background:i%2===0?C.bg:"#fafbff",borderBottom:`1px solid #EDE9FF`}}>
+                    <td style={{...pCell,fontWeight:600,verticalAlign:"top",whiteSpace:"nowrap",width:110,color:C.text}}>{d.field}</td>
+                    <td style={{...pCell,verticalAlign:"top",background:d.changed?"#fff8f8":C.bg,padding:"12px 16px"}}>
+                      <div style={{maxHeight:isLong?180:80,overflowY:isLong?"auto":"visible"}}>{oldEl}</div>
+                    </td>
+                    <td style={{...pCell,verticalAlign:"top",background:d.changed?"#f8fff9":C.bg,padding:"12px 16px",borderLeft:`1px solid #EDE9FF`}}>
+                      <div style={{maxHeight:isLong?180:80,overflowY:isLong?"auto":"visible"}}>{newEl}</div>
+                    </td>
+                  </tr>
+                  );
+                })}</tbody>
+              </table>
+            </div>
+
+            {/* ── SECTION B: Additional Context (two side-by-side mini tables) ── */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Additional Context</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <table style={{borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
+                  <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Current Value</th></tr></thead>
+                  <tbody>{req.ctxData.slice(0,Math.ceil(req.ctxData.length/2)).map((c,i)=>(
+                    <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
+                  ))}</tbody>
+                </table>
+                <table style={{borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
+                  <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Current Value</th></tr></thead>
+                  <tbody>{req.ctxData.slice(Math.ceil(req.ctxData.length/2)).map((c,i)=>(
+                    <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* ── SECTION C: Action Zone ── */}
+            {!isClosed&&(
+              <div style={{borderTop:`1px solid ${C.border}`,paddingTop:16}}>
+                {isChecker?(
+                  <>
+                    <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Checker Comments <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional for approval · Required for rejection)</span></div>
+                    <textarea value={remark} onChange={e=>setRemark(e.target.value)} placeholder="Add your remarks here..." style={{width:"100%",padding:"8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",minHeight:72,fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+                    <div style={{fontSize:12,color:C.t3,marginTop:4}}>This will be recorded in the audit log and visible to the maker.</div>
+                  </>
+                ):(
+                  <div style={{margin:"14px 24px 0",display:"flex",alignItems:"flex-start",gap:10,padding:"10px 14px",background:C.amberL,border:`1px solid ${C.amberB}`,borderRadius:8,fontSize:12.5}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.amber} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginTop:1,flexShrink:0}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
+                    <div><span style={{fontWeight:600,color:C.amberT}}>View only. </span><span style={{color:C.amberT}}>You have <code style={{background:C.amberB,padding:"1px 5px",borderRadius:3}}>gmc:view</code> permission. Approve/Decline requires <code style={{background:C.amberB,padding:"1px 5px",borderRadius:3}}>gmc:manage</code>.</span></div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>}
+
+          {/* ── CHECKER REMARKS TAB ── */}
+          {isClosed&&tab==="checker"&&<>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>Checker Decision</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:12}}>
+                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>Reviewed By</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.checkerName||"—"}</div></div>
+                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>Decision Date</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.checkerDate||"—"}</div></div>
+                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>Final Status</div><GBadge v={req.status}/></div>
+              </div>
+            </div>
+            <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:6}}>Remarks</div>
+            <div style={{fontSize:13,color:C.text,background:C.bg2,padding:"12px 14px",borderRadius:6,border:`1px solid ${C.border}`,lineHeight:1.7}}>{req.checkerRemark||"No remarks provided."}</div>
+          </>}
+        </div>
+
+        {/* ── FOOTER: Action buttons ── */}
+        <div style={{padding:"14px 24px",borderTop:`1px solid ${C.border}`,display:"flex",gap:10,justifyContent:"flex-end",flexShrink:0}}>
+          {!isClosed&&isChecker&&<>
+            <button onClick={()=>onReject(req.id,remark)} style={{padding:"7px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Decline</button>
+            <button onClick={()=>onApprove(req.id,remark)} style={{padding:"7px 20px",background:"#059669",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Approve</button>
+          </>}
+          {(isClosed||!isChecker)&&<Btn variant="outline" onClick={onClose}>Close</Btn>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GMCLogsView({logs,setLogs,templates,setTemplates}){
+  const [sel,setSel]=useState(null);
+  const [viewerPerm,setViewerPerm]=useState("gmc:view");
+  const [toast,setToast]=useState(null);
+  const [showLogFilters,setShowLogFilters]=useState(false);
+  const [logStatusF,setLogStatusF]=useState("");
+  const [logDomainF,setLogDomainF]=useState("");
+  const [logSearch,setLogSearch]=useState("");
+  const filteredLogs=logs.filter(r=>{
+    if(logStatusF&&r.status!==logStatusF)return false;
+    if(logDomainF&&r.domain!==logDomainF)return false;
+    if(logSearch){
+      const q=logSearch.toLowerCase();
+      if(!r.activityId.toLowerCase().includes(q)&&!r.maker.toLowerCase().includes(q)&&!r.id.toLowerCase().includes(q))return false;
+    }
+    return true;
+  });
+  const handleApprove=(id,remark)=>{
+    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Approved",checkerName:"Roushan Gupta",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Approved."}:r));
+    const log=logs.find(r=>r.id===id);
+    if(log&&log.targetTemplateId){
+      const newVals={};
+      log.diff.forEach(d=>{if(d.field==="Body")newVals.body=d.nw;if(d.field==="Subject")newVals.subject=d.nw;if(d.field==="Status")newVals.status=d.nw;});
+      setTemplates(p=>p.map(t=>t.id===log.targetTemplateId?{...t,...newVals}:t));
+    }
+    setSel(null);setToast("Request approved. Template updated successfully.");
+  };
+  const handleReject=(id,remark)=>{
+    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Rejected",checkerName:"Roushan Gupta",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Rejected."}:r));
+    setSel(null);setToast("Request rejected.");
+  };
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>GMC Logs</div>
+          <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3}}>
+            <span style={{cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.color=C.blue} onMouseLeave={e=>e.currentTarget.style.color=C.t3}>GMC</span>
+            <span style={{fontSize:11}}>›</span>
+            <span style={{color:C.t2}}>Logs</span>
+          </div>
+        </div>
+        {/* Viewer switcher */}
+        <div style={{display:"flex",alignItems:"center",gap:10,marginTop:4}}>
+          <span style={{fontSize:12,color:C.t2}}>Viewing as:</span>
+          <div style={{display:"inline-flex",background:C.bg2,border:`1px solid ${C.border}`,borderRadius:8,padding:3,gap:2}}>
+            {[["gmc:view","Utkarsh (View only)"],["gmc:manage","Roushan (Checker)"]].map(([perm,label])=>(
+              <button key={perm} onClick={()=>setViewerPerm(perm)} style={{padding:"4px 12px",fontSize:12,border:"none",cursor:"pointer",borderRadius:6,background:viewerPerm===perm?C.bg:"transparent",color:viewerPerm===perm?C.blue:C.t2,fontWeight:viewerPerm===perm?600:400,boxShadow:viewerPerm===perm?"0 1px 3px rgba(0,0,0,.1)":"none",transition:"all .12s"}}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* ── Search + Show Filters row ── */}
+      <div style={{padding:"0 24px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,overflow:"hidden",background:C.bg,height:34}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={logSearch} onChange={e=>setLogSearch(e.target.value)} placeholder="Search Activity ID or Maker..." style={{border:"none",outline:"none",fontSize:13,width:240,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button onClick={()=>setShowLogFilters(f=>!f)} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:showLogFilters?"#f8faff":C.bg,color:showLogFilters?C.blue:C.t2,fontSize:12.5,cursor:"pointer",fontWeight:showLogFilters?500:400}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+          {showLogFilters?"Hide Filters":"Show Filters"}
+        </button>
+      </div>
+      {showLogFilters&&(
+        <div style={{display:"flex",gap:16,padding:"0 24px 14px",alignItems:"flex-end",flexShrink:0,flexWrap:"wrap"}}>
+          <div style={{minWidth:160}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Status</div>
+            <div style={{position:"relative"}}>
+              <select value={logStatusF} onChange={e=>setLogStatusF(e.target.value)} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option>
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style={{minWidth:160}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Domain</div>
+            <div style={{position:"relative"}}>
+              <select value={logDomainF} onChange={e=>setLogDomainF(e.target.value)} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All</option><option value="Communication">Communication</option><option value="Payments">Payments</option><option value="Admin">Admin</option>
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS}>Request ID</th><th style={thS}>Activity ID</th><th style={thS}>Flow Name</th>
+            <th style={thS}>Domain</th><th style={thS}>Maker</th><th style={thS}>Date</th>
+            <th style={thS}>Status</th><th style={thSL}>Actions</th>
+          </tr></thead>
+          <tbody>
+            {filteredLogs.map(r=>(
+              <tr key={r.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={()=>setSel(r)}>
+                <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.id}</td>
+                <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.activityId}</td>
+                <td style={tdS}>{r.flowName}</td>
+                <td style={tdS}>{r.domain}</td>
+                <td style={tdS}>{r.maker}</td>
+                <td style={{...tdS,fontSize:12,color:C.t2}}>{r.date}</td>
+                <td style={tdS}><GBadge v={r.status}/></td>
+                <td style={{...tdS,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
+                  <DotMenu items={[["View Details",C.blue,()=>setSel(r)]]}/>
+                </td>
+              </tr>
+            ))}
+            {filteredLogs.length===0&&<tr><td colSpan={8} style={{...tdS,textAlign:"center",color:C.t3}}>No logs match your filters</td></tr>}
+          </tbody>
+        </table>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",background:C.bg,borderTop:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{fontSize:12.5,color:C.t2}}>Showing 1–{filteredLogs.length} of {logs.length}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12.5,color:C.t2}}>
+          <span>Rows per page</span>
+          <select style={{border:`1px solid ${C.grayB}`,borderRadius:5,padding:"2px 6px",fontSize:12.5,color:C.text,background:C.bg,outline:"none",cursor:"pointer",marginLeft:4}}><option>10</option><option>20</option></select>
+          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 1</span></div>
+          {["›","»"].map(a=><button key={a} style={{width:26,height:26,border:`1px solid ${C.grayB}`,borderRadius:4,background:C.bg,color:C.t3,cursor:"pointer",fontSize:13}}>{a}</button>)}
+        </div>
+      </div>
+      {sel&&<LogDetailModal req={sel} viewerPerm={viewerPerm} onClose={()=>setSel(null)} onApprove={handleApprove} onReject={handleReject}/>}
+      {toast&&<div style={{position:"fixed",bottom:24,right:24,background:"#111827",color:"#fff",padding:"11px 16px",borderRadius:8,fontSize:12.5,boxShadow:"0 4px 20px rgba(0,0,0,.25)",zIndex:999,display:"flex",alignItems:"center",gap:8}}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {toast}
+        <button onClick={()=>setToast(null)} style={{marginLeft:8,background:"none",border:"none",color:"#9ca3af",cursor:"pointer",fontSize:14,lineHeight:1}}>×</button>
+      </div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   CREATE ACTIVITY MODAL
+═══════════════════════════════════════ */
+function CreateActivityModal({onClose}){
+  /* ── MODAL FIELD REGISTRY ──
+     Maps Domain → Modal ID → all fields that modal exposes.
+     When user selects Domain + Modal ID, we auto-populate diff rows
+     with ALL fields from that modal. User then removes (×) what they don't need. */
+  const MODAL_REGISTRY={
+    "Communication":{
+      modals:[
+        {id:"edit-template-modal",label:"Edit Template",url:"/communication/templates/:id/edit",
+         fields:[
+           {name:"body",label:"Body",strategy:"HTML Diff"},
+           {name:"subject",label:"Subject",strategy:"Plain Text"},
+           {name:"notifType",label:"Notification Type",strategy:"Select"},
+           {name:"client",label:"Client",strategy:"Select"},
+           {name:"status",label:"Status",strategy:"Select"},
+           {name:"validity",label:"Validity (sec)",strategy:"Plain Text"},
+           {name:"iconUrl",label:"Icon URL",strategy:"Plain Text"},
+         ]},
+        {id:"create-template-modal",label:"Create Template",url:"/communication/templates/new",
+         fields:[
+           {name:"title",label:"Title",strategy:"Plain Text"},
+           {name:"body",label:"Body",strategy:"HTML Diff"},
+           {name:"notifType",label:"Notification Type",strategy:"Select"},
+           {name:"client",label:"Client",strategy:"Select"},
+         ]},
+      ],
+      makers:[{userId:"usr_001",name:"Abhinav",domainKey:"communication:manage"},{userId:"usr_002",name:"Adnan",domainKey:"communication:manage"}],
+      checkers:[{userId:"usr_003",name:"Rajat",domainKey:"communication:manage"}],
+    },
+    "Payments":{
+      modals:[
+        {id:"edit-fee-modal",label:"Edit Fee",url:"/payments/fees/:id/edit",
+         fields:[
+           {name:"feeName",label:"Fee Name",strategy:"Plain Text"},
+           {name:"feePercentage",label:"Fee Percentage",strategy:"Plain Text"},
+           {name:"flatFee",label:"Flat Fee",strategy:"Plain Text"},
+           {name:"status",label:"Status",strategy:"Select"},
+         ]},
+        {id:"edit-limit-modal",label:"Edit Limit",url:"/payments/limits/:id/edit",
+         fields:[
+           {name:"dailyLimit",label:"Daily Limit",strategy:"Plain Text"},
+           {name:"monthlyLimit",label:"Monthly Limit",strategy:"Plain Text"},
+           {name:"transactionLimit",label:"Transaction Limit",strategy:"Plain Text"},
+         ]},
+      ],
+      makers:[{userId:"usr_004",name:"Rohit",domainKey:"payments:manage"},{userId:"usr_005",name:"Kanishk",domainKey:"payments:manage"}],
+      checkers:[{userId:"usr_006",name:"Jeetendra",domainKey:"payments:manage"}],
+    },
+    "Customers & KYC":{
+      modals:[
+        {id:"edit-kyc-rules-modal",label:"Edit KYC Rules",url:"/kyc/rules/:id/edit",
+         fields:[
+           {name:"ruleName",label:"Rule Name",strategy:"Plain Text"},
+           {name:"ruleCondition",label:"Condition",strategy:"JSON Diff"},
+           {name:"severity",label:"Severity",strategy:"Select"},
+           {name:"status",label:"Status",strategy:"Select"},
+         ]},
+      ],
+      makers:[{userId:"usr_007",name:"Prateek",domainKey:"kyc:manage"}],
+      checkers:[{userId:"usr_008",name:"Saurabh",domainKey:"kyc:manage"},{userId:"usr_009",name:"Dipanshu",domainKey:"kyc:manage"}],
+    },
+    "Admin":{
+      modals:[
+        {id:"edit-role-modal",label:"Edit Role",url:"/admin/roles/:id/edit",
+         fields:[
+           {name:"roleName",label:"Role Name",strategy:"Plain Text"},
+           {name:"permissions",label:"Permissions",strategy:"JSON Diff"},
+           {name:"status",label:"Status",strategy:"Select"},
+         ]},
+        {id:"edit-agent-modal",label:"Edit Agent",url:"/admin/agents/:id/edit",
+         fields:[
+           {name:"agentName",label:"Agent Name",strategy:"Plain Text"},
+           {name:"email",label:"Email",strategy:"Plain Text"},
+           {name:"roleAssignment",label:"Role",strategy:"Select"},
+         ]},
+      ],
+      makers:[{userId:"usr_010",name:"Jeetendra",domainKey:"admin:manage"}],
+      checkers:[{userId:"usr_011",name:"Abhinav",domainKey:"admin:manage"},{userId:"usr_012",name:"Kanishk",domainKey:"admin:manage"}],
+    },
+    "Platform":{
+      modals:[
+        {id:"edit-config-modal",label:"Edit Config",url:"/platform/config/:key/edit",
+         fields:[
+           {name:"configKey",label:"Config Key",strategy:"Plain Text"},
+           {name:"configValue",label:"Config Value",strategy:"JSON Diff"},
+           {name:"environment",label:"Environment",strategy:"Select"},
+         ]},
+      ],
+      makers:[{userId:"usr_013",name:"Saurabh",domainKey:"platform:manage"},{userId:"usr_014",name:"Adnan",domainKey:"platform:manage"}],
+      checkers:[{userId:"usr_015",name:"Dipanshu",domainKey:"platform:manage"}],
+    },
+  };
+
+  const [section,setSection]=useState("");
+  const [modalId,setModalId]=useState("");
+  const [diffRows,setDiffRows]=useState([]);
+  const [ctxRows,setCtxRows]=useState([{label:"",query:""}]);
+  const [diffAutoLoaded,setDiffAutoLoaded]=useState(false);
+
+  const domainData=section&&MODAL_REGISTRY[section]?MODAL_REGISTRY[section]:null;
+  const availableModals=domainData?domainData.modals:[];
+  const selectedModal=availableModals.find(m=>m.id===modalId)||null;
+  const makers=domainData?domainData.makers:[];
+  const checkers=domainData?domainData.checkers:[];
+
+  /* Auto-populate diff rows when domain + modal both selected */
+  useEffect(()=>{
+    if(selectedModal){
+      setDiffRows(selectedModal.fields.map(f=>({...f,removed:false})));
+      setDiffAutoLoaded(true);
+    } else {
+      setDiffRows([]);
+      setDiffAutoLoaded(false);
+    }
+  },[modalId,section]);
+
+  const labelS={fontSize:12.5,fontWeight:500,color:C.text,marginBottom:5,display:"block"};
+  const inputS={width:"100%",padding:"7px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const selS={...inputS,cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
+  const miniTh={fontSize:11,fontWeight:600,color:C.t2,padding:"8px 10px",background:C.bg2,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".05em"};
+  const miniTd={padding:"8px 10px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,color:C.text,verticalAlign:"middle"};
+  const strategyColors={"HTML Diff":{bg:"#eff6ff",c:C.blue},"Plain Text":{bg:C.grayL,c:C.gray},"Select":{bg:"#f0fdf4",c:C.greenT},"JSON Diff":{bg:C.purpleL,c:C.purple}};
+
+  return(
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
+      <div style={{background:C.bg,borderRadius:8,width:720,maxWidth:"96%",maxHeight:"92vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px 12px",borderBottom:`1px solid ${C.border}`}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>Create Activity</span>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3,lineHeight:1}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"18px 20px"}}>
+
+          {/* ── BASIC DETAILS ── */}
+          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Basic Details</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+            <div>
+              <label style={labelS}>Activity Name</label>
+              <input style={inputS} placeholder="e.g. Edit Email Template"
+                onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div>
+              <label style={labelS}>Domain</label>
+              <div style={{position:"relative"}}>
+                <select value={section} onChange={e=>{setSection(e.target.value);setModalId("");}} style={selS}
+                  onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                  onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                  <option value="">Select domain...</option>
+                  <option>Communication</option><option>Payments</option>
+                  <option>Customers &amp; KYC</option><option>Admin</option><option>Platform</option>
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div>
+              <label style={labelS}>
+                Modal ID / URL
+                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>(identifies which screen this activity intercepts)</span>
+              </label>
+              {section?(
+                <div style={{position:"relative"}}>
+                  <select value={modalId} onChange={e=>setModalId(e.target.value)} style={selS}
+                    onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                    onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                    <option value="">Select modal / screen...</option>
+                    {availableModals.map(m=><option key={m.id} value={m.id}>{m.label} — {m.url}</option>)}
+                  </select>
+                  <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+              ):(
+                <input style={{...inputS,background:C.bg2,color:C.t3}} disabled placeholder="Select a domain first..."/>
+              )}
+            </div>
+            <div>
+              <label style={labelS}>Callback URL</label>
+              <input style={inputS}
+                value={selectedModal?`/api/gmc-callback${selectedModal.url.replace("/:id/edit","").replace("/new","")}`:""} 
+                placeholder="https://service/gmc-callback/..."
+                onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}
+                onChange={()=>{}}/>
+            </div>
+            <div>
+              <label style={labelS}>SLA Duration (hrs)</label>
+              <input type="number" defaultValue="4" style={inputS}
+                onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div>
+              <label style={labelS}>Warning At (%)</label>
+              <input type="number" defaultValue="80" style={inputS}
+                onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+          </div>
+
+          {/* ── DIFF QUERIES ── */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>
+            <span style={{fontSize:12,fontWeight:700,color:C.text,textTransform:"uppercase",letterSpacing:".06em"}}>Diff Fields</span>
+            {diffAutoLoaded&&<span style={{fontSize:11.5,color:C.greenT,display:"flex",alignItems:"center",gap:4}}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Auto-populated from {selectedModal&&selectedModal.label}
+            </span>}
+          </div>
+
+          {!section||!modalId?(
+            <div style={{border:`1px solid ${C.border}`,borderRadius:6,padding:"24px 16px",textAlign:"center",marginBottom:14,background:C.bg2}}>
+              <div style={{fontSize:13,color:C.t3,marginBottom:4}}>Select Domain and Modal ID / URL above</div>
+              <div style={{fontSize:12,color:C.t3}}>All available diff fields from that modal will be auto-populated here</div>
+            </div>
+          ):(
+            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden",marginBottom:14}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr>
+                  <th style={miniTh}>#</th>
+                  <th style={miniTh}>Field Name</th>
+                  <th style={miniTh}>Display Label</th>
+                  <th style={miniTh}>Diff Strategy</th>
+                  <th style={{...miniTh,textAlign:"center",width:60}}>Include</th>
+                </tr></thead>
+                <tbody>
+                  {diffRows.length===0&&<tr><td colSpan={5} style={{...miniTd,textAlign:"center",color:C.t3}}>No fields available for this modal</td></tr>}
+                  {diffRows.map((r,i)=>(
+                    <tr key={i} style={{background:r.removed?"#fef2f2":C.bg,opacity:r.removed?0.5:1,transition:"all .15s"}}>
+                      <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
+                      <td style={{...miniTd,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.name}</td>
+                      <td style={miniTd}>{r.label}</td>
+                      <td style={miniTd}>
+                        <span style={{display:"inline-flex",padding:"2px 8px",borderRadius:4,fontSize:11.5,fontWeight:500,background:strategyColors[r.strategy]?.bg||C.grayL,color:strategyColors[r.strategy]?.c||C.gray}}>
+                          {r.strategy}
+                        </span>
+                      </td>
+                      <td style={{...miniTd,textAlign:"center"}}>
+                        <button
+                          onClick={()=>setDiffRows(p=>p.map((row,j)=>j===i?{...row,removed:!row.removed}:row))}
+                          style={{background:"none",border:`1px solid ${r.removed?C.grayB:C.red}`,color:r.removed?C.t3:C.red,cursor:"pointer",fontSize:11.5,borderRadius:4,padding:"2px 8px",fontWeight:500}}>
+                          {r.removed?"Restore":"× Remove"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div style={{padding:"8px 14px",background:C.bg2,borderTop:`1px solid ${C.border}`,fontSize:12,color:C.t3,display:"flex",alignItems:"center",gap:6}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                {diffRows.filter(r=>!r.removed).length} of {diffRows.length} fields included in this activity's diff.
+                Remove fields you don't want tracked.
+              </div>
+            </div>
+          )}
+
+          {/* ── CONTEXT QUERIES (SQL) ── */}
+          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Context Queries</div>
+          <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden",marginBottom:14}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr>
+                <th style={miniTh}>#</th>
+                <th style={miniTh}>Display Label</th>
+                <th style={miniTh}>SQL Query</th>
+                <th style={miniTh}></th>
+              </tr></thead>
+              <tbody>
+                {ctxRows.map((r,i)=>(
+                  <tr key={i}>
+                    <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
+                    <td style={miniTd}>
+                      <input value={r.label} onChange={e=>setCtxRows(p=>{const n=[...p];n[i]={...n[i],label:e.target.value};return n;})}
+                        style={{...inputS,padding:"4px 8px",fontSize:12}} placeholder="e.g. Total Affected Users"
+                        onFocus={e=>e.currentTarget.style.borderColor=C.blue}
+                        onBlur={e=>e.currentTarget.style.borderColor=C.grayB}/>
+                    </td>
+                    <td style={miniTd}>
+                      <input value={r.query} onChange={e=>setCtxRows(p=>{const n=[...p];n[i]={...n[i],query:e.target.value};return n;})}
+                        style={{...inputS,padding:"4px 8px",fontSize:12,fontFamily:"monospace"}} placeholder="SELECT COUNT(*) FROM ... WHERE id = {target}"
+                        onFocus={e=>e.currentTarget.style.borderColor=C.blue}
+                        onBlur={e=>e.currentTarget.style.borderColor=C.grayB}/>
+                    </td>
+                    <td style={{...miniTd,width:32}}>
+                      <button onClick={()=>setCtxRows(p=>p.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:14,lineHeight:1}}>×</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button onClick={()=>setCtxRows(p=>[...p,{label:"",query:""}])}
+              style={{width:"100%",padding:"8px",background:C.bg2,border:"none",borderTop:`1px solid ${C.border}`,color:C.blue,fontSize:12.5,cursor:"pointer",textAlign:"left",paddingLeft:14}}>
+              + Add Context Query
+            </button>
+          </div>
+
+          {/* ── ASSIGN MAKERS & CHECKERS ── */}
+          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Assign Makers & Checkers</div>
+
+          {/* Makers */}
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:12,fontWeight:600,color:C.t2,marginBottom:8}}>Assign Makers</div>
+            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden",marginBottom:14}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr>
+                  <th style={miniTh}>#</th>
+                  <th style={miniTh}>User ID</th>
+                  <th style={miniTh}>Name</th>
+                  <th style={miniTh}>Domain Key</th>
+                </tr></thead>
+                <tbody>
+                  {makers.length===0
+                    ?<tr><td colSpan={4} style={{...miniTd,color:C.t3,textAlign:"center"}}>Select a domain to see available makers</td></tr>
+                    :makers.map((m,i)=>(
+                      <tr key={i} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+                        <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
+                        <td style={{...miniTd,fontFamily:"monospace",fontSize:12,color:C.t2}}>{m.userId}</td>
+                        <td style={{...miniTd,fontWeight:500}}>{m.name}</td>
+                        <td style={miniTd}><PermTag v={m.domainKey}/></td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            {/* Checkers */}
+            <div style={{fontSize:12,fontWeight:600,color:C.t2,marginBottom:8}}>Assign Checkers</div>
+            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr>
+                  <th style={miniTh}>#</th>
+                  <th style={miniTh}>User ID</th>
+                  <th style={miniTh}>Name</th>
+                  <th style={miniTh}>Domain Key</th>
+                </tr></thead>
+                <tbody>
+                  {checkers.length===0
+                    ?<tr><td colSpan={4} style={{...miniTd,color:C.t3,textAlign:"center"}}>Select a domain to see available checkers</td></tr>
+                    :checkers.map((m,i)=>(
+                      <tr key={i} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+                        <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
+                        <td style={{...miniTd,fontFamily:"monospace",fontSize:12,color:C.t2}}>{m.userId}</td>
+                        <td style={{...miniTd,fontWeight:500}}>{m.name}</td>
+                        <td style={miniTd}><PermTag v={m.domainKey}/></td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <span style={{fontSize:12,color:C.t3}}>
+            {section&&modalId?<span style={{color:C.greenT}}>✓ {diffRows.filter(r=>!r.removed).length} diff fields · {ctxRows.filter(r=>r.label).length} context queries configured</span>:"Fill in domain and modal ID to configure diff fields"}
+          </span>
+          <div style={{display:"flex",gap:8}}>
+            <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+            <Btn variant="dark" onClick={onClose}>Save Activity</Btn>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   GMC CONFIGS VIEW
+═══════════════════════════════════════ */
+const ACTIVITY_CONFIGS=[
+  {id:"ACT_CT_001",name:"Manage Template Edit",section:"Communication",queries:"3 diff, 4 ctx",sla:"4 hrs",warn:"80% (192 min)",status:"Active"},
+];
+const ROLE_CONFIGS=[
+  {userId:"usr_001",actId:"ACT_CT_001",flow:"Manage Template Edit",section:"Communication",makerPerm:"gmc:view, communication:manage",checkerPerm:"gmc:manage, communication:manage"},
+];
+
+function GMCConfigsView(){
+  const [showCreate,setShowCreate]=useState(false);
+  const [showFilters,setShowFilters]=useState(false);
+  const [statusFilter,setStatusFilter]=useState("");
+  const [sectionFilter,setSectionFilter]=useState("");
+  const [searchQ,setSearchQ]=useState("");
+  const labelS={fontSize:12.5,fontWeight:500,color:C.text,marginBottom:5,display:"block"};
+  const inputS={width:"100%",padding:"7px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const filtered=ACTIVITY_CONFIGS.filter(a=>{
+    if(statusFilter&&a.status!==statusFilter)return false;
+    if(sectionFilter&&a.section!==sectionFilter)return false;
+    if(searchQ&&!a.id.toLowerCase().includes(searchQ.toLowerCase())&&!a.name.toLowerCase().includes(searchQ.toLowerCase()))return false;
+    return true;
+  });
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>Configs</div>
+          <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3}}>
+            <span style={{cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.color=C.blue} onMouseLeave={e=>e.currentTarget.style.color=C.t3}>GMC</span>
+            <span style={{fontSize:11}}>›</span>
+            <span style={{color:C.t2}}>Configs</span>
+          </div>
+        </div>
+        <Btn variant="dark" sx={{marginTop:4}} onClick={()=>setShowCreate(true)}>+ Create Activity</Btn>
+      </div>
+      {/* Search + Show Filters row */}
+      <div style={{padding:"0 24px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,overflow:"hidden",background:C.bg,height:34}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Search by Activity ID or Name..." style={{border:"none",outline:"none",fontSize:13,width:240,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button onClick={()=>setShowFilters(f=>!f)} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:showFilters?"#f8faff":C.bg,color:showFilters?C.blue:C.t2,fontSize:12.5,cursor:"pointer",fontWeight:showFilters?500:400}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+          {showFilters?"Hide Filters":"Show Filters"}
+        </button>
+      </div>
+      {showFilters&&(
+        <div style={{display:"flex",gap:16,padding:"0 24px 14px",alignItems:"flex-end",flexShrink:0}}>
+          <div style={{minWidth:180}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Status</div>
+            <div style={{position:"relative"}}>
+              <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All</option><option value="Active">Active</option><option value="Inactive">Inactive</option>
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style={{minWidth:180}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Section</div>
+            <div style={{position:"relative"}}>
+              <select value={sectionFilter} onChange={e=>setSectionFilter(e.target.value)} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All</option><option value="Communication">Communication</option><option value="Payments">Payments</option><option value="Admin">Admin</option>
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Unified Table */}
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS}>Activity ID</th><th style={thS}>Activity / Flow Name</th>
+            <th style={thS}>Section</th><th style={thS}>Queries</th>
+            <th style={thS}>SLA</th><th style={thS}>Warning Time</th>
+            <th style={thS}>Status</th><th style={thSL}>Actions</th>
+          </tr></thead>
+          <tbody>{filtered.length===0?<tr><td colSpan={8} style={{...tdS,textAlign:"center",color:C.t3}}>No activities found</td></tr>:filtered.map(a=>(
+            <tr key={a.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+              <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{a.id}</td>
+              <td style={tdS}>{a.name}</td>
+              <td style={tdS}>{a.section}</td>
+              <td style={{...tdS,color:C.t2}}>{a.queries}</td>
+              <td style={tdS}>{a.sla}</td>
+              <td style={{...tdS,color:C.t2}}>{a.warn}</td>
+              <td style={tdS}><Badge v={a.status}/></td>
+              <td style={{...tdS,textAlign:"right"}}>
+                <DotMenu items={[["View",C.blue,null],["Edit",C.blue,null],["Deactivate",C.red,null]]}/>
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",background:C.bg,borderTop:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{fontSize:12.5,color:C.t2}}>Showing 1–{filtered.length} of {ACTIVITY_CONFIGS.length}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12.5,color:C.t2}}>
+          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 1</span></div>
+          {["›","»"].map(a=><button key={a} style={{width:26,height:26,border:`1px solid ${C.grayB}`,borderRadius:4,background:C.bg,color:C.t3,cursor:"pointer",fontSize:13}}>{a}</button>)}
+        </div>
+      </div>
+      {showCreate&&<CreateActivityModal onClose={()=>setShowCreate(false)}/>}
+
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   ROOT APP
+═══════════════════════════════════════ */
+function App(){
+  const [page,setPage]=useState("manage-template");
+  const [templates,setTemplates]=useState(INIT_TEMPLATES);
+  const [logs,setLogs]=useState(INIT_LOGS);
+
+  const handleTemplateUpdate=(id,form)=>{
+    setTemplates(p=>p.map(t=>t.id===id?{...t,...form,title:form.subject||t.title}:t));
+  };
+  const handleLogAdd=(log)=>{
+    const latestTemplate=templates.find(t=>t.id===log.targetTemplateId)||templates[0];
+    const enrichedLog={...log,targetTemplateId:latestTemplate?.id};
+    setLogs(p=>[enrichedLog,...p]);
+  };
+
+  return(
+    <div style={{display:"flex",height:"100vh",background:C.bg,overflow:"hidden"}}>
+      <Sidebar page={page} onPage={setPage} pendingCount={logs.filter(r=>r.status==="Pending").length}/>
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:C.bg,position:"relative"}}>
+        {page==="manage-template"&&<ManageTemplateView templates={templates} onTemplateUpdate={handleTemplateUpdate} onLogAdd={handleLogAdd}/>}
+        {page==="gmc-logs"&&<GMCLogsView logs={logs} setLogs={setLogs} templates={templates} setTemplates={setTemplates}/>}
+        {page==="gmc-configs"&&<GMCConfigsView/>}
+        {page!=="manage-template"&&page!=="gmc-logs"&&page!=="gmc-configs"&&(
+          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.t3,fontSize:13}}>Select a section from the sidebar</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

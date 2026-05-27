@@ -107,6 +107,11 @@ function DotMenu({items}){
 function Sidebar({page,onPage,pendingCount}){
   const [commOpen,setCommOpen]=useState(false);
   const [gmcOpen,setGmcOpen]=useState(false);
+  const [kycOpen,setKycOpen]=useState(false);
+  const [payOpen,setPayOpen]=useState(false);
+  const [payUserOpen,setPayUserOpen]=useState(false);
+  const [payTreasuryOpen,setPayTreasuryOpen]=useState(false);
+  const [payConfigOpen,setPayConfigOpen]=useState(false);
 
   const NavRow=({icon,label,active,indent=0,hasArrow,onClick,badge})=>(
     <div onClick={onClick} style={{display:"flex",alignItems:"center",gap:8,padding:`6px 14px 6px ${14+indent}px`,cursor:"pointer",color:active?C.blue:C.text,fontWeight:active?600:400,fontSize:13,background:active?C.blueL:"transparent",borderLeft:active?`3px solid ${C.blue}`:"3px solid transparent",transition:"background .1s"}}
@@ -151,7 +156,19 @@ function Sidebar({page,onPage,pendingCount}){
       <nav style={{flex:1,padding:"6px 0",overflowY:"auto"}}>
         <div style={{fontSize:10.5,fontWeight:600,color:C.t3,padding:"8px 14px 3px",letterSpacing:".07em",textTransform:"uppercase"}}>Platform</div>
         <NavRow icon={ICONS.home} label="Homepage"/>
-        <NavRow icon={ICONS.kyc} label="Customers & KYC" hasArrow/>
+        {/* Customers & KYC */}
+        <div onClick={()=>setKycOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
+          onMouseEnter={e=>{if(!kycOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!kycOpen)e.currentTarget.style.background="transparent"}}>
+          <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.kyc}</span>
+          <span style={{flex:1}}>Customers & KYC</span>
+          <span style={{fontSize:11,color:C.t3,transform:kycOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+        </div>
+        {kycOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:14}}>
+          <NavRow label="Assign Agent" indent={8}/>
+          <NavRow label="Assigned eKyc List" indent={8}/>
+          <NavRow label="Customers" indent={8} active={page==="kyc-customers"} onClick={()=>onPage("kyc-customers")}/>
+          <NavRow label="Config" indent={8} hasArrow/>
+        </div>}
         <NavRow icon={ICONS.goods} label="Digital Goods" hasArrow/>
         <div onClick={()=>setCommOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
           onMouseEnter={e=>e.currentTarget.style.background=C.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
@@ -159,14 +176,59 @@ function Sidebar({page,onPage,pendingCount}){
           <span style={{flex:1}}>Communication</span>
           <span style={{fontSize:11,color:C.t3,transform:commOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
         </div>
-        {commOpen&&<>
-          <NavRow label="Notification Logs" indent={14}/>
-          <NavRow label="Manage Template" indent={14} active={page==="manage-template"} onClick={()=>onPage("manage-template")}/>
-          <NavRow label="Config" indent={14} hasArrow/>
-          <NavRow label="Connectra" indent={14}/>
-        </>}
+        {commOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:14}}>
+          <NavRow label="Notification Logs" indent={8}/>
+          <NavRow label="Manage Template" indent={8} active={page==="manage-template"} onClick={()=>onPage("manage-template")}/>
+          <NavRow label="Config" indent={8} hasArrow/>
+          <NavRow label="Connectra" indent={8}/>
+        </div>}
         <NavRow icon={ICONS.alert} label="Alerts" hasArrow/>
-        <NavRow icon={ICONS.pay} label="Payments" hasArrow/>
+        {/* Payments */}
+        <div onClick={()=>setPayOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
+          onMouseEnter={e=>{if(!payOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!payOpen)e.currentTarget.style.background="transparent"}}>
+          <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.pay}</span>
+          <span style={{flex:1}}>Payments</span>
+          <span style={{fontSize:11,color:C.t3,transform:payOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+        </div>
+        {payOpen&&<>
+          {/* User Accounts */}
+          <div onClick={()=>setPayUserOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 14px 5px 28px",cursor:"pointer",color:C.text,fontSize:12.5}}
+            onMouseEnter={e=>e.currentTarget.style.background=C.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+            <span style={{flex:1}}>User Accounts</span>
+            <span style={{fontSize:11,color:C.t3,transform:payUserOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+          </div>
+          {payUserOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:28}}>
+            <NavRow label="Consumers" indent={12} active={page==="pay-consumers"} onClick={()=>onPage("pay-consumers")}/>
+            <NavRow label="Merchants" indent={12}/>
+            <NavRow label="Vendors" indent={12}/>
+          </div>}
+          <NavRow label="Transactions" indent={28}/>
+          <NavRow label="Settlements" indent={28}/>
+          <NavRow label="PesoNet" indent={28} hasArrow/>
+          {/* Treasury */}
+          <div onClick={()=>setPayTreasuryOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 14px 5px 28px",cursor:"pointer",color:C.text,fontSize:12.5}}
+            onMouseEnter={e=>e.currentTarget.style.background=C.bg} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+            <span style={{flex:1}}>Treasury</span>
+            <span style={{fontSize:11,color:C.t3,transform:payTreasuryOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+          </div>
+          {payTreasuryOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:28}}>
+            <NavRow label="Cash" indent={12}/>
+            <NavRow label="Fee/Tax" indent={12}/>
+            <NavRow label="Manual Transfer" indent={12} active={page==="pay-manual-transfer"} onClick={()=>onPage("pay-manual-transfer")}/>
+          </div>}
+          {/* Configs */}
+          <div onClick={()=>setPayConfigOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 14px 5px 28px",cursor:"pointer",color:payConfigOpen?C.blue:C.text,fontSize:12.5,background:payConfigOpen?C.blueL:"transparent",borderLeft:payConfigOpen?`3px solid ${C.blue}`:"3px solid transparent"}}
+            onMouseEnter={e=>{if(!payConfigOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!payConfigOpen)e.currentTarget.style.background=payConfigOpen?C.blueL:"transparent"}}>
+            <span style={{flex:1}}>Configs</span>
+            <span style={{fontSize:11,color:payConfigOpen?C.blue:C.t3,transform:payConfigOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
+          </div>
+          {payConfigOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:28}}>
+            <NavRow label="Channels" indent={12}/>
+            <NavRow label="Account Types (AT)" indent={12} active={page==="pay-account-types"} onClick={()=>onPage("pay-account-types")}/>
+            <NavRow label="AT Mapping" indent={12}/>
+            <NavRow label="Banks" indent={12}/>
+          </div>}
+        </>}
         <NavRow icon={ICONS.aml} label="AML" hasArrow/>
         <NavRow icon={ICONS.admin} label="Admin" hasArrow/>
         <NavRow icon={ICONS.audit} label="Audit Trails"/>
@@ -272,13 +334,7 @@ const INIT_TEMPLATES=[
 /* ═══════════════════════════════════════
    GMC LOG DATA
 ═══════════════════════════════════════ */
-const INIT_LOGS=[
-  {id:"REQ_1089",activityId:"ACT_CT_001",flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",makerPermission:"gmc:view",date:"May 13, 2026 12:58",status:"Pending",
-   category:"Communication",action:"Manage Template Edit",reason:"",context:"",atts:[],
-   diff:[{field:"Body",old:"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">",nw:"PENDING_NEW_VALUE",changed:true}],
-   ctxData:[{l:"Template Type",v:"Email"},{l:"Client",v:"smart_app_consumer"},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:"Email"},{l:"Template Status",v:"Active"},{l:"Silent Delivery",v:"No"}],
-   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
-];
+const INIT_LOGS=ALL_INIT_LOGS;
 
 /* ═══════════════════════════════════════
    GMC REASONING MODAL
@@ -446,7 +502,7 @@ function ManageTemplateView({templates,onTemplateUpdate,onLogAdd}){
   const [toast,setToast]=useState(null);
   const handleSave=(id,form,diff,reason,ctx)=>{
     onTemplateUpdate(id,form);
-    onLogAdd({id:`REQ_${1090+Math.floor(Math.random()*100)}`,activityId:"ACT_CT_001",flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",makerPermission:"gmc:view",date:(()=>{const n=new Date();const d=n.getDate();const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][n.getMonth()];const y=n.getFullYear();let h=n.getHours();const min=String(n.getMinutes()).padStart(2,"0");const ampm=h>=12?"PM":"AM";h=h%12||12;return`${d} ${m} ${y}, ${h}:${min} ${ampm}`;})(),status:"Pending",category:"Communication",action:"Manage Template Edit",reason,context:ctx,atts:[],diff,ctxData:[{l:"Template Type",v:form.notifType},{l:"Client",v:form.client},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:form.notifType},{l:"Template Status",v:form.status},{l:"Silent Delivery",v:"No"}],checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:id});
+    onLogAdd({id:`REQ_${1090+Math.floor(Math.random()*100)}`,activityId:"ACT_CT_001",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",makerPermission:"gmc:view",date:(()=>{const n=new Date();const d=n.getDate();const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][n.getMonth()];const y=n.getFullYear();let h=n.getHours();const min=String(n.getMinutes()).padStart(2,"0");const ampm=h>=12?"PM":"AM";h=h%12||12;return`${d} ${m} ${y}, ${h}:${min} ${ampm}`;})(),status:"Pending",category:"Communication",action:"Manage Template Edit",reason,context:ctx,atts:[],diff,ctxData:[{l:"Template Type",v:form.notifType},{l:"Client",v:form.client},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:form.notifType},{l:"Template Status",v:form.status},{l:"Silent Delivery",v:"No"}],checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:id});
     setToast("Request submitted for approval. Checker has been notified.");
   };
   return(
@@ -533,9 +589,47 @@ function ManageTemplateView({templates,onTemplateUpdate,onLogAdd}){
 /* ═══════════════════════════════════════
    GMC LOG REQUEST DETAIL MODAL
 ═══════════════════════════════════════ */
-function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
+function ExpandableFields({diff,mainCount}){
+  const [open,setOpen]=useState(false);
+  /* Fields beyond mainCount go into the expandable section - no duplicates */
+  const MAX=mainCount!=null?mainCount:3;
+  const hidden=diff.slice(MAX);
+  if(hidden.length===0)return null;
+  const pHdr2={background:"#EDE9FF",padding:"8px 12px",fontWeight:600,fontSize:12.5,color:"#3B3FFF",border:"1px solid #DDD6FE"};
+  const pCell2={padding:"10px 12px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,color:C.text,verticalAlign:"top"};
+  return(
+    <div style={{marginTop:8,border:`1px solid #EDE9FF`,borderRadius:6,overflow:"hidden"}}>
+      <button onClick={()=>setOpen(o=>!o)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"#f8f7ff",border:"none",cursor:"pointer",fontSize:12.5,color:"#3B3FFF",fontWeight:500}}>
+        <span style={{display:"flex",alignItems:"center",gap:6}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          {open?"Hide":"View"} {hidden.length} other field{hidden.length!==1?"s":""}
+        </span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{transform:open?"rotate(180deg)":"none",transition:"transform .15s"}}><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      {open&&(
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={pHdr2}>Field</th>
+            <th style={pHdr2}>Current Value</th>
+            <th style={{...pHdr2,borderLeft:`1px solid #DDD6FE`}}>Proposed Value</th>
+          </tr></thead>
+          <tbody>{hidden.map((d,i)=>(
+            <tr key={i} style={{background:i%2===0?"#fff":"#fafbff"}}>
+              <td style={{...pCell2,fontWeight:600,width:110,whiteSpace:"nowrap"}}>{d.field}</td>
+              <td style={{...pCell2,color:C.t2,fontFamily:"monospace",fontSize:12}}>{d.old||"—"}</td>
+              <td style={{...pCell2,color:C.t2,fontFamily:"monospace",fontSize:12,borderLeft:`1px solid #EDE9FF`}}>{d.nw||d.old||"—"}</td>
+            </tr>
+          ))}</tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject,onWithdraw}){
   const [tab,setTab]=useState("maker");
   const [remark,setRemark]=useState("");
+  const [showWithdrawConfirm,setShowWithdrawConfirm]=useState(false);
   const isChecker=viewerPerm==="gmc:manage";
   const isClosed=req.status!=="Pending";
   const pHdr={background:"#EDE9FF",padding:"10px 14px",fontWeight:600,fontSize:13,color:"#3B3FFF",border:"1px solid #DDD6FE"};
@@ -566,6 +660,17 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
                   <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Category</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.category}</div></div>
                   <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Action</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.action}</div></div>
                   {req.checkerName&&<div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approved by</span><div style={{fontSize:13,color:C.blue,marginTop:2}}>{req.checkerName}</div></div>}
+                  {req.approvalCount>1&&<div style={{marginLeft:8}}>
+                    <span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approvals</span>
+                    <div style={{marginTop:4,display:"flex",alignItems:"center",gap:6}}>
+                      {Array.from({length:req.approvalCount}).map((_,i)=>(
+                        <div key={i} style={{width:22,height:22,borderRadius:"50%",background:i<(req.approvalsReceived||0)?C.blue:C.bg2,border:`2px solid ${i<(req.approvalsReceived||0)?C.blue:C.grayB}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          {i<(req.approvalsReceived||0)&&<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                        </div>
+                      ))}
+                      <span style={{fontSize:11.5,color:C.t3}}>{req.approvalsReceived||0} of {req.approvalCount||1} required</span>
+                    </div>
+                  </div>}
                 </div>
               </div>
             </div>
@@ -612,7 +717,22 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
             </div>}
 
             {/* ── SECTION B: Data Difference Review ── */}
-            <div style={{marginBottom:20}}>
+            {(()=>{
+              /* GOLDEN RULE (dynamic, applies to any future use case):
+                 1. Changed fields always come first in the table.
+                 2. Max 3 fields shown in the main visible table.
+                 3. If fewer than 3 total fields exist, show all (no padding).
+                 4. Everything beyond position 3 goes into "View X Other Fields" expandable.
+                 5. No field ever appears in both sections — clean slice, zero duplication.
+                 This works automatically for any diff array regardless of how many
+                 changed/unchanged fields a request carries. */
+              const changedFields=req.diff.filter(d=>d.changed);
+              const otherFields=req.diff.filter(d=>!d.changed);
+              const orderedDiff=[...changedFields,...otherFields];
+              /* mainCount: always min(3, total) — works for 1 field or 20 fields */
+              const mainCount=Math.min(3,orderedDiff.length);
+              return(
+              <div style={{marginBottom:20}}>
               <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Data Difference Review</div>
               <table style={{width:"100%",borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
                 <thead><tr>
@@ -620,7 +740,7 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
                   <th style={pHdr}>Current Value</th>
                   <th style={{...pHdr,borderLeft:`1px solid #DDD6FE`}}>Proposed Value</th>
                 </tr></thead>
-                <tbody>{req.diff.map((d,i)=>{
+                <tbody>{orderedDiff.slice(0,mainCount).map((d,i)=>{
                   const buildDiff=(oldStr,newStr)=>{
                     if(!d.changed)return{oldEl:<span style={{color:C.t2,fontSize:12.5}}>{oldStr}</span>,newEl:<span style={{color:C.t2,fontSize:12.5}}>{newStr}</span>};
                     /* Find common prefix and suffix to isolate the exact changed region */
@@ -676,7 +796,10 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
                   );
                 })}</tbody>
               </table>
+              <ExpandableFields diff={orderedDiff} mainCount={mainCount}/>
             </div>
+              );
+            })()}
 
             {/* ── SECTION B: Additional Context (two side-by-side mini tables) ── */}
             <div style={{marginBottom:20}}>
@@ -732,13 +855,36 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject}){
         </div>
 
         {/* ── FOOTER: Action buttons ── */}
-        <div style={{padding:"14px 24px",borderTop:`1px solid ${C.border}`,display:"flex",gap:10,justifyContent:"flex-end",flexShrink:0}}>
+        <div style={{padding:"14px 24px",borderTop:`1px solid ${C.border}`,display:"flex",gap:10,justifyContent:"flex-end",alignItems:"center",flexShrink:0}}>
           {!isClosed&&isChecker&&<>
             <button onClick={()=>onReject(req.id,remark)} style={{padding:"7px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Decline</button>
             <button onClick={()=>onApprove(req.id,remark)} style={{padding:"7px 20px",background:"#059669",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Approve</button>
           </>}
-          {(isClosed||!isChecker)&&<Btn variant="outline" onClick={onClose}>Close</Btn>}
+          {isClosed&&<Btn variant="outline" onClick={onClose}>Close</Btn>}
+          {!isClosed&&!isChecker&&(
+            <button onClick={()=>setShowWithdrawConfirm(true)} style={{padding:"7px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
+              Withdraw Request
+            </button>
+          )}
         </div>
+        {/* ── WITHDRAW CONFIRMATION MODAL ── */}
+        {showWithdrawConfirm&&(
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:50}}>
+            <div style={{background:C.bg,borderRadius:10,width:400,padding:"28px 24px",boxShadow:"0 8px 32px rgba(0,0,0,.22)",textAlign:"center"}}>
+              <div style={{width:48,height:48,borderRadius:"50%",background:"#fef2f2",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 14px"}}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:8}}>Withdraw this request?</div>
+              <div style={{fontSize:13.5,color:C.t2,lineHeight:1.6,marginBottom:20}}>
+                This will cancel <strong>Request {req.id}</strong> and remove it from the checker's queue. This action cannot be undone.
+              </div>
+              <div style={{display:"flex",gap:10,justifyContent:"center"}}>
+                <button onClick={()=>setShowWithdrawConfirm(false)} style={{padding:"8px 24px",background:C.bg,color:C.text,border:`1px solid ${C.border}`,borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer"}}>Cancel</button>
+                <button onClick={()=>{onWithdraw(req.id);setShowWithdrawConfirm(false);}} style={{padding:"8px 24px",background:"#dc2626",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer"}}>Yes, Withdraw</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -774,6 +920,10 @@ function GMCLogsView({logs,setLogs,templates,setTemplates}){
   const handleReject=(id,remark)=>{
     setLogs(p=>p.map(r=>r.id===id?{...r,status:"Rejected",checkerName:"Roushan Gupta",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Rejected."}:r));
     setSel(null);setToast("Request rejected.");
+  };
+  const handleWithdraw=(id)=>{
+    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Withdrawn"}:r));
+    setSel(null);setToast("Request withdrawn successfully.");
   };
   return(
     <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
@@ -866,7 +1016,7 @@ function GMCLogsView({logs,setLogs,templates,setTemplates}){
           {["›","»"].map(a=><button key={a} style={{width:26,height:26,border:`1px solid ${C.grayB}`,borderRadius:4,background:C.bg,color:C.t3,cursor:"pointer",fontSize:13}}>{a}</button>)}
         </div>
       </div>
-      {sel&&<LogDetailModal req={sel} viewerPerm={viewerPerm} onClose={()=>setSel(null)} onApprove={handleApprove} onReject={handleReject}/>}
+      {sel&&<LogDetailModal req={sel} viewerPerm={viewerPerm} onClose={()=>setSel(null)} onApprove={handleApprove} onReject={handleReject} onWithdraw={handleWithdraw}/>}
       {toast&&<div style={{position:"fixed",bottom:24,right:24,background:"#111827",color:"#fff",padding:"11px 16px",borderRadius:8,fontSize:12.5,boxShadow:"0 4px 20px rgba(0,0,0,.25)",zIndex:999,display:"flex",alignItems:"center",gap:8}}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         {toast}
@@ -972,17 +1122,39 @@ function CreateActivityModal({onClose}){
     },
   };
 
+  const [approvalCount,setApprovalCount]=useState(1);
   const [section,setSection]=useState("");
   const [modalId,setModalId]=useState("");
   const [diffRows,setDiffRows]=useState([]);
   const [ctxRows,setCtxRows]=useState([{label:"",query:""}]);
   const [diffAutoLoaded,setDiffAutoLoaded]=useState(false);
+  const [selectedCheckers,setSelectedCheckers]=useState([]);
+  const [saveAttempted,setSaveAttempted]=useState(false);
 
   const domainData=section&&MODAL_REGISTRY[section]?MODAL_REGISTRY[section]:null;
   const availableModals=domainData?domainData.modals:[];
   const selectedModal=availableModals.find(m=>m.id===modalId)||null;
   const makers=domainData?domainData.makers:[];
   const checkers=domainData?domainData.checkers:[];
+
+  /* Dynamic validation: selected checkers must satisfy approval count */
+  const checkerSatisfied=selectedCheckers.length>=approvalCount;
+  const checkerShortfall=Math.max(0,approvalCount-selectedCheckers.length);
+
+  /* Reset selected checkers when domain changes */
+  useEffect(()=>{setSelectedCheckers([]);},[section]);
+
+  const toggleChecker=(userId)=>{
+    setSelectedCheckers(prev=>
+      prev.includes(userId)?prev.filter(id=>id!==userId):[...prev,userId]
+    );
+  };
+
+  const handleSaveActivity=()=>{
+    setSaveAttempted(true);
+    if(!checkerSatisfied)return; /* Block save */
+    onClose(); /* proceed */
+  };
 
   /* Auto-populate diff rows when domain + modal both selected */
   useEffect(()=>{
@@ -1072,6 +1244,33 @@ function CreateActivityModal({onClose}){
               <input type="number" defaultValue="80" style={inputS}
                 onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
                 onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+            <div style={{gridColumn:"1/-1"}}>
+              <label style={labelS}>
+                Approval Count
+                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>Checkers required to approve before execution · Assign Checkers section below will validate against this</span>
+              </label>
+              <div style={{display:"flex",alignItems:"center",gap:14,marginTop:6}}>
+                {/* Dropdown selector */}
+                <div style={{position:"relative",width:120}}>
+                  <select value={approvalCount} onChange={e=>setApprovalCount(Number(e.target.value))}
+                    style={{width:"100%",padding:"8px 32px 8px 12px",border:`1.5px solid ${C.blue}`,borderRadius:7,fontSize:14,fontWeight:600,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}
+                    onFocus={e=>{e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                    onBlur={e=>{e.currentTarget.style.boxShadow="none";}}>
+                    {[1,2,3,4,5].map(n=><option key={n} value={n}>{n}</option>)}
+                  </select>
+                  <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                {/* Progress circles only */}
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{display:"flex",gap:5}}>
+                    {Array.from({length:approvalCount}).map((_,i)=>(
+                      <div key={i} style={{width:10,height:10,borderRadius:"50%",background:i<selectedCheckers.length?C.blue:C.grayB,border:`2px solid ${i<selectedCheckers.length?C.blue:C.grayB}`,transition:"all .2s"}}/>
+                    ))}
+                  </div>
+                  <span style={{fontSize:12,color:C.t3}}>{selectedCheckers.length} of {approvalCount} checker{approvalCount!==1?"s":""} assigned</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1199,41 +1398,93 @@ function CreateActivityModal({onClose}){
               </table>
             </div>
 
-            {/* Checkers */}
-            <div style={{fontSize:12,fontWeight:600,color:C.t2,marginBottom:8}}>Assign Checkers</div>
-            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+            {/* Checkers — interactive with validation */}
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+              <div style={{fontSize:12,fontWeight:600,color:C.t2}}>Assign Checkers</div>
+              <div style={{display:"flex",alignItems:"center",gap:6,fontSize:12}}>
+                {checkers.length>0&&(
+                  checkerSatisfied
+                  ?<span style={{display:"flex",alignItems:"center",gap:4,color:C.greenT,fontWeight:500}}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    {selectedCheckers.length} checker{selectedCheckers.length!==1?"s":""} assigned — requirement met
+                  </span>
+                  :<span style={{color:saveAttempted?C.red:C.t3}}>
+                    Select at least {approvalCount} checker{approvalCount!==1?"s":""} (Approval Count = {approvalCount})
+                  </span>
+                )}
+              </div>
+            </div>
+            <div style={{border:`1.5px solid ${saveAttempted&&!checkerSatisfied?C.red:checkerSatisfied&&checkers.length>0?C.greenT:C.border}`,borderRadius:6,overflow:"hidden",transition:"border-color .2s"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr>
-                  <th style={miniTh}>#</th>
+                  <th style={{...miniTh,width:36}}>✓</th>
                   <th style={miniTh}>User ID</th>
                   <th style={miniTh}>Name</th>
                   <th style={miniTh}>Domain Key</th>
+                  <th style={miniTh}>Status</th>
                 </tr></thead>
                 <tbody>
                   {checkers.length===0
-                    ?<tr><td colSpan={4} style={{...miniTd,color:C.t3,textAlign:"center"}}>Select a domain to see available checkers</td></tr>
-                    :checkers.map((m,i)=>(
-                      <tr key={i} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
-                        <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
+                    ?<tr><td colSpan={5} style={{...miniTd,color:C.t3,textAlign:"center"}}>Select a domain to see available checkers</td></tr>
+                    :checkers.map((m,i)=>{
+                      const isSelected=selectedCheckers.includes(m.userId);
+                      return(
+                      <tr key={i} onClick={()=>toggleChecker(m.userId)} style={{background:isSelected?"#f0fdf4":C.bg,cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=isSelected?"#dcfce7":C.bg2} onMouseLeave={e=>e.currentTarget.style.background=isSelected?"#f0fdf4":C.bg}>
+                        <td style={{...miniTd,width:36,textAlign:"center"}}>
+                          <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${isSelected?C.blue:C.grayB}`,background:isSelected?C.blue:"transparent",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",transition:"all .12s"}}>
+                            {isSelected&&<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                          </div>
+                        </td>
                         <td style={{...miniTd,fontFamily:"monospace",fontSize:12,color:C.t2}}>{m.userId}</td>
-                        <td style={{...miniTd,fontWeight:500}}>{m.name}</td>
+                        <td style={{...miniTd,fontWeight:500,color:isSelected?C.text:C.t2}}>{m.name}</td>
                         <td style={miniTd}><PermTag v={m.domainKey}/></td>
+                        <td style={miniTd}>
+                          {isSelected
+                            ?<span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11.5,fontWeight:600,color:C.greenT}}>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                              Selected
+                            </span>
+                            :<span style={{fontSize:11.5,color:C.t3}}>Click to select</span>
+                          }
+                        </td>
                       </tr>
-                    ))
+                      );
+                    })
                   }
                 </tbody>
               </table>
+              {/* Inline validation error */}
+              {saveAttempted&&!checkerSatisfied&&checkers.length>0&&(
+                <div style={{padding:"10px 14px",background:"#fef2f2",borderTop:`1px solid #fecaca`,display:"flex",alignItems:"center",gap:8,fontSize:12.5,color:"#b91c1c"}}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <span>
+                    Unable to save activity. The number of assigned checkers (<strong>{selectedCheckers.length}</strong>) does not satisfy the configured approval count (<strong>{approvalCount}</strong>). Please select {checkerShortfall} more checker{checkerShortfall!==1?"s":""}.
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
         </div>
         <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <span style={{fontSize:12,color:C.t3}}>
-            {section&&modalId?<span style={{color:C.greenT}}>✓ {diffRows.filter(r=>!r.removed).length} diff fields · {ctxRows.filter(r=>r.label).length} context queries configured</span>:"Fill in domain and modal ID to configure diff fields"}
+            {section&&modalId?(
+              <span style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{color:C.greenT}}>✓ {diffRows.filter(r=>!r.removed).length} diff · {ctxRows.filter(r=>r.label).length} ctx queries</span>
+                <span style={{color:checkerSatisfied?C.greenT:saveAttempted?C.red:C.t3,fontWeight:checkerSatisfied||saveAttempted?500:400}}>
+                  {checkerSatisfied
+                    ?`✓ ${selectedCheckers.length}/${approvalCount} checker${approvalCount!==1?"s":""} — ready`
+                    :`${selectedCheckers.length}/${approvalCount} checker${approvalCount!==1?"s":""} required`
+                  }
+                </span>
+              </span>
+            ):"Fill in domain and modal ID to configure diff fields"}
           </span>
           <div style={{display:"flex",gap:8}}>
             <Btn variant="outline" onClick={onClose}>Cancel</Btn>
-            <Btn variant="dark" onClick={onClose}>Save Activity</Btn>
+            <button onClick={handleSaveActivity} style={{padding:"7px 18px",background:checkerSatisfied&&section&&modalId?"#111827":C.grayB,color:checkerSatisfied&&section&&modalId?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:checkerSatisfied&&section&&modalId?"pointer":"not-allowed",transition:"background .15s"}}>
+              Save Activity
+            </button>
           </div>
         </div>
       </div>
@@ -1320,7 +1571,7 @@ function GMCConfigsView(){
             <th style={thS}>Activity ID</th><th style={thS}>Activity / Flow Name</th>
             <th style={thS}>Section</th><th style={thS}>Queries</th>
             <th style={thS}>SLA</th><th style={thS}>Warning Time</th>
-            <th style={thS}>Status</th><th style={thSL}>Actions</th>
+            <th style={thS}>Approval Count</th><th style={thS}>Status</th><th style={thSL}>Actions</th>
           </tr></thead>
           <tbody>{filtered.length===0?<tr><td colSpan={8} style={{...tdS,textAlign:"center",color:C.t3}}>No activities found</td></tr>:filtered.map(a=>(
             <tr key={a.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
@@ -1330,6 +1581,9 @@ function GMCConfigsView(){
               <td style={{...tdS,color:C.t2}}>{a.queries}</td>
               <td style={tdS}>{a.sla}</td>
               <td style={{...tdS,color:C.t2}}>{a.warn}</td>
+              <td style={{...tdS,textAlign:"center"}}>
+                <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:26,height:26,borderRadius:"50%",background:a.approvalCount>1?C.blueL:C.grayL,color:a.approvalCount>1?C.blue:C.gray,fontSize:12,fontWeight:700}}>{a.approvalCount||1}</span>
+              </td>
               <td style={tdS}><Badge v={a.status}/></td>
               <td style={{...tdS,textAlign:"right"}}>
                 <DotMenu items={[["View",C.blue,null],["Edit",C.blue,null],["Deactivate",C.red,null]]}/>
@@ -1354,29 +1608,1354 @@ function GMCConfigsView(){
 /* ═══════════════════════════════════════
    ROOT APP
 ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   ALL NEW USE CASE VIEWS + UPDATED SIDEBAR + UPDATED APP
+   Replace everything from "function Sidebar" onwards
+═══════════════════════════════════════════════════════════════ */
+
+/* ── SHARED HELPERS ── */
+const fmtDate=(d=new Date())=>{const day=d.getDate();const m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];const y=d.getFullYear();let h=d.getHours();const min=String(d.getMinutes()).padStart(2,"0");const ap=h>=12?"PM":"AM";h=h%12||12;return`${day} ${m} ${y}, ${h}:${min} ${ap}`;};
+
+/* ═══════════════════════════════════════════════════════════════
+   UPDATED INIT_LOGS — pre-seeded for all use cases
+═══════════════════════════════════════════════════════════════ */
+const ALL_INIT_LOGS=[
+  /* Communication */
+  {id:"REQ_1089",activityId:"ACT_CT_001",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",date:"13 May 2026, 12:58 PM",status:"Pending",targetId:"TMPL_101",
+   category:"Communication",action:"Manage Template Edit",reason:"",context:"",atts:[],
+   diff:[
+     {field:"Body",old:"<!DOCTYPE html>\n<html lang=\"en\">",nw:"<!DOCTYPE html>\n<html lang=\"en\"><!-- Updated -->",changed:true},
+     {field:"Subject",old:"[AML] Data Ingestion Failure",nw:"[AML] Data Ingestion Failure",changed:false},
+     {field:"Notification Type",old:"Email",nw:"Email",changed:false},
+     {field:"Client",old:"smart_app_consumer",nw:"smart_app_consumer",changed:false},
+     {field:"Status",old:"Active",nw:"Active",changed:false},
+     {field:"Validity (sec)",old:"1",nw:"1",changed:false},
+     {field:"Icon URL",old:"https://stg-backoffice.fyscal.ai/assets/favicon-96x96.png",nw:"https://stg-backoffice.fyscal.ai/assets/favicon-96x96.png",changed:false},
+   ],
+   ctxData:[{l:"Template Type",v:"Email"},{l:"Client",v:"smart_app_consumer"},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:"Email"},{l:"Template Status",v:"Active"},{l:"Silent Delivery",v:"No"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:101},
+  /* UC1a — Account Type ID Change */
+  {id:"REQ_1201",activityId:"ACT_PAY_001",approvalCount:1,approvalsReceived:0,flowName:"Account Type ID Change",domain:"Payments",maker:"Utkarsh Giri",date:"25 May 2026, 9:15 AM",status:"Pending",targetId:"CONS_343",
+   category:"Payments — User Accounts",action:"Account Type ID Change",reason:"Customer upgraded to premium tier as per request #CUS-2891. Account type needs to reflect new permissions.",context:"Verified with operations team. Customer has completed enhanced KYC.",atts:[],
+   diff:[
+     {field:"Account Type ID",old:"3 — Current_Account",nw:"1 — Savings_Bank_Ac_Basic",changed:true},
+     {field:"Account ID",old:"343",nw:"343",changed:false},
+     {field:"Account Status",old:"CREATED",nw:"CREATED",changed:false},
+     {field:"Phone Number",old:"09*****28",nw:"09*****28",changed:false},
+     {field:"Ledger Account ID",old:"44ad6553-bb5e-4db7...",nw:"44ad6553-bb5e-4db7...",changed:false},
+   ],
+   ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC1b — Freeze Account */
+  {id:"REQ_1202",activityId:"ACT_PAY_002",approvalCount:2,approvalsReceived:0,flowName:"Freeze Account",domain:"Payments",maker:"Utkarsh Giri",date:"25 May 2026, 9:45 AM",status:"Pending",targetId:"CONS_343",
+   category:"Payments — User Accounts",action:"Freeze Account",reason:"Multiple failed login attempts detected. Suspicious transaction pattern observed. Freezing pending investigation per SEC-04.",context:"AML team notified. Investigation ticket #AML-5521 raised.",atts:[],
+   diff:[
+     {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
+     {field:"Account Type ID",old:"3 — Current_Account",nw:"3 — Current_Account",changed:false},
+     {field:"Phone Number",old:"09*****28",nw:"09*****28",changed:false},
+     {field:"Wallet Balance Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
+     {field:"Daily Outgoing Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
+     {field:"Monthly Incoming Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
+   ],
+   ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC2 — Manual Transfer */
+  {id:"REQ_1203",activityId:"ACT_PAY_003",approvalCount:2,approvalsReceived:0,flowName:"Manual Treasury Transfer",domain:"Payments",maker:"Utkarsh Giri",date:"25 May 2026, 10:00 AM",status:"Pending",targetId:"TXN_BHP_CV",
+   category:"Payments — Treasury",action:"Manual Treasury Transfer",reason:"Add money to treasury reserve for end-of-day settlement processing.",context:"Approved by finance team. Reference: FIN-2026-0525.",atts:[{name:"Screenshot_2026-05-26_proof.png",size:"440 KB"}],
+   diff:[
+     {field:"Source Account Group",old:"—",nw:"Internal Cash",changed:true},
+     {field:"Source Account",old:"—",nw:"328832",changed:true},
+     {field:"Destination Account Group",old:"—",nw:"Consumer",changed:true},
+     {field:"Destination Account",old:"—",nw:"331473",changed:true},
+     {field:"Amount",old:"—",nw:"₱9,999.97",changed:true},
+     {field:"Payment Channel",old:"—",nw:"SMART_MONEY",changed:true},
+     {field:"Description",old:"—",nw:"adding money",changed:true},
+     {field:"Attached Proof",old:"—",nw:"Screenshot_2026-05-26_proof.png",changed:true},
+   ],
+   ctxData:[{l:"Fee Amount",v:"₱50.00"},{l:"Tax Amount",v:"₱12.00"},{l:"Payment Channel ID",v:"49"},{l:"Payment Channel Name",v:"SMART_MONEY"},{l:"Status",v:"Pending"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC3a — Edit Account Type */
+  {id:"REQ_1204",activityId:"ACT_PAY_004",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Utkarsh Giri",date:"25 May 2026, 10:30 AM",status:"Pending",targetId:"AT_1020",
+   category:"Payments — Configs",action:"Edit Account Type",reason:"Updating wallet limits as per new policy effective June 2026. Daily outgoing limit increased for premium consumer accounts.",context:"Policy document: POL-2026-LIMITS-004.",atts:[],
+   diff:[
+     {field:"Daily Outgoing Limit",old:"₱10,000",nw:"₱25,000",changed:true},
+     {field:"Monthly Incoming Limit",old:"₱100,000",nw:"₱250,000",changed:true},
+     {field:"Account Type Name",old:"UTKARSH_BAWA_0",nw:"UTKARSH_BAWA_0",changed:false},
+     {field:"Account Group",old:"CONSUMER",nw:"CONSUMER",changed:false},
+     {field:"Wallet Balance Limit",old:"₱100,000",nw:"₱100,000",changed:false},
+   ],
+   ctxData:[{l:"Core Features",v:"Bank Transfer, Scan & Pay, Bill Payments, Mobile Load"},{l:"Send Money Access",v:"Consumer, Merchant, Seller"},{l:"Transaction Channel",v:"SMART_MONEY"},{l:"Money Movement",v:"Send & Receive"},{l:"Min Transaction Amount",v:"₱1"},{l:"Max Transaction Amount",v:"₱50,000"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC3b — Edit Constraint */
+  {id:"REQ_1205",activityId:"ACT_PAY_005",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Utkarsh Giri",date:"25 May 2026, 11:00 AM",status:"Pending",targetId:"CONS_495",
+   category:"Payments — Configs",action:"Edit Account Type Constraint",reason:"Increasing max amount limit for PesoNet bill payments as per merchant agreement renewal.",context:"Merchant agreement #MA-2026-0491 signed.",atts:[],
+   diff:[
+     {field:"Max Amount",old:"₱50,000",nw:"₱100,000",changed:true},
+     {field:"Destination Accounts Group",old:"CONSUMER, MERCHANT",nw:"CONSUMER, MERCHANT, SELLER",changed:true},
+     {field:"Min Amount",old:"₱5",nw:"₱5",changed:false},
+     {field:"Status",old:"Active",nw:"Active",changed:false},
+     {field:"Money Movement",old:"Send: Yes, Receive: No",nw:"Send: Yes, Receive: No",changed:false},
+   ],
+   ctxData:[{l:"Account Type Name",v:"UTKARSH_BAWA_0"},{l:"Account Type Group",v:"Consumer"},{l:"Wallet Balance Limit",v:"₱100,000"},{l:"Daily Outgoing Limit",v:"₱10,000"},{l:"Monthly Incoming Limit",v:"₱100,000"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC4a — Block */
+  {id:"REQ_1206",activityId:"ACT_KYC_001",approvalCount:2,approvalsReceived:0,flowName:"Block Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",date:"25 May 2026, 11:30 AM",status:"Pending",targetId:"KYC_99",
+   category:"Customers & KYC",action:"Block Customer Account",reason:"Confirmed Fraudulent Activity",context:"Multiple chargeback disputes filed. AML team flagged this account for suspicious outgoing transfers totalling ₱450,000 in 48 hours.",atts:[],
+   diff:[
+     {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
+     {field:"User Status",old:"Active",nw:"Active",changed:false},
+     {field:"KYC Status",old:"In Progress",nw:"In Progress",changed:false},
+     {field:"Violation Count",old:"3",nw:"3",changed:false},
+     {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
+   ],
+   ctxData:[{l:"Customer Full Name",v:"Nishank Sharma"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"3"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC4b — Reset MPIN */
+  {id:"REQ_1207",activityId:"ACT_KYC_002",approvalCount:1,approvalsReceived:0,flowName:"Reset Customer MPIN",domain:"Customers & KYC",maker:"Utkarsh Giri",date:"25 May 2026, 12:00 PM",status:"Pending",targetId:"KYC_80",
+   category:"Customers & KYC",action:"Reset Customer MPIN",reason:"Customer lost access to phone. Identity verified via KYC documents.",context:"Support Ticket ID: KEDS-2891. Customer physically visited branch.",atts:[{name:"ID_Card.png",size:"1.2 MB"},{name:"Photo_with_ID.png",size:"980 KB"},{name:"Selfie.png",size:"540 KB"}],
+   diff:[
+     {field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true},
+     {field:"Identity Verification",old:"Not verified",nw:"Verified (Agent Approved)",changed:false},
+     {field:"Support Ticket ID",old:"—",nw:"KEDS-2891",changed:false},
+     {field:"KYC Status",old:"Agent Approved",nw:"Agent Approved",changed:false},
+     {field:"Account Status",old:"Active",nw:"Active",changed:false},
+   ],
+   ctxData:[{l:"Customer Full Name",v:"Robert R. Bernardo"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC4c — Freeze */
+  {id:"REQ_1208",activityId:"ACT_KYC_003",approvalCount:2,approvalsReceived:0,flowName:"Freeze Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",date:"25 May 2026, 12:15 PM",status:"Pending",targetId:"KYC_76",
+   category:"Customers & KYC",action:"Freeze Customer Account",reason:"AMLC Investigation",context:"AMLC order received. Temporary freeze required pending investigation resolution. Reference: AMLC-2026-0088.",atts:[],
+   diff:[
+     {field:"Account Status",old:"Active",nw:"Frozen",changed:true},
+     {field:"User Status",old:"Active",nw:"Active",changed:false},
+     {field:"KYC Status",old:"In Progress",nw:"In Progress",changed:false},
+     {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
+   ],
+   ctxData:[{l:"Customer Full Name",v:"Test Test"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+  /* UC4d — Force Logout */
+  {id:"REQ_1209",activityId:"ACT_KYC_004",approvalCount:1,approvalsReceived:0,flowName:"Force Logout Customer",domain:"Customers & KYC",maker:"Utkarsh Giri",date:"25 May 2026, 12:30 PM",status:"Pending",targetId:"KYC_33",
+   category:"Customers & KYC",action:"Force Logout Customer",reason:"Active Security Threat — Account Takeover",context:"Unusual login detected from foreign IP. Forcing logout to protect account.",atts:[],
+   diff:[
+     {field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true},
+     {field:"Account Status",old:"Active",nw:"Active",changed:false},
+     {field:"KYC Status",old:"In Progress",nw:"In Progress",changed:false},
+     {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
+   ],
+   ctxData:[{l:"Customer Full Name",v:"Test Test"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
+   checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
+];
+
+
+
+/* ═══════════════════════════════════════
+   SHARED SECTION HEADER
+═══════════════════════════════════════ */
+function PageHeader({title,breadcrumb,actions}){
+  return(
+    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+      <div>
+        <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>{title}</div>
+        <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3,flexWrap:"wrap"}}>
+          {breadcrumb.map((b,i)=><span key={i} style={{display:"flex",alignItems:"center",gap:5}}>
+            {i>0&&<span style={{fontSize:11,color:C.grayB}}>›</span>}
+            <span style={{color:i===breadcrumb.length-1?C.t2:C.blue,cursor:i<breadcrumb.length-1?"pointer":"default"}}
+              onMouseEnter={e=>{if(i<breadcrumb.length-1)e.currentTarget.style.textDecoration="underline"}}
+              onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>{b}</span>
+          </span>)}
+        </div>
+      </div>
+      <div style={{display:"flex",gap:8,marginTop:4}}>{actions}</div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function Toast2({msg,onClose}){
+  useEffect(()=>{const t=setTimeout(onClose,3500);return()=>clearTimeout(t);},[]);
+  return(
+    <div style={{position:"fixed",bottom:24,right:24,background:"#111827",color:"#fff",padding:"11px 16px",borderRadius:8,fontSize:12.5,boxShadow:"0 4px 20px rgba(0,0,0,.25)",zIndex:999,display:"flex",alignItems:"center",gap:8}}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      {msg}
+      <button onClick={onClose} style={{marginLeft:8,background:"none",border:"none",color:"#9ca3af",cursor:"pointer",fontSize:16,lineHeight:1}}>×</button>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   UC1 — CONSUMERS LIST + DETAIL PAGE
+   Payments → User Accounts → Consumers
+═══════════════════════════════════════ */
+const CONSUMERS=[
+  {id:343,phone:"09*****28",acctTypeId:3,acctTypeName:"Current_Account",acctId:343,ledgerAcctId:"44ad6553-bb5e-4db7-a0d8-894a5969011b",status:"CREATED",updatedAt:"25 May 2026, 01:00:55 pm IST",firstName:"first",middleName:"middle",lastName:"last",fullName:"first middle last",userId:350,ledgerId:"7734ab91-fa9b-4cf1-9f9d-53bb4a4a3409",createdAt:"22 May 2026, 04:55:00 pm IST",uuid:"da31994b-5694-444a-b20b-f6969339b473",walletLimit:"₱10,000.00",dailyOutgoing:"₱10,000.00",monthlyIncoming:"₱10,000.00",frozen:false},
+  {id:344,phone:"09*****91",acctTypeId:1,acctTypeName:"Savings_Bank_Ac_Basic",acctId:344,ledgerAcctId:"55bd7664-cc6f-5ec8-b1e9-905b6a7a1122",status:"ACTIVE",updatedAt:"24 May 2026, 09:00:00 am IST",firstName:"Nishank",middleName:"",lastName:"Sharma",fullName:"Nishank Sharma",userId:351,ledgerId:"8845bc02-gb0c-5df2-ag0e-64cc5b5b4510",createdAt:"20 May 2026, 02:00:00 pm IST",uuid:"eb42005c-6705-555b-c31c-g7070440c584",walletLimit:"₱50,000.00",dailyOutgoing:"₱25,000.00",monthlyIncoming:"₱100,000.00",frozen:false},
+];
+const ACCT_TYPES=[{id:35,name:"TESTT_KYC_0"},{id:34,name:"TEST_KYC_0"},{id:5,name:"DUMMY_0"},{id:3,name:"Current_Account"},{id:1,name:"Savings_Bank_Ac_Basic"}];
+
+function ConsumersView({onLogAdd,onPage}){
+  const [sel,setSel]=useState(null);
+  const [search,setSearch]=useState("");
+  const filtered=CONSUMERS.filter(c=>c.fullName.toLowerCase().includes(search.toLowerCase())||String(c.id).includes(search));
+  const thS2={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"10px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase"};
+  const tdS2={padding:"13px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,color:C.text,verticalAlign:"middle"};
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <PageHeader title="Consumers" breadcrumb={["Payments","User Accounts","Consumers"]} actions={null}/>
+      <div style={{padding:"0 24px 12px",display:"flex",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,height:34,flex:1,maxWidth:300}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search here..." style={{border:"none",outline:"none",fontSize:13,width:200,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button style={{height:34,padding:"0 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,color:C.t2,fontSize:12.5,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>Show Filters</button>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS2}>SIGNUP PHONE NO.</th><th style={thS2}>REF. NO.</th><th style={thS2}>NAME</th>
+            <th style={thS2}>STATUS</th><th style={thS2}>UPDATED AT</th><th style={thS2}>ACTIONS</th>
+          </tr></thead>
+          <tbody>{filtered.map(c=>(
+            <tr key={c.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}
+              onClick={()=>setSel(c)}>
+              <td style={tdS2}>{c.phone}</td>
+              <td style={{...tdS2,fontFamily:"monospace",fontSize:12,color:C.t2}}>kyc_d{c.id}...</td>
+              <td style={{...tdS2,fontWeight:500}}>{c.fullName}</td>
+              <td style={tdS2}><Badge v={c.status}/></td>
+              <td style={{...tdS2,fontSize:12,color:C.t2}}>{c.updatedAt}</td>
+              <td style={tdS2} onClick={e=>e.stopPropagation()}>
+                <DotMenu items={[["View Details",C.blue,()=>setSel(c)]]}/>
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",borderTop:`1px solid ${C.border}`,flexShrink:0,fontSize:12.5,color:C.t2}}>
+        <span>Showing 1–{filtered.length} of {CONSUMERS.length}</span>
+        <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 1</span></div>
+      </div>
+      {sel&&<ConsumerDetail consumer={sel} onClose={()=>setSel(null)} onLogAdd={onLogAdd}/>}
+    </div>
+  );
+}
+
+function ConsumerDetail({consumer,onClose,onLogAdd}){
+  const [acctTypeId,setAcctTypeId]=useState(consumer.acctTypeId);
+  const [acctTypeName,setAcctTypeName]=useState(consumer.acctTypeName);
+  const [dropOpen,setDropOpen]=useState(false);
+  const [search,setSearch]=useState("");
+  const [showFreezeForm,setShowFreezeForm]=useState(false);
+  const [freezeReason,setFreezeReason]=useState("");
+  const [showGMC,setShowGMC]=useState(false);
+  const [gmcAction,setGmcAction]=useState(null);
+  const [pendingDiff,setPendingDiff]=useState([]);
+  const [toast,setToast]=useState(null);
+  const [frozen,setFrozen]=useState(consumer.frozen);
+
+  const filteredTypes=ACCT_TYPES.filter(t=>t.name.toLowerCase().includes(search.toLowerCase())||String(t.id).includes(search));
+
+  const handleTypeSelect=(t)=>{
+    setDropOpen(false);
+    setSearch("");
+    setPendingDiff([{field:"Account Type ID",old:`${acctTypeId} — ${acctTypeName}`,nw:`${t.id} — ${t.name}`,changed:true}]);
+    setGmcAction("acct-type");
+    setShowGMC(true);
+  };
+
+  const handleFreezeSubmit=()=>{
+    setPendingDiff([{field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true}]);
+    setGmcAction("freeze");
+    setShowGMC(true);
+  };
+
+  const handleGMCConfirm=(reason,ctx)=>{
+    const isFreeze=gmcAction==="freeze";
+    const newId=`REQ_${1210+Math.floor(Math.random()*90)}`;
+    onLogAdd({
+      id:newId,activityId:isFreeze?"ACT_PAY_002":"ACT_PAY_001",
+      flowName:isFreeze?"Freeze Account":"Account Type ID Change",
+      domain:"Payments",maker:"Utkarsh Giri",date:fmtDate(),status:"Pending",
+      targetId:`CONS_${consumer.id}`,category:"Payments — User Accounts",
+      action:isFreeze?"Freeze Account":"Account Type ID Change",
+      reason,context:ctx,atts:[],diff:pendingDiff,
+      ctxData:[
+        {l:"Account Type Name",v:acctTypeName},{l:"Wallet Balance Limit",v:consumer.walletLimit},
+        {l:"Daily Outgoing Limit",v:consumer.dailyOutgoing},{l:"Monthly Incoming Limit",v:consumer.monthlyIncoming},
+        {l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},
+        {l:"Applicable Charges",v:"Standard — 1.2% per transaction"},
+      ],
+      checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null,
+    });
+    setShowGMC(false);setShowFreezeForm(false);setFreezeReason("");
+    setToast(`Request ${newId} submitted for approval. Checker has been notified.`);
+  };
+
+  const sectionStyle={background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:16};
+  const labelStyle={fontSize:12,color:C.t3,marginBottom:4};
+  const valueStyle={fontSize:13.5,color:C.text,fontWeight:500};
+
+  if(showFreezeForm){
+    return(
+      <div style={{position:"absolute",inset:0,background:C.bg,display:"flex",flexDirection:"column",zIndex:10}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 24px 12px",borderBottom:`1px solid ${C.border}`}}>
+          <div>
+            <div style={{fontSize:15,fontWeight:600,color:C.text}}>Consumer Details</div>
+            <div style={{display:"flex",gap:5,fontSize:12.5,color:C.t3,marginTop:3}}>
+              <span style={{color:C.blue,cursor:"pointer"}}>Payments</span><span>›</span>
+              <span style={{color:C.blue,cursor:"pointer"}}>User Accounts</span><span>›</span>
+              <span style={{color:C.blue,cursor:"pointer"}}>Consumers</span><span>›</span>
+              <span>{consumer.id}</span>
+            </div>
+          </div>
+          <button onClick={()=>setShowFreezeForm(false)} style={{padding:"6px 16px",background:C.red,color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"}}>Cancel</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"24px"}}>
+          <textarea value={freezeReason} onChange={e=>setFreezeReason(e.target.value)} placeholder="Enter reason for freezing..." style={{width:"100%",minHeight:140,border:`1px solid ${freezeReason?"#e5e7eb":"#fca5a5"}`,borderRadius:8,padding:"12px 14px",fontSize:13,color:C.text,background:freezeReason?"#fff":"#fff8f8",outline:"none",resize:"vertical",fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=freezeReason?"#e5e7eb":"#fca5a5";e.currentTarget.style.boxShadow="none";}}/>
+          <div style={{display:"flex",justifyContent:"flex-end",marginTop:12}}>
+            <button disabled={!freezeReason.trim()} onClick={handleFreezeSubmit} style={{padding:"8px 24px",background:freezeReason.trim()?C.red:"#fca5a5",color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:freezeReason.trim()?"pointer":"not-allowed"}}>Submit Freeze</button>
+          </div>
+        </div>
+        {showGMC&&<GMCReasoningModal diff={pendingDiff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+        {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+      </div>
+    );
+  }
+
+  return(
+    <div style={{position:"absolute",inset:0,background:C.bg,display:"flex",flexDirection:"column",overflowY:"auto",zIndex:10}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 24px 12px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:C.blue,fontSize:13,padding:0,display:"flex",alignItems:"center",gap:4}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <div style={{fontSize:16,fontWeight:700,color:C.text}}>Consumer Details</div>
+          </div>
+          <div style={{display:"flex",gap:5,fontSize:12.5,color:C.t3,marginTop:3,marginLeft:22}}>
+            <span style={{color:C.blue,cursor:"pointer"}}>Payments</span><span>›</span>
+            <span style={{color:C.blue,cursor:"pointer"}}>User Accounts</span><span>›</span>
+            <span style={{color:C.blue,cursor:"pointer"}}>Consumers</span><span>›</span>
+            <span style={{color:C.t2,fontWeight:500}}>{consumer.id}</span>
+          </div>
+        </div>
+        <button onClick={()=>setShowFreezeForm(true)} style={{padding:"7px 18px",background:C.red,color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"}}>Freeze Account</button>
+      </div>
+
+      <div style={{padding:"20px 24px",flex:1}}>
+        {/* User Information */}
+        <div style={sectionStyle}>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:16}}>User Information</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px 40px"}}>
+            {[["First Name",consumer.firstName],["Middle Name",consumer.middleName||"—"],["Last Name",consumer.lastName],["User ID",consumer.userId],["Full Name",consumer.fullName]].map(([l,v])=>(
+              <div key={l}><div style={labelStyle}>{l}</div><div style={valueStyle}>{v}</div></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Account Information */}
+        <div style={sectionStyle}>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:16}}>Account Information</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px 40px"}}>
+            {/* Account Type ID with dropdown */}
+            <div style={{position:"relative"}}>
+              <div style={labelStyle}>Account Type ID</div>
+              {!dropOpen?(
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",border:`1px solid ${C.border}`,borderRadius:6,background:"#f8faff",minWidth:200}}>
+                    <span style={{fontSize:12,color:C.blue,fontWeight:600}}>{acctTypeId}</span>
+                    <span style={{fontSize:13,color:C.text}}>{acctTypeName}</span>
+                    <svg style={{marginLeft:"auto"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </div>
+                  <button onClick={()=>setDropOpen(true)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:5,padding:"5px 8px",cursor:"pointer",color:C.blue,fontSize:12}}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                </div>
+              ):(
+                <div style={{border:`1px solid ${C.blue}`,borderRadius:8,background:C.bg,boxShadow:"0 4px 16px rgba(0,0,0,.1)",width:260,zIndex:50}}>
+                  <div style={{padding:"6px 10px",borderBottom:`1px solid ${C.border}`}}>
+                    <input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search Account Type ID..." style={{width:"100%",border:"none",outline:"none",fontSize:12.5,color:C.text,background:"transparent"}}/>
+                  </div>
+                  {filteredTypes.map(t=>(
+                    <div key={t.id} onClick={()=>handleTypeSelect(t)} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 12px",cursor:"pointer",background:t.id===acctTypeId?"#eff6ff":"transparent",borderLeft:t.id===acctTypeId?`3px solid ${C.blue}`:"3px solid transparent"}}
+                      onMouseEnter={e=>{if(t.id!==acctTypeId)e.currentTarget.style.background=C.bg2}} onMouseLeave={e=>{if(t.id!==acctTypeId)e.currentTarget.style.background="transparent"}}>
+                      {t.id===acctTypeId&&<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                      <span style={{fontSize:12,color:C.t3,minWidth:20}}>{t.id}</span>
+                      <span style={{fontSize:13,color:t.id===acctTypeId?C.blue:C.text,fontWeight:t.id===acctTypeId?600:400}}>{t.name}</span>
+                    </div>
+                  ))}
+                  <div style={{padding:"8px 12px",borderTop:`1px solid ${C.border}`}}>
+                    <button onClick={()=>{setDropOpen(false);setSearch("");}} style={{background:"none",border:"none",color:C.t3,cursor:"pointer",fontSize:12}}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+            {[["Account ID",consumer.acctId],["Phone Number",consumer.phone],["Ledger Account ID",<span style={{color:C.blue,fontSize:12,fontFamily:"monospace"}}>{consumer.ledgerAcctId}</span>],["Ledger ID",<span style={{fontFamily:"monospace",fontSize:12}}>{consumer.ledgerId}</span>],["Status",<Badge v={consumer.status}/>],["Created At",consumer.createdAt],["Updated At",consumer.updatedAt],["UUID",<span style={{fontFamily:"monospace",fontSize:11,color:C.t2}}>{consumer.uuid}</span>]].map(([l,v])=>(
+              <div key={l}><div style={labelStyle}>{l}</div><div style={valueStyle}>{v}</div></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Account Type Limits & Eligibility */}
+        <div style={sectionStyle}>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:4}}>Account Type Limits & Eligibility</div>
+          <div style={{fontSize:12,color:C.t3,marginBottom:16}}>Transaction Limits</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px 40px",marginBottom:20}}>
+            {[["Wallet Balance Limit",consumer.walletLimit],["Daily Outgoing Limit",consumer.dailyOutgoing],["Monthly Incoming Limit",consumer.monthlyIncoming]].map(([l,v])=>(
+              <div key={l}><div style={labelStyle}>{l}</div><div style={valueStyle}>{v}</div></div>
+            ))}
+          </div>
+          <div style={{fontSize:12,color:C.t3,marginBottom:10}}>Payment Types</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[["Bank Transfer",true],["Scan and Pay",true],["Bill Payments",true],["Cash In",false],["Mobile Load",true]].map(([l,v])=>(
+              <label key={l} style={{display:"flex",alignItems:"center",gap:7,fontSize:13,color:v?C.text:C.t3,cursor:"default"}}>
+                <input type="checkbox" checked={v} readOnly style={{accentColor:C.blue}}/>{l}
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {showGMC&&<GMCReasoningModal diff={pendingDiff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   UC2 — MANUAL TRANSFER
+   Payments → Treasury → Manual Transfer
+═══════════════════════════════════════ */
+const MANUAL_TRANSFERS=[
+  {code:"TXN-BHP-CV",source:"328832",dest:"331473",channelId:"49",amount:"₱9,999.97",status:"PENDING",createdAt:"26 May 2026, 06:05:54 pm IST"},
+  {code:"TXN-JQ9-DJ",source:"328832",dest:"332388",channelId:"49",amount:"₱1000",status:"POSTED",createdAt:"26 May 2026, 05:58:46 pm IST"},
+  {code:"TXN-7HE-PD",source:"328832",dest:"330524",channelId:"49",amount:"₱9,999.98",status:"POSTED",createdAt:"22 May 2026, 12:20:52 pm IST"},
+  {code:"TXN-94I-M7",source:"331813",dest:"332426",channelId:"49",amount:"₱1000",status:"FAILED",createdAt:"12 May 2026, 10:16:57 pm IST"},
+  {code:"TXN-RQM-9B",source:"328832",dest:"332426",channelId:"49",amount:"₱1000",status:"PENDING",createdAt:"10 May 2026, 11:11:26 pm IST"},
+];
+const CHANNELS=["SMART_MONEY","PESONET","INSTAPAY","BANCNET"];
+const ACCT_GROUPS=["Internal Cash","Internal Deduction","Consumer","Merchant","Vendor"];
+
+function ManualTransferView({onLogAdd}){
+  const [showCreate,setShowCreate]=useState(false);
+  const [toast,setToast]=useState(null);
+  const [search,setSearch]=useState("");
+  const thS2={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"11px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase"};
+  const tdS2={padding:"14px 16px",borderBottom:`1px solid ${C.border}`,fontSize:13,color:C.text,verticalAlign:"middle"};
+  const statusStyle={PENDING:{bg:C.amberL,c:C.amberT},POSTED:{bg:C.greenL,c:C.greenT},FAILED:{bg:"#fef2f2",c:"#dc2626"}};
+  const filtered=MANUAL_TRANSFERS.filter(t=>!search||t.code.toLowerCase().includes(search.toLowerCase())||t.source.includes(search)||t.dest.includes(search));
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      {/* Page title + breadcrumb */}
+      <div style={{padding:"20px 24px 12px",flexShrink:0}}>
+        <div style={{fontSize:22,fontWeight:700,color:C.text,marginBottom:4}}>Manual Transfer</div>
+        <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3}}>
+          <span>Payments</span><span>›</span><span>Treasury</span><span>›</span><span style={{color:C.t2,fontWeight:500}}>Manual Transfer</span>
+        </div>
+      </div>
+      {/* Search + Create button row */}
+      <div style={{padding:"0 24px 12px",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.border}`,borderRadius:8,background:C.bg,overflow:"hidden",height:36}}>
+          <div style={{display:"flex",alignItems:"center",gap:4,padding:"0 10px",borderRight:`1px solid ${C.border}`,height:"100%",background:C.bg2,cursor:"pointer",fontSize:12.5,color:C.t2,whiteSpace:"nowrap"}}>
+            Search by <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft:4}}><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search here..." style={{border:"none",outline:"none",fontSize:13,width:200,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <div style={{marginLeft:"auto",display:"flex",gap:8}}>
+          <button onClick={()=>setShowCreate(true)} style={{height:36,padding:"0 18px",background:C.blue,color:"#fff",border:"none",borderRadius:8,fontSize:13,fontWeight:600,cursor:"pointer",boxShadow:"0 1px 4px rgba(59,63,255,.25)"}}>Create Manual Transfer</button>
+          <button style={{height:36,padding:"0 14px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.t2,fontSize:12.5,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+            Show Filters
+          </button>
+        </div>
+      </div>
+      {/* Table */}
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",background:C.bg}}>
+          <thead><tr style={{borderBottom:`1px solid ${C.border}`}}>
+            <th style={thS2}>TXN CODE</th><th style={thS2}>SOURCE ACCOUNT ID</th>
+            <th style={thS2}>DESTINATION ACCOUNT ID</th><th style={thS2}>PAYMENT CHANNEL ID</th>
+            <th style={thS2}>AMOUNT</th><th style={thS2}>TXN STATUS</th>
+            <th style={thS2}>CREATED AT</th><th style={thS2}>ACTIONS</th>
+          </tr></thead>
+          <tbody>{filtered.map((t,i)=>(
+            <tr key={t.code} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+              <td style={{...tdS2}}>
+                <span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",border:`1px solid ${C.border}`,borderRadius:6,fontFamily:"monospace",fontSize:12,color:C.t2,background:C.bg2}}>{t.code}</span>
+              </td>
+              <td style={tdS2}>{t.source}</td>
+              <td style={tdS2}>{t.dest}</td>
+              <td style={tdS2}>{t.channelId}</td>
+              <td style={{...tdS2,fontWeight:600}}>₱ {t.amount.replace("₱","")}</td>
+              <td style={tdS2}>
+                <span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:statusStyle[t.status]?.bg||C.grayL,color:statusStyle[t.status]?.c||C.gray}}>
+                  {t.status==="POSTED"?"Posted":t.status==="FAILED"?"Failed":"Pending"}
+                </span>
+              </td>
+              <td style={{...tdS2,fontSize:12,color:C.t2}}>{t.createdAt}</td>
+              <td style={tdS2}>
+                {t.status==="POSTED"&&<span style={{fontSize:12.5,fontWeight:600,color:C.greenT}}>Approved</span>}
+                {t.status==="FAILED"&&<span style={{fontSize:12.5,fontWeight:600,color:"#dc2626"}}>Rejected</span>}
+                {t.status==="PENDING"&&<span style={{fontSize:12.5,color:C.t3}}>—</span>}
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+      {/* Pagination */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",borderTop:`1px solid ${C.border}`,flexShrink:0,fontSize:12.5,color:C.t2}}>
+        <span>Showing 1–{filtered.length} of {MANUAL_TRANSFERS.length}</span>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span>Rows per page</span>
+          <select style={{border:`1px solid ${C.border}`,borderRadius:5,padding:"2px 6px",fontSize:12,color:C.text,background:C.bg,outline:"none"}}><option>10</option><option>20</option></select>
+          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 1</span></div>
+        </div>
+      </div>
+      {showCreate&&<CreateManualTransferModal onClose={()=>setShowCreate(false)} onLogAdd={onLogAdd} onToast={setToast}/>}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
+function CreateManualTransferModal({onClose,onLogAdd,onToast}){
+  const [srcGroup,setSrcGroup]=useState("");
+  const [dstGroup,setDstGroup]=useState("");
+  const [amount,setAmount]=useState("");
+  const [channel,setChannel]=useState("");
+  const [desc,setDesc]=useState("");
+  const [proofFile,setProofFile]=useState(null);
+  const [showGMC,setShowGMC]=useState(false);
+  const dirty=srcGroup&&dstGroup&&amount&&channel&&desc;
+
+  const handleGMCConfirm=(reason,ctx)=>{
+    const newId=`REQ_${1220+Math.floor(Math.random()*90)}`;
+    onLogAdd({
+      id:newId,activityId:"ACT_PAY_003",approvalCount:2,approvalsReceived:0,flowName:"Manual Treasury Transfer",
+      domain:"Payments",maker:"Utkarsh Giri",date:fmtDate(),status:"Pending",
+      targetId:`TXN-NEW-${Math.random().toString(36).substring(2,6).toUpperCase()}`,
+      category:"Payments — Treasury",action:"Manual Treasury Transfer",
+      reason,context:ctx,
+      atts:proofFile?[{name:proofFile,size:"440 KB"}]:[],
+      diff:[
+        {field:"Source Account Group",old:"—",nw:srcGroup,changed:true},
+        {field:"Destination Account Group",old:"—",nw:dstGroup,changed:true},
+        {field:"Amount",old:"—",nw:`₱${amount}`,changed:true},
+        {field:"Payment Channel",old:"—",nw:channel,changed:true},
+        {field:"Description",old:"—",nw:desc,changed:true},
+        ...(proofFile?[{field:"Attached Proof",old:"—",nw:proofFile,changed:true}]:[]),
+      ],
+      ctxData:[
+        {l:"Fee Amount",v:"₱50.00"},{l:"Tax Amount",v:"₱12.00"},
+        {l:"Payment Channel ID",v:"49"},{l:"Payment Channel Name",v:channel},{l:"Status",v:"Pending"},
+      ],
+      checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null,
+    });
+    setShowGMC(false);onClose();
+    onToast(`Request ${newId} submitted for approval. Checker has been notified.`);
+  };
+
+  const inputStyle={width:"100%",padding:"10px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const selStyle={...inputStyle,cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
+  const secTitle={fontSize:15,fontWeight:600,color:C.text,marginBottom:4,display:"flex",alignItems:"center",gap:8};
+  const secSub={fontSize:12.5,color:C.t3,marginBottom:14};
+
+  return(
+    <div style={{position:"absolute",inset:0,background:C.bg,display:"flex",flexDirection:"column",zIndex:20,overflowY:"auto"}}>
+      <div style={{padding:"14px 24px 10px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{fontSize:12.5,color:C.t2,display:"flex",gap:5,marginBottom:6}}>
+          <span style={{color:C.blue}}>Payments</span><span>›</span><span style={{color:C.blue}}>Treasury</span><span>›</span>
+          <span style={{color:C.blue}}>Manual Transfer</span><span>›</span><span style={{color:C.t2,fontWeight:500}}>Create</span>
+        </div>
+        <div style={{fontSize:22,fontWeight:700,color:C.text,marginBottom:2}}>Create Manual Transfer</div>
+        <div style={{fontSize:12.5,color:C.t3}}>Maker creates the transfer; Checker approves it.</div>
+      </div>
+      <div style={{flex:1,padding:"24px",maxWidth:960}}>
+        {/* Source Account */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Source Account <span style={{color:C.red}}>*</span></div>
+          <div style={secSub}>Choose the source account group and then select the source account.</div>
+          <div style={{fontSize:13,color:C.t2,marginBottom:8}}>Account Group (Source)</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
+            {ACCT_GROUPS.map(g=><button key={g} onClick={()=>setSrcGroup(g)} style={{padding:"6px 14px",border:`1px solid ${srcGroup===g?C.blue:C.border}`,borderRadius:6,background:srcGroup===g?C.blueL:C.bg,color:srcGroup===g?C.blue:C.t2,fontSize:12.5,cursor:"pointer",fontWeight:srcGroup===g?600:400}}>{g}</button>)}
+          </div>
+          <div style={{position:"relative"}}>
+            <select style={selStyle} disabled={!srcGroup}>
+              <option>{srcGroup?"Select source account":"Select source group first"}</option>
+              <option>328832</option><option>330832</option><option>331813</option>
+            </select>
+            <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        {/* Destination Account */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Destination Account <span style={{color:C.red}}>*</span></div>
+          <div style={secSub}>Choose the destination account group and then select the account.</div>
+          <div style={{fontSize:13,color:C.t2,marginBottom:8}}>Account Group (Destination)</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
+            {ACCT_GROUPS.map(g=><button key={g} onClick={()=>setDstGroup(g)} style={{padding:"6px 14px",border:`1px solid ${dstGroup===g?C.blue:C.border}`,borderRadius:6,background:dstGroup===g?C.blueL:C.bg,color:dstGroup===g?C.blue:C.t2,fontSize:12.5,cursor:"pointer",fontWeight:dstGroup===g?600:400}}>{g}</button>)}
+          </div>
+          <div style={{position:"relative"}}>
+            <select style={selStyle} disabled={!dstGroup}>
+              <option>{dstGroup?"Select destination account":"Select account group first"}</option>
+              <option>331473</option><option>332388</option><option>330524</option>
+            </select>
+            <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        {/* Amount */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Amount <span style={{color:C.red}}>*</span></div>
+          <input type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="Enter the Amount" style={{...inputStyle,maxWidth:280}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+        </div>
+        {/* Payment Channel */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Payment Channel <span style={{color:C.red}}>*</span></div>
+          <div style={secSub}>Select the channel to route this transfer.</div>
+          <div style={{fontSize:13,color:C.t2,marginBottom:6}}>Channel list <span style={{float:"right",fontSize:12,color:C.t3}}>Page 1 / 1</span></div>
+          <div style={{position:"relative"}}>
+            <select value={channel} onChange={e=>setChannel(e.target.value)} style={selStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+              <option value="">Select payment channel</option>
+              {CHANNELS.map(c=><option key={c} value={c}>{c}</option>)}
+            </select>
+            <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        {/* Proof of Payment */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Attached Proof Of Payment <span style={{color:C.red}}>*</span></div>
+          <div style={secSub}>Mandatory supporting document or screenshot.<br/><span style={{fontSize:11,color:C.t3}}>Supported: images, pdf, csv, txt (server constraints may apply)</span></div>
+          {proofFile?(
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",border:`1px solid ${C.border}`,borderRadius:6,background:C.bg2}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.t2} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span style={{fontSize:12.5,color:C.text,flex:1}}>{proofFile}</span>
+              <span style={{fontSize:12,color:C.t3}}>440 KB</span>
+              <button onClick={()=>setProofFile(null)} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:16}}>×</button>
+            </div>
+          ):(
+            <div onClick={()=>setProofFile("Screenshot_2026-05-26_proof.png")} style={{border:`1.5px dashed ${C.grayB}`,borderRadius:8,padding:"32px",textAlign:"center",cursor:"pointer",color:C.t3}} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.background="#f8faff";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.background="transparent";}}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{margin:"0 auto 8px",display:"block"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div style={{fontSize:13,marginBottom:6}}>Drag & drop file here</div>
+              <div style={{fontSize:12,marginBottom:10,color:C.t3}}>— or —</div>
+              <button style={{padding:"7px 20px",background:"#111827",color:"#fff",border:"none",borderRadius:6,fontSize:12.5,cursor:"pointer",display:"flex",alignItems:"center",gap:6,margin:"0 auto"}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload File
+              </button>
+            </div>
+          )}
+        </div>
+        {/* Description */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+          <div style={secTitle}><span style={{width:4,height:18,background:C.blue,borderRadius:2,display:"inline-block"}}/>Description <span style={{color:C.red}}>*</span></div>
+          <textarea value={desc} onChange={e=>setDesc(e.target.value)} placeholder="Enter description..." style={{width:"100%",minHeight:100,border:`1px solid ${C.grayB}`,borderRadius:7,padding:"10px 12px",fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+        </div>
+      </div>
+      {/* Footer */}
+      <div style={{padding:"14px 24px",borderTop:`1px solid ${C.border}`,display:"flex",gap:10,flexShrink:0}}>
+        <button disabled={!dirty} onClick={()=>dirty&&setShowGMC(true)} style={{padding:"8px 20px",background:dirty?"#111827":C.grayB,color:dirty?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:dirty?"pointer":"not-allowed"}}>Create Manual Transfer</button>
+        <button style={{padding:"8px 16px",background:C.bg,border:`1px solid ${C.border}`,borderRadius:6,fontSize:13,color:C.t2,cursor:"pointer"}}>Clear</button>
+        <button onClick={onClose} style={{padding:"8px 16px",background:C.bg,border:`1px solid ${C.border}`,borderRadius:6,fontSize:13,color:C.t2,cursor:"pointer"}}>Close</button>
+      </div>
+      {showGMC&&<GMCReasoningModal diff={[{field:"Transfer",old:"—",nw:"New manual transfer",changed:true}]} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   UC3 — ACCOUNT TYPES (AT)
+   Payments → Configs → Account Types
+═══════════════════════════════════════ */
+const ACCOUNT_TYPES_DATA=[
+  {id:1020,name:"UTKARSH_BAWA_0",group:"CONSUMER",walletLimit:"₱100,000",dailyOutgoing:"₱10,000",monthlyIncoming:"₱100,000",createdAt:"22 May 2026, 01:21:02 pm IST",updatedAt:"22 May 2026, 01:21:20 pm IST",features:{bankTransfer:true,scanPay:true,billPayments:true,cashIn:false,mobileLoad:true},sendMoney:{consumer:true,merchant:true,seller:true},constraints:[{id:495,channel:"Xandit - SM Bills Payment",txnType:"VENDOR_TRANSFER",channelId:408,allowedGroups:"CONSUMER, MERCHANT, SELLER",status:"Active",minAmount:"₱5",maxAmount:"₱50,000",send:true,receive:false},{id:494,channel:"SMART_MONEY",txnType:"BILL",channelId:49,allowedGroups:"—",status:"Active",minAmount:"₱10",maxAmount:"₱100,000",send:false,receive:true},{id:493,channel:"SMART_MONEY",txnType:"INTERNAL_TRANSFER",channelId:49,allowedGroups:"CONSUMER, MERCHANT, SELLER",status:"Active",minAmount:"₱1",maxAmount:"₱50",send:true,receive:true}]},
+  {id:1019,name:"USER_KYB_10",group:"CONSUMER",walletLimit:"₱1,000",dailyOutgoing:"₱1,000",monthlyIncoming:"₱1,000",createdAt:"15 May 2026, 01:08:13 pm IST",updatedAt:"15 May 2026, 01:08:13 pm IST",features:{bankTransfer:false,scanPay:false,billPayments:false,cashIn:false,mobileLoad:false},sendMoney:{consumer:false,merchant:false,seller:false},constraints:[]},
+  {id:1018,name:"PRAMEELA_KYC_2",group:"CONSUMER",walletLimit:"₱100,000,000",dailyOutgoing:"₱10,000,000",monthlyIncoming:"₱10,000,000",createdAt:"15 May 2026, 12:00:39 pm IST",updatedAt:"20 May 2026, 09:17:32 am IST",features:{bankTransfer:true,scanPay:true,billPayments:true,cashIn:true,mobileLoad:true},sendMoney:{consumer:true,merchant:true,seller:true},constraints:[]},
+];
+
+function AccountTypesView({onLogAdd}){
+  const [sel,setSel]=useState(null);
+  const [search,setSearch]=useState("");
+  const thS2={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"11px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase"};
+  const tdS2={padding:"14px 16px",borderBottom:`1px solid ${C.border}`,fontSize:13,color:C.text,verticalAlign:"middle"};
+  const filtered=ACCOUNT_TYPES_DATA.filter(at=>!search||String(at.id).includes(search)||at.name.toLowerCase().includes(search.toLowerCase()));
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      {/* Title + breadcrumb */}
+      <div style={{padding:"20px 24px 0",flexShrink:0}}>
+        <div style={{fontSize:22,fontWeight:700,color:C.text,marginBottom:4}}>Account Types</div>
+        <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3,marginBottom:12}}>
+          <span style={{color:C.blue,cursor:"pointer"}}>Payments</span><span>›</span>
+          <span style={{color:C.blue,cursor:"pointer"}}>Configs</span><span>›</span>
+          <span style={{color:C.t2,fontWeight:500}}>Account Types (AT)</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      {/* Search + buttons */}
+      <div style={{padding:"0 24px 12px",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.border}`,borderRadius:8,background:C.bg,overflow:"hidden",height:36}}>
+          <div style={{display:"flex",alignItems:"center",gap:4,padding:"0 10px",borderRight:`1px solid ${C.border}`,height:"100%",background:C.bg2,cursor:"pointer",fontSize:12.5,color:C.t2,whiteSpace:"nowrap"}}>
+            Search by <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginLeft:4}}><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search here..." style={{border:"none",outline:"none",fontSize:13,width:200,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <div style={{marginLeft:"auto",display:"flex",gap:8}}>
+          <button style={{height:36,padding:"0 14px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.t2,fontSize:12.5,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+            Show Filters
+          </button>
+          <button style={{height:36,padding:"0 16px",background:C.blue,color:"#fff",border:"none",borderRadius:8,fontSize:13,fontWeight:600,cursor:"pointer",boxShadow:"0 1px 4px rgba(59,63,255,.25)"}}>+ Create</button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS2}>ACCOUNT TYPE ID</th><th style={thS2}>NAME</th><th style={thS2}>USER GROUP</th>
+            <th style={thS2}>WALLET LIMIT</th><th style={thS2}>DAILY OUTGOING LIMIT</th>
+            <th style={thS2}>MONTHLY INCOMING LIMIT</th><th style={thS2}>CREATED AT</th><th style={thS2}>UPDATED AT</th>
+          </tr></thead>
+          <tbody>{filtered.map(at=>(
+            <tr key={at.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={()=>setSel(at)}>
+              <td style={tdS2}>{at.id}</td>
+              <td style={{...tdS2,fontWeight:500}}>{at.name}</td>
+              <td style={tdS2}><span style={{display:"inline-flex",padding:"3px 10px",borderRadius:4,background:"#f1f5f9",color:C.t2,fontSize:12,fontWeight:500}}>{at.group}</span></td>
+              <td style={tdS2}>{at.walletLimit}</td>
+              <td style={tdS2}>{at.dailyOutgoing}</td>
+              <td style={tdS2}>{at.monthlyIncoming}</td>
+              <td style={{...tdS2,fontSize:12,color:C.t2}}>{at.createdAt}</td>
+              <td style={{...tdS2,fontSize:12,color:C.t2}}>{at.updatedAt}</td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",borderTop:`1px solid ${C.border}`,flexShrink:0,fontSize:12.5,color:C.t2}}>
+        <span>Showing 1–{ACCOUNT_TYPES_DATA.length} of {ACCOUNT_TYPES_DATA.length}</span>
+        <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 1 of 1</span></div>
+      </div>
+      {sel&&<AccountTypeDetail at={sel} onClose={()=>setSel(null)} onLogAdd={onLogAdd}/>}
+    </div>
+  );
+}
+
+function AccountTypeDetail({at,onClose,onLogAdd}){
+  const [showEdit,setShowEdit]=useState(false);
+  const [selConstraint,setSelConstraint]=useState(null);
+  const [toast,setToast]=useState(null);
+  const sectionStyle={border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:16};
+  const labelStyle={fontSize:11,color:C.t3,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4};
+  const valueStyle={fontSize:13.5,color:C.text,fontWeight:500};
+  const thS2={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"9px 14px",background:C.bg2,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".05em",textTransform:"uppercase"};
+  const tdS2={padding:"11px 14px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,color:C.text};
+  return(
+    <div style={{position:"absolute",inset:0,background:C.bg,display:"flex",flexDirection:"column",zIndex:10}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 24px 10px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:12.5,color:C.t2}}>
+          <span style={{color:C.blue,cursor:"pointer"}}>Payments</span><span>›</span>
+          <span style={{color:C.blue,cursor:"pointer"}}>Configs</span><span>›</span>
+          <span style={{color:C.blue,cursor:"pointer"}} onClick={onClose}>Account Types (AT)</span><span>›</span>
+          <span style={{color:C.t2,fontWeight:500}}>{at.id}</span>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={()=>setShowEdit(true)} style={{padding:"6px 18px",border:`1px solid ${C.border}`,borderRadius:6,background:C.bg,color:C.text,fontSize:13,cursor:"pointer"}}>Edit</button>
+          <button style={{padding:"6px 18px",border:`1px solid ${C.red}`,borderRadius:6,background:C.bg,color:C.red,fontSize:13,cursor:"pointer"}}>Delete</button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+        {/* Account Type header */}
+        <div style={sectionStyle}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:16}}>
+            <div>
+              <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:2}}>Account Type</div>
+              <div style={{fontSize:12.5,color:C.t3}}>Detailed information for ID {at.id}</div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px 48px"}}>
+            <div><div style={labelStyle}>Account Type ID</div><div style={{...valueStyle,color:C.blue,fontWeight:600}}>{at.id}</div></div>
+            <div><div style={labelStyle}>Created At</div><div style={valueStyle}>{at.createdAt}</div></div>
+            <div><div style={labelStyle}>Account Type Name</div><div style={valueStyle}>{at.name}</div></div>
+            <div><div style={labelStyle}>Updated At</div><div style={valueStyle}>{at.updatedAt}</div></div>
+            <div><div style={labelStyle}>Account Type Group</div><div style={valueStyle}><span style={{display:"inline-flex",padding:"3px 10px",borderRadius:4,background:"#f1f5f9",color:C.t2,fontSize:12.5,fontWeight:500}}>{at.group}</span></div></div>
+            <div><div style={labelStyle}>UUID</div><div style={{...valueStyle,fontFamily:"monospace",fontSize:11.5,color:C.t3,wordBreak:"break-all"}}>9fc3eaf1-4ecf-4654-aedf-94d209d2d98b</div></div>
+          </div>
+        </div>
+        {/* Limits */}
+        <div style={sectionStyle}>
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:2}}>Account Type Limits</div>
+          <div style={{fontSize:12.5,color:C.t3,marginBottom:16}}>Configured balance & transaction ceilings</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px 48px"}}>
+            <div><div style={{fontSize:12.5,color:C.t2,marginBottom:3}}>Wallet Balance Limit</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>₱ {at.walletLimit.replace("₱","").trim()}</div></div>
+            <div><div style={{fontSize:12.5,color:C.t2,marginBottom:3}}>Monthly Incoming Limit</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>₱ {at.monthlyIncoming.replace("₱","").trim()}</div></div>
+            <div><div style={{fontSize:12.5,color:C.t2,marginBottom:3}}>Daily Outgoing Limit</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>₱ {at.dailyOutgoing.replace("₱","").trim()}</div></div>
+          </div>
+        </div>
+        {/* Eligibility */}
+        <div style={sectionStyle}>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:3}}>Account Type Eligibility</div>
+          <div style={{fontSize:12,color:C.t3,marginBottom:14}}>Services available for this account type</div>
+          <div style={{fontSize:12,color:C.t3,textTransform:"uppercase",letterSpacing:".05em",marginBottom:10}}>CORE FEATURES</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+            {[["Bank Transfer",at.features.bankTransfer],["Scan and Pay",at.features.scanPay],["Bill Payments",at.features.billPayments],["Cash In",at.features.cashIn],["Mobile Load",at.features.mobileLoad]].map(([l,v])=>(
+              <label key={l} style={{display:"flex",alignItems:"center",gap:7,fontSize:13,color:v?C.text:C.t3}}>
+                <input type="checkbox" checked={v} readOnly style={{accentColor:C.blue}}/>{l}
+              </label>
+            ))}
+          </div>
+          <div style={{fontSize:12,color:C.t3,textTransform:"uppercase",letterSpacing:".05em",marginBottom:10}}>SEND MONEY OPTIONS</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[["Consumer",at.sendMoney.consumer],["Merchant",at.sendMoney.merchant],["Seller",at.sendMoney.seller]].map(([l,v])=>(
+              <label key={l} style={{display:"flex",alignItems:"center",gap:7,fontSize:13,color:v?C.text:C.t3}}>
+                <input type="checkbox" checked={v} readOnly style={{accentColor:C.blue}}/>{l}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* Constraints */}
+        <div style={sectionStyle}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+            <div>
+              <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:1}}>Constraints</div>
+              <div style={{fontSize:12,color:C.t3}}>Account Type: {at.name}</div>
+            </div>
+            <button style={{padding:"6px 16px",background:"#111827",color:"#fff",border:"none",borderRadius:6,fontSize:12.5,cursor:"pointer"}}>Create constraints</button>
+          </div>
+          <table style={{width:"100%",borderCollapse:"collapse",border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+            <thead><tr>
+              <th style={thS2}>CONSTRAINT ID</th><th style={thS2}>CHANNEL</th><th style={thS2}>TRANSACTION TYPE</th>
+              <th style={thS2}>CHANNEL ID</th><th style={thS2}>ALLOWED GROUPS</th><th style={thS2}>STATUS</th>
+              <th style={thS2}>MIN AMOUNT</th><th style={thS2}>MAX AMOUNT</th><th style={thS2}>MONEY MOVEMENT</th>
+            </tr></thead>
+            <tbody>{at.constraints.map(c=>(
+              <tr key={c.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={()=>setSelConstraint({...c,at})}>
+                <td style={tdS2}>{c.id}</td><td style={tdS2}>{c.channel}</td><td style={tdS2}>{c.txnType}</td>
+                <td style={tdS2}>{c.channelId}</td><td style={tdS2}>{c.allowedGroups}</td>
+                <td style={tdS2}><Badge v={c.status}/></td>
+                <td style={tdS2}>{c.minAmount}</td><td style={tdS2}>{c.maxAmount}</td>
+                <td style={tdS2}>
+                  <span style={{display:"inline-flex",gap:4}}>
+                    <span style={{padding:"2px 6px",borderRadius:4,fontSize:11,fontWeight:600,background:c.send?C.greenL:C.grayL,color:c.send?C.greenT:C.gray}}>Send {c.send?"Yes":"No"}</span>
+                    <span style={{padding:"2px 6px",borderRadius:4,fontSize:11,fontWeight:600,background:c.receive?C.greenL:C.grayL,color:c.receive?C.greenT:C.gray}}>Receive {c.receive?"Yes":"No"}</span>
+                  </span>
+                </td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      </div>
+      {showEdit&&<EditAccountTypeModal at={at} onClose={()=>setShowEdit(false)} onLogAdd={onLogAdd} onToast={setToast}/>}
+      {selConstraint&&<EditConstraintModal constraint={selConstraint} onClose={()=>setSelConstraint(null)} onLogAdd={onLogAdd} onToast={setToast}/>}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
+function EditAccountTypeModal({at,onClose,onLogAdd,onToast}){
+  const [name,setName]=useState(at.name);
+  const [group,setGroup]=useState(at.group);
+  const [wallet,setWallet]=useState(at.walletLimit.replace("₱","").replace(",",""));
+  const [daily,setDaily]=useState(at.dailyOutgoing.replace("₱","").replace(",",""));
+  const [monthly,setMonthly]=useState(at.monthlyIncoming.replace("₱","").replace(",",""));
+  const [showGMC,setShowGMC]=useState(false);
+  const dirty=name!==at.name||group!==at.group||wallet!==at.walletLimit.replace("₱","").replace(",","")||daily!==at.dailyOutgoing.replace("₱","").replace(",","")||monthly!==at.monthlyIncoming.replace("₱","").replace(",","");
+  const diff=[];
+  if(name!==at.name)diff.push({field:"Account Type Name",old:at.name,nw:name,changed:true});
+  if(group!==at.group)diff.push({field:"Account Group",old:at.group,nw:group,changed:true});
+  if(wallet!==at.walletLimit.replace("₱","").replace(",",""))diff.push({field:"Wallet Balance Limit",old:at.walletLimit,nw:`₱${wallet}`,changed:true});
+  if(daily!==at.dailyOutgoing.replace("₱","").replace(",",""))diff.push({field:"Daily Outgoing Limit",old:at.dailyOutgoing,nw:`₱${daily}`,changed:true});
+  if(monthly!==at.monthlyIncoming.replace("₱","").replace(",",""))diff.push({field:"Monthly Incoming Limit",old:at.monthlyIncoming,nw:`₱${monthly}`,changed:true});
+  const inputStyle={width:"100%",padding:"10px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const handleGMCConfirm=(reason,ctx)=>{
+    const newId=`REQ_${1230+Math.floor(Math.random()*90)}`;
+    onLogAdd({id:newId,activityId:"ACT_PAY_004",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Utkarsh Giri",date:fmtDate(),status:"Pending",targetId:`AT_${at.id}`,category:"Payments — Configs",action:"Edit Account Type",reason,context:ctx,atts:[],diff,ctxData:[{l:"Core Features",v:"Bank Transfer, Scan & Pay, Bill Payments, Mobile Load"},{l:"Send Money Access",v:"Consumer, Merchant, Seller"},{l:"Transaction Channel",v:"SMART_MONEY"},{l:"Money Movement",v:"Send & Receive"},{l:"Min Transaction Amount",v:"₱1"},{l:"Max Transaction Amount",v:"₱50,000"}],checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null});
+    setShowGMC(false);onClose();onToast(`Request ${newId} submitted for approval.`);
+  };
+  return(
+    <>
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"flex-start",justifyContent:"flex-end",zIndex:30}}>
+      <div style={{background:C.bg,width:480,height:"100%",display:"flex",flexDirection:"column",boxShadow:"-4px 0 24px rgba(0,0,0,.15)",overflowY:"auto"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <div>
+            <div style={{fontSize:15,fontWeight:600,color:C.text}}>Edit Account Type</div>
+            <div style={{fontSize:12,color:C.t3,marginTop:2}}>Account ID: <strong>{at.id}</strong></div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3}}>×</button>
+        </div>
+        <div style={{flex:1,padding:"20px",overflowY:"auto"}}>
+          <div style={{marginBottom:16}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Account Name</label>
+            <input value={name} onChange={e=>setName(e.target.value)} style={inputStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            <div style={{fontSize:11,color:C.t3,marginTop:4}}>Only letters, numbers, and underscores allowed • {name.length}/32</div>
+            <div style={{fontSize:11,color:C.t3}}>Name must be in format like USER_KYC_0. Spaces will be converted to underscores.</div>
+          </div>
+          <div style={{marginBottom:16}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Account Group</label>
+            <div style={{position:"relative"}}>
+              <select value={group} onChange={e=>setGroup(e.target.value)} style={{...inputStyle,cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                {["CONSUMER","SELLER","MERCHANT","INTERNAL_CASH","INTERNAL_DEDUCTION"].map(g=><option key={g}>{g}</option>)}
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          {/* Transaction Limits */}
+          <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"16px",marginBottom:16}}>
+            <div style={{fontSize:13.5,fontWeight:600,color:C.text,marginBottom:3}}>Transaction Limits</div>
+            <div style={{fontSize:12,color:C.t3,marginBottom:14}}>Modify financial constraints for this account type</div>
+            {[["Wallet Balance Limit",wallet,setWallet],["Daily Outgoing Limit",daily,setDaily],["Monthly Incoming Limit",monthly,setMonthly]].map(([l,v,s])=>(
+              <div key={l} style={{marginBottom:12}}>
+                <label style={{fontSize:12.5,color:C.text,marginBottom:5,display:"block"}}>{l}</label>
+                <input type="number" value={v} onChange={e=>s(e.target.value)} style={inputStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <button disabled={!dirty} onClick={()=>dirty&&setShowGMC(true)} style={{padding:"7px 20px",background:dirty?"#111827":C.grayB,color:dirty?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:dirty?"pointer":"not-allowed"}}>Save Changes</button>
+        </div>
+      </div>
+    </div>
+    {showGMC&&<GMCReasoningModal diff={diff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+    </>
+  );
+}
+
+function EditConstraintModal({constraint,onClose,onLogAdd,onToast}){
+  const [status,setStatus]=useState(constraint.status==="Active");
+  const [groups,setGroups]=useState({consumer:true,merchant:true,seller:true});
+  const [minAmt,setMinAmt]=useState(constraint.minAmount.replace("₱","").replace(",",""));
+  const [maxAmt,setMaxAmt]=useState(constraint.maxAmount.replace("₱","").replace(",",""));
+  const [send,setSend]=useState(constraint.send);
+  const [receive,setReceive]=useState(constraint.receive);
+  const [showGMC,setShowGMC]=useState(false);
+  const dirty=true;
+  const diff=[];
+  if(maxAmt!==constraint.maxAmount.replace("₱","").replace(",",""))diff.push({field:"Max Amount",old:constraint.maxAmount,nw:`₱${maxAmt}`,changed:true});
+  if(minAmt!==constraint.minAmount.replace("₱","").replace(",",""))diff.push({field:"Min Amount",old:constraint.minAmount,nw:`₱${minAmt}`,changed:true});
+  if(diff.length===0)diff.push({field:"Constraint",old:"Unchanged",nw:"Updated",changed:true});
+  const inputStyle={width:"100%",padding:"10px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const handleGMCConfirm=(reason,ctx)=>{
+    const newId=`REQ_${1240+Math.floor(Math.random()*90)}`;
+    onLogAdd({id:newId,activityId:"ACT_PAY_005",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Utkarsh Giri",date:fmtDate(),status:"Pending",targetId:`CONS_${constraint.id}`,category:"Payments — Configs",action:"Edit Account Type Constraint",reason,context:ctx,atts:[],diff,ctxData:[{l:"Account Type Name",v:constraint.at?.name||"UTKARSH_BAWA_0"},{l:"Account Type Group",v:"Consumer"},{l:"Wallet Balance Limit",v:"₱100,000"},{l:"Daily Outgoing Limit",v:"₱10,000"},{l:"Monthly Incoming Limit",v:"₱100,000"}],checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null});
+    setShowGMC(false);onClose();onToast(`Request ${newId} submitted for approval.`);
+  };
+  const grpList=Object.entries(groups).filter(([,v])=>v).map(([k])=>k.charAt(0).toUpperCase()+k.slice(1)).join(", ")||"None";
+  return(
+    <>
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:40}}>
+      <div style={{background:C.bg,borderRadius:8,width:480,maxHeight:"85vh",display:"flex",flexDirection:"column",boxShadow:"0 8px 32px rgba(0,0,0,.2)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <div style={{fontSize:15,fontWeight:600,color:C.text}}>Edit Constraint ID: {constraint.id}</div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
+          {/* Status toggle */}
+          <div style={{marginBottom:18,display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:13,fontWeight:500,color:C.text}}>Status</span>
+            <div onClick={()=>setStatus(s=>!s)} style={{width:38,height:22,borderRadius:11,background:status?C.blue:C.grayB,cursor:"pointer",position:"relative",transition:"background .15s"}}>
+              <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:status?18:2,transition:"left .15s",boxShadow:"0 1px 3px rgba(0,0,0,.2)"}}/>
+            </div>
+          </div>
+          {/* Destination Groups */}
+          <div style={{marginBottom:16}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Destination Accounts Group</label>
+            <div style={{border:`1px solid ${C.blue}`,borderRadius:7,overflow:"hidden"}}>
+              <div style={{padding:"8px 12px",background:C.bg,fontSize:13,color:C.t2}}>{grpList} <span style={{float:"right",color:C.t3,fontSize:12}}>▼</span></div>
+              {["consumer","merchant","seller"].map(g=>(
+                <label key={g} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",cursor:"pointer",borderTop:`1px solid ${C.border}`,background:groups[g]?C.blueL:"transparent"}}>
+                  <input type="checkbox" checked={groups[g]} onChange={e=>setGroups(prev=>({...prev,[g]:e.target.checked}))} style={{accentColor:C.blue}}/>
+                  <span style={{fontSize:13,fontWeight:500,color:groups[g]?C.blue:C.text}}>{g.toUpperCase()}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          {/* Min/Max Amount */}
+          {[["Min Amount",minAmt,setMinAmt],["Max Amount",maxAmt,setMaxAmt]].map(([l,v,s])=>(
+            <div key={l} style={{marginBottom:14}}>
+              <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>{l}</label>
+              <input type="number" value={v} onChange={e=>s(e.target.value)} style={inputStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            </div>
+          ))}
+          {/* Money Movement */}
+          <div style={{marginBottom:14}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:8,display:"block"}}>Money Movement</label>
+            <div style={{display:"flex",gap:16}}>
+              {[["Send",send,setSend],["Receive",receive,setReceive]].map(([l,v,s])=>(
+                <label key={l} style={{display:"flex",alignItems:"center",gap:7,cursor:"pointer",fontSize:13}}>
+                  <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{accentColor:C.blue}}/>{l}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <button onClick={()=>setShowGMC(true)} style={{padding:"7px 20px",background:"#111827",color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"}}>Update</button>
+        </div>
+      </div>
+    </div>
+    {showGMC&&<GMCReasoningModal diff={diff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════
+   UC4 — CUSTOMERS & KYC → CUSTOMERS
+   + RISK PROFILE
+═══════════════════════════════════════ */
+const CUSTOMERS_DATA=[
+  {id:"gg*****85",refNo:"kyc_d7822dkgs7l57a1g",name:"first middle last",assignedTo:"—",status:"Not started",amlStatus:"—",submittedAt:"—",lastStep:"Apr 24, 2026 01:55 PM",fullName:"First Middle Last",kyc:"Not started",acctStatus:"Active",userStatus:"Active",violations:0,dob:"2000-01-01",gender:"Male"},
+  {id:"gg*****76",refNo:"kyc_d7lhradkgs7l57d10",name:"first middle last",assignedTo:"—",status:"Not started",amlStatus:"—",submittedAt:"—",lastStep:"Apr 24, 2026 01:55 PM",fullName:"First Middle Last",kyc:"Not started",acctStatus:"Active",userStatus:"Active",violations:0,dob:"1998-05-12",gender:"Female"},
+  {id:"94*****23",refNo:"kyc_d7lhrmad5kgs7l57ha2g",name:"first middle last",assignedTo:"—",status:"Not started",amlStatus:"—",submittedAt:"—",lastStep:"Apr 24, 2026 01:08 PM",fullName:"First Middle Last",kyc:"Not started",acctStatus:"Active",userStatus:"Active",violations:0,dob:"1995-03-22",gender:"Male"},
+  {id:"gg*****60",refNo:"kyc_d6g24jrqd1c7f13ltg",name:"Nishank Sharma",assignedTo:"—",status:"In progress",amlStatus:"—",submittedAt:"—",lastStep:"Apr 23, 2026 03:19 PM",fullName:"Nishank Sharma",kyc:"In Progress",acctStatus:"Active",userStatus:"Active",violations:3,dob:"2008-02-26",gender:"Male"},
+  {id:"gg*****80",refNo:"kyc_d7leb/n18br104s7l0eqg5d0",name:"Abhi Jha",assignedTo:"—",status:"Not started",amlStatus:"—",submittedAt:"—",lastStep:"Apr 22, 2026 04:52 PM",fullName:"Abhi Jha",kyc:"Not started",acctStatus:"Active",userStatus:"Active",violations:0,dob:"1990-07-14",gender:"Male"},
+];
+
+function KycCustomersView({onLogAdd}){
+  const [sel,setSel]=useState(null);
+  const [search,setSearch]=useState("");
+  const filtered=CUSTOMERS_DATA.filter(c=>c.name.toLowerCase().includes(search.toLowerCase())||c.id.includes(search));
+  const thS2={textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"10px 16px",background:C.bg,borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",letterSpacing:".06em",textTransform:"uppercase"};
+  const tdS2={padding:"13px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,color:C.text};
+  const statusColors={"Not started":{bg:C.grayL,c:C.gray},"In progress":{bg:C.amberL,c:C.amberT},"Application submit":{bg:C.blueL,c:C.blue}};
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+      <PageHeader title="Customers" breadcrumb={["Customers & KYC","Customers"]} actions={null}/>
+      <div style={{padding:"0 24px 12px",display:"flex",gap:8,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,height:34}}>
+          <select style={{border:"none",outline:"none",background:C.bg2,color:C.t2,fontSize:12.5,cursor:"pointer",padding:"0 8px",borderRight:`1px solid ${C.border}`,height:"100%"}}><option>Search by</option></select>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search here..." style={{border:"none",outline:"none",fontSize:13,width:160,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button style={{height:34,padding:"0 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,color:C.t2,fontSize:12.5,cursor:"pointer"}}>Show Filters</button>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS2}>SIGNUP PHONE NO.</th><th style={thS2}>REF. NO.</th><th style={thS2}>NAME</th>
+            <th style={thS2}>ASSIGNED TO</th><th style={thS2}>STATUS</th><th style={thS2}>AML STATUS</th>
+            <th style={thS2}>SUBMITTED AT</th><th style={thS2}>LAST STEP</th><th style={thS2}>ACTIONS</th>
+          </tr></thead>
+          <tbody>{filtered.map(c=>(
+            <tr key={c.id} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
+              <td style={tdS2}>{c.id}</td>
+              <td style={{...tdS2,fontFamily:"monospace",fontSize:11,color:C.t2}}>{c.refNo}</td>
+              <td style={{...tdS2,fontWeight:500}}>{c.name}</td>
+              <td style={tdS2}>{c.assignedTo}</td>
+              <td style={tdS2}><span style={{display:"inline-flex",alignItems:"center",gap:5,padding:"2px 8px",borderRadius:4,fontSize:11.5,fontWeight:600,background:statusColors[c.status]?.bg||C.grayL,color:statusColors[c.status]?.c||C.gray}}>{c.status}</span></td>
+              <td style={{...tdS2,color:C.t3}}>—</td>
+              <td style={{...tdS2,color:C.t3}}>—</td>
+              <td style={{...tdS2,fontSize:12,color:C.t2}}>{c.lastStep}</td>
+              <td style={tdS2} onClick={e=>e.stopPropagation()}>
+                <DotMenu items={[["View Risk Profile",C.blue,()=>setSel(c)]]}/>
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 24px",borderTop:`1px solid ${C.border}`,flexShrink:0,fontSize:12.5,color:C.t2}}>
+        <span>Showing 1–{filtered.length} of {CUSTOMERS_DATA.length}</span>
+        <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:7,height:7,borderRadius:"50%",background:C.blue}}/><span>Page 2 of 9</span></div>
+      </div>
+      {sel&&<RiskProfileView customer={sel} onClose={()=>setSel(null)} onLogAdd={onLogAdd}/>}
+    </div>
+  );
+}
+
+function RiskProfileView({customer,onClose,onLogAdd}){
+  const [activeAction,setActiveAction]=useState(null);
+  const [toast,setToast]=useState(null);
+  const [activeTab,setActiveTab]=useState("violation");
+
+  const ctxData=[
+    {l:"Customer Full Name",v:customer.fullName},{l:"KYC Status",v:customer.kyc},
+    {l:"Account Status",v:customer.acctStatus},{l:"User Status",v:customer.userStatus},
+    {l:"Current Violation Count",v:String(customer.violations)},
+  ];
+
+  const handleActionSubmit=(action,reason,context,atts=[])=>{
+    const diffMap={
+      "Block":[{field:"Account Status",old:"Active",nw:"Blocked",changed:true}],
+      "Freeze":[{field:"Account Status",old:"Active",nw:"Frozen",changed:true}],
+      "Force Logout":[{field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true}],
+      "Reset MPIN":[{field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true}],
+    };
+    const actMap={"Block":"ACT_KYC_001","Freeze":"ACT_KYC_003","Force Logout":"ACT_KYC_004","Reset MPIN":"ACT_KYC_002"};
+    const flowMap={"Block":"Block Customer Account","Freeze":"Freeze Customer Account","Force Logout":"Force Logout Customer","Reset MPIN":"Reset Customer MPIN"};
+    const newId=`REQ_${1250+Math.floor(Math.random()*90)}`;
+    onLogAdd({id:newId,activityId:actMap[action],flowName:flowMap[action],domain:"Customers & KYC",maker:"Utkarsh Giri",date:fmtDate(),status:"Pending",targetId:`KYC_${customer.id.replace("*","")}`,category:"Customers & KYC",action:flowMap[action],reason,context,atts,diff:diffMap[action]||[],ctxData,checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null});
+    setActiveAction(null);setToast(`Request ${newId} submitted for approval. Checker has been notified.`);
+  };
+
+  const labelStyle={fontSize:12,color:C.t3,marginBottom:3};
+  const valueStyle={fontSize:13.5,color:C.text,fontWeight:500};
+  const btnRed={padding:"7px 18px",background:C.red,color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"};
+  const btnDark={padding:"7px 18px",background:"#111827",color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"};
+
+  return(
+    <div style={{position:"absolute",inset:0,background:C.bg,display:"flex",flexDirection:"column",zIndex:10}}>
+      <div style={{padding:"12px 24px 10px",borderBottom:`1px solid ${C.border}`,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t2,marginBottom:8}}>
+          <span style={{color:C.blue,cursor:"pointer"}}>Home</span><span>›</span>
+          <span style={{color:C.blue,cursor:"pointer"}} onClick={onClose}>Kyc Customers</span><span>›</span>
+          <span style={{color:C.t2,fontWeight:500}}>Risk Profile</span>
+        </div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
+          <button onClick={()=>setActiveAction("Reset MPIN")} style={{...btnDark,background:"#374151"}}>Reset MPIN</button>
+          <button onClick={()=>setActiveAction("Block")} style={btnRed}>Block</button>
+          <button onClick={()=>setActiveAction("Freeze")} style={btnRed}>Freeze</button>
+          <button onClick={()=>setActiveAction("Force Logout")} style={btnRed}>Force Logout</button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+        {/* Validation Details */}
+        <div style={{border:`1px solid ${C.border}`,borderRadius:8,padding:"20px 24px",marginBottom:16}}>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:16}}>Validation Details</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px 40px"}}>
+            <div><div style={labelStyle}>Full Name</div><div style={valueStyle}>{customer.fullName}</div></div>
+            <div><div style={labelStyle}>Current Violation Counter</div><div style={valueStyle}>{customer.violations}</div></div>
+            <div><div style={labelStyle}>Date of Birth</div><div style={valueStyle}>{customer.dob}</div></div>
+            <div><div style={labelStyle}>Account Status</div><div style={valueStyle}><Badge v={customer.acctStatus}/></div></div>
+            <div><div style={labelStyle}>Gender</div><div style={valueStyle}>{customer.gender}</div></div>
+            <div><div style={labelStyle}>User Status</div><div style={valueStyle}>
+              <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+                <Badge v={customer.userStatus}/>
+                <span style={{fontSize:11.5,color:C.t3}}>Last Login: May 12, 2026 10:04 AM</span>
+              </span>
+            </div></div>
+            <div><div style={labelStyle}>KYC Status</div><div style={valueStyle}>{customer.kyc}</div></div>
+          </div>
+        </div>
+        {/* Tabs */}
+        <div style={{display:"flex",borderBottom:`1px solid ${C.border}`,marginBottom:16}}>
+          {["violation","activity","reset"].map(t=>(
+            <button key={t} onClick={()=>setActiveTab(t)} style={{padding:"10px 20px",fontSize:13,border:"none",background:"none",cursor:"pointer",color:activeTab===t?C.blue:C.t2,fontWeight:activeTab===t?600:400,borderBottom:activeTab===t?`2px solid ${C.blue}`:"2px solid transparent",marginBottom:-1}}>
+              {t==="violation"?"Violation":t==="activity"?"Activity History":"Reset MPIN History"}
+            </button>
+          ))}
+        </div>
+        {activeTab==="violation"&&(
+          <div style={{textAlign:"center",padding:"40px",color:C.t3}}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{margin:"0 auto 12px",display:"block"}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            <div style={{fontSize:13,marginBottom:4}}>No violations available</div>
+            <div style={{fontSize:12}}>Please adjust your search criteria or try again later</div>
+          </div>
+        )}
+        {activeTab==="activity"&&(
+          <table style={{width:"100%",borderCollapse:"collapse"}}>
+            <thead><tr>
+              {["DATE-TIME","AGENT","ACTIONS"].map(h=><th key={h} style={{textAlign:"left",fontSize:11,fontWeight:600,color:C.t2,padding:"9px 16px",borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".05em"}}>{h}</th>)}
+            </tr></thead>
+            <tbody><tr>
+              <td style={{padding:"12px 16px",fontSize:12.5,color:C.t2,borderBottom:`1px solid ${C.border}`}}>May 12, 2026 09:55 AM</td>
+              <td style={{padding:"12px 16px",fontSize:12.5,color:C.t2,borderBottom:`1px solid ${C.border}`}}>—</td>
+              <td style={{padding:"12px 16px",fontSize:12.5,color:C.t2,borderBottom:`1px solid ${C.border}`}}>Reset MPIN by User</td>
+            </tr></tbody>
+          </table>
+        )}
+      </div>
+      {/* Action modals */}
+      {activeAction&&activeAction!=="Reset MPIN"&&(
+        <CustomerActionModal action={activeAction} onClose={()=>setActiveAction(null)} onSubmit={(reason,ctx)=>handleActionSubmit(activeAction,reason,ctx)}/>
+      )}
+      {activeAction==="Reset MPIN"&&(
+        <ResetMPINModal onClose={()=>setActiveAction(null)} onSubmit={(reason,ctx,atts)=>handleActionSubmit("Reset MPIN",reason,ctx,atts)}/>
+      )}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
+function CustomerActionModal({action,onClose,onSubmit}){
+  const REASONS={
+    "Block":["Confirmed Fraudulent Activity","Violation of Anti-Money Laundering Act (AMLA)","Verified Identity Theft","Court or Law Enforcement Order","Severe Violation of Terms & Conditions","Other"],
+    "Freeze":["Freeze Account By User","User Request - Suspected Unauthorized Access","Suspicious Transaction Pattern","Suspected Account Takeover (ATO)","User Request - Lost or Stolen Device","AMLC Investigation","Law Enforcement / Court Order","Other","Identity Verification Required"],
+    "Force Logout":["User Request - Lost or Stolen Device","User Request - Suspected Unauthorized Access","Active Security Threat - Account Takeover","Technical Support - Resolve Session Issue","Other"],
+  };
+  const [reason,setReason]=useState("");
+  const [ctx,setCtx]=useState("");
+  const [step,setStep]=useState(1);
+  const reasons=REASONS[action]||[];
+  const canConfirm=reason&&ctx;
+  const inputStyle={width:"100%",padding:"9px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
+  if(step===2){
+    return(
+      <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:30}}>
+        <div style={{background:C.bg,borderRadius:8,width:420,padding:"24px",boxShadow:"0 8px 32px rgba(0,0,0,.2)"}}>
+          <div style={{textAlign:"center",marginBottom:16}}>
+            <div style={{width:40,height:40,borderRadius:"50%",background:C.blueL,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px"}}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:6}}>Are you sure?</div>
+            <div style={{fontSize:13,color:C.blue}}>Confirm {action} Account? This action will immediately {action==="Block"?"block":"restrict"} the customer's account.</div>
+          </div>
+          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+            <Btn variant="outline" onClick={()=>setStep(1)}>Cancel</Btn>
+            <Btn variant="dark" onClick={()=>onSubmit(reason,ctx)}>Confirm</Btn>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return(
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:30}}>
+      <div style={{background:C.bg,borderRadius:8,width:480,display:"flex",flexDirection:"column",boxShadow:"0 8px 32px rgba(0,0,0,.2)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <div style={{fontSize:15,fontWeight:600,color:C.text}}>{action} Account</div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3}}>×</button>
+        </div>
+        <div style={{padding:"20px"}}>
+          <div style={{marginBottom:14}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Reason for {action.toLowerCase()} <span style={{color:C.red}}>*</span></label>
+            <div style={{position:"relative"}}>
+              <select value={reason} onChange={e=>setReason(e.target.value)} style={inputStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
+                <option value="">Select reason for {action.toLowerCase()} account</option>
+                {reasons.map(r=><option key={r}>{r}</option>)}
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style={{marginBottom:16}}>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Context <span style={{color:C.red}}>*</span></label>
+            <textarea value={ctx} onChange={e=>setCtx(e.target.value)} placeholder="e.g. Added supporting link from internal audit..." style={{width:"100%",minHeight:80,border:`1px solid ${C.grayB}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            <div style={{fontSize:11.5,color:C.t3,marginTop:4}}>Please include all the evidences and links in this context. This may be used for audit purposes in the future.</div>
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <button disabled={!canConfirm} onClick={()=>canConfirm&&setStep(2)} style={{padding:"7px 20px",background:canConfirm?"#111827":C.grayB,color:canConfirm?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:canConfirm?"pointer":"not-allowed"}}>Confirm</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResetMPINModal({onClose,onSubmit}){
+  const [step,setStep]=useState(1);
+  const [supportId,setSupportId]=useState("");
+  const [reason,setReason]=useState("");
+  const [verified,setVerified]=useState(false);
+  const [idCard,setIdCard]=useState(null);
+  const [photo,setPhoto]=useState(null);
+  const [selfie,setSelfie]=useState(null);
+  const canConfirm=supportId&&reason&&verified&&idCard&&photo&&selfie;
+
+  if(step===2){
+    return(
+      <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:30}}>
+        <div style={{background:C.bg,borderRadius:8,width:420,padding:"24px",boxShadow:"0 8px 32px rgba(0,0,0,.2)",textAlign:"center"}}>
+          <div style={{width:40,height:40,borderRadius:"50%",background:C.blueL,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:6}}>Are you sure?</div>
+          <div style={{fontSize:13,color:C.blue,marginBottom:16}}>Confirm Reset MPIN? New MPIN will be generated and sent to consumer's registered phone number.</div>
+          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+            <Btn variant="outline" onClick={()=>setStep(1)}>Cancel</Btn>
+            <Btn variant="dark" onClick={()=>onSubmit(reason,`Support Ticket: ${supportId}`,[{name:idCard,size:"1.2 MB"},{name:photo,size:"980 KB"},{name:selfie,size:"540 KB"}])}>Confirm</Btn>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const inputStyle={width:"100%",padding:"9px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const uploadZone=(label,val,setter)=>(
+    <div onClick={()=>setter(`${label.replace(/ /g,"_")}.png`)} style={{border:`1.5px dashed ${val?C.blue:C.grayB}`,borderRadius:8,padding:"24px 12px",textAlign:"center",cursor:"pointer",background:val?C.blueL:"transparent",transition:"all .12s"}} onMouseEnter={e=>{if(!val){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.background="#f8faff";}}} onMouseLeave={e=>{if(!val){e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.background="transparent";}}}>
+      {val?(
+        <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{margin:"0 auto 4px",display:"block"}}><polyline points="20 6 9 17 4 12"/></svg>
+        <div style={{fontSize:12,color:C.blue,fontWeight:600}}>{label}</div>
+        <div style={{fontSize:11,color:C.t3,marginTop:2}}>File selected: {val}</div></>
+      ):(
+        <><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{margin:"0 auto 6px",display:"block"}}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <div style={{fontSize:12,color:C.t2,fontWeight:500}}>{label}</div></>
+      )}
+    </div>
+  );
+
+  return(
+    <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:30}}>
+      <div style={{background:C.bg,borderRadius:8,width:600,maxHeight:"88vh",display:"flex",flexDirection:"column",boxShadow:"0 8px 32px rgba(0,0,0,.2)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <div style={{fontSize:15,fontWeight:600,color:C.text}}>Reset MPIN</div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,color:C.t3}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
+          {/* Customer info masked */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16,padding:"14px",background:C.bg2,borderRadius:8}}>
+            {[["ID Number","••••••••••"],["Place of Birth","••••••••••, ••••••••••"],["Full Name","ROBERT R. BERNARDO"],["Gender","••••••••••"],["Nationality","Philippines"],["Phone Number","91•••••90"],["Date of Birth","••••••••••"],["KYC Status","Agent Approved"]].map(([l,v])=>(
+              <div key={l}><div style={{fontSize:11,color:C.t3,marginBottom:2}}>{l}</div><div style={{fontSize:13,color:C.text,fontWeight:500}}>{v}</div></div>
+            ))}
+          </div>
+          {/* Warning */}
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:"#fffbeb",border:`1px solid ${C.amberB}`,borderRadius:7,marginBottom:16,fontSize:12.5,color:C.amberT}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Important: Please fill all the fields in order to Unblock/Reset User MPIN.
+          </div>
+          {/* Upload zones */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+            {uploadZone("ID Card",idCard,setIdCard)}
+            {uploadZone("Photo with ID Card",photo,setPhoto)}
+            {uploadZone("Selfie",selfie,setSelfie)}
+          </div>
+          {/* Fields */}
+          <div style={{marginBottom:12}}>
+            <label style={{fontSize:12.5,color:C.text,marginBottom:5,display:"block"}}>Support Ticket ID</label>
+            <input value={supportId} onChange={e=>setSupportId(e.target.value)} style={inputStyle} placeholder="e.g. KEDS-2891" onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            <div style={{fontSize:11,color:C.t3,marginTop:3}}>Only alphanumeric characters, #, and - are allowed</div>
+          </div>
+          <div style={{marginBottom:14}}>
+            <label style={{fontSize:12.5,color:C.text,marginBottom:5,display:"block"}}>Reason for MPIN Reset</label>
+            <input value={reason} onChange={e=>setReason(e.target.value)} style={inputStyle} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+          </div>
+          {/* Verification */}
+          <label style={{display:"flex",alignItems:"flex-start",gap:8,cursor:"pointer",fontSize:12.5,color:C.text,lineHeight:1.5}}>
+            <input type="checkbox" checked={verified} onChange={e=>setVerified(e.target.checked)} style={{accentColor:C.blue,marginTop:2}}/>
+            I have verified that the documents submitted by the user matches their KYC records recorded during their registration with SMART Money app.
+          </label>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <button disabled={!canConfirm} onClick={()=>canConfirm&&setStep(2)} style={{padding:"7px 20px",background:canConfirm?"#111827":C.grayB,color:canConfirm?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:canConfirm?"pointer":"not-allowed"}}>Confirm</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App(){
-  const [page,setPage]=useState("manage-template");
+  const [page,setPage]=useState("gmc-logs");
   const [templates,setTemplates]=useState(INIT_TEMPLATES);
-  const [logs,setLogs]=useState(INIT_LOGS);
+  const [logs,setLogs]=useState(ALL_INIT_LOGS);
 
   const handleTemplateUpdate=(id,form)=>{
     setTemplates(p=>p.map(t=>t.id===id?{...t,...form,title:form.subject||t.title}:t));
   };
   const handleLogAdd=(log)=>{
-    const latestTemplate=templates.find(t=>t.id===log.targetTemplateId)||templates[0];
-    const enrichedLog={...log,targetTemplateId:latestTemplate?.id};
-    setLogs(p=>[enrichedLog,...p]);
+    setLogs(p=>[log,...p]);
   };
+  const pendingCount=logs.filter(r=>r.status==="Pending").length;
 
   return(
     <div style={{display:"flex",height:"100vh",background:C.bg,overflow:"hidden"}}>
-      <Sidebar page={page} onPage={setPage} pendingCount={logs.filter(r=>r.status==="Pending").length}/>
+      <Sidebar page={page} onPage={setPage} pendingCount={pendingCount}/>
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:C.bg,position:"relative"}}>
         {page==="manage-template"&&<ManageTemplateView templates={templates} onTemplateUpdate={handleTemplateUpdate} onLogAdd={handleLogAdd}/>}
         {page==="gmc-logs"&&<GMCLogsView logs={logs} setLogs={setLogs} templates={templates} setTemplates={setTemplates}/>}
         {page==="gmc-configs"&&<GMCConfigsView/>}
-        {page!=="manage-template"&&page!=="gmc-logs"&&page!=="gmc-configs"&&(
-          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.t3,fontSize:13}}>Select a section from the sidebar</div>
+        {page==="pay-consumers"&&<ConsumersView onLogAdd={handleLogAdd} onPage={setPage}/>}
+        {page==="pay-manual-transfer"&&<ManualTransferView onLogAdd={handleLogAdd}/>}
+        {page==="pay-account-types"&&<AccountTypesView onLogAdd={handleLogAdd}/>}
+        {page==="kyc-customers"&&<KycCustomersView onLogAdd={handleLogAdd}/>}
+        {page!=="manage-template"&&page!=="gmc-logs"&&page!=="gmc-configs"&&page!=="pay-consumers"&&page!=="pay-manual-transfer"&&page!=="pay-account-types"&&page!=="kyc-customers"&&(
+          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.t3,fontSize:13,flexDirection:"column",gap:8}}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Select a section from the sidebar</span>
+          </div>
         )}
       </div>
     </div>
@@ -1386,4 +2965,6 @@ function App(){
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
-</html>
+</html><script>
+// This marker helps us locate where to inject new code
+</script>

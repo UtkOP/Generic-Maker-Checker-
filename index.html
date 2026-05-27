@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Fyscal Technologies — Backoffice</title>
+<title>Generic Maker Checker</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -863,7 +863,7 @@ function LogDetailModal({req,viewerPerm,onClose,onApprove,onReject,onWithdraw}){
           {isClosed&&<Btn variant="outline" onClick={onClose}>Close</Btn>}
           {!isClosed&&!isChecker&&(
             <button onClick={()=>setShowWithdrawConfirm(true)} style={{padding:"7px 20px",background:"#dc2626",color:"#fff",border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:"pointer",transition:"opacity .12s"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
-              Withdraw Request
+              Withdraw
             </button>
           )}
         </div>

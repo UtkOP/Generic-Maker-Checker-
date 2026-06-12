@@ -354,10 +354,6 @@ const ALL_INIT_LOGS=[
    category:"Payments — User Accounts",action:"Account Type ID Change",reason:"Customer upgraded to premium tier as per request #CUS-2891. Account type needs to reflect new permissions.",context:"Verified with operations team. Customer has completed enhanced KYC.",atts:[],
    diff:[
      {field:"Account Type ID",old:"3 — Current_Account",nw:"1 — Savings_Bank_Ac_Basic",changed:true},
-     {field:"Account ID",old:"343",nw:"343",changed:false},
-     {field:"Account Status",old:"CREATED",nw:"CREATED",changed:false},
-     {field:"Phone Number",old:"09*****28",nw:"09*****28",changed:false},
-     {field:"Ledger Account ID",old:"44ad6553-bb5e-4db7...",nw:"44ad6553-bb5e-4db7...",changed:false},
    ],
    ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
@@ -366,11 +362,6 @@ const ALL_INIT_LOGS=[
    category:"Payments — User Accounts",action:"Freeze Account",reason:"Multiple failed login attempts detected. Suspicious transaction pattern observed. Freezing pending investigation per SEC-04.",context:"AML team notified. Investigation ticket #AML-5521 raised.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
-     {field:"Account Type ID",old:"3 — Current_Account",nw:"3 — Current_Account",changed:false},
-     {field:"Phone Number",old:"09*****28",nw:"09*****28",changed:false},
-     {field:"Wallet Balance Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
-     {field:"Daily Outgoing Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
-     {field:"Monthly Incoming Limit",old:"₱10,000.00",nw:"₱10,000.00",changed:false},
    ],
    ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
@@ -418,10 +409,6 @@ const ALL_INIT_LOGS=[
    category:"Customers & KYC",action:"Block Customer Account",reason:"Confirmed Fraudulent Activity",context:"Multiple chargeback disputes filed. AML team flagged this account for suspicious outgoing transfers totalling ₱450,000 in 48 hours.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
-     {field:"User Status",old:"Active",nw:"Active",changed:false},
-     {field:"KYC Status",old:"In Progress",nw:"In Progress",changed:false},
-     {field:"Violation Count",old:"3",nw:"3",changed:false},
-     {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
    ],
    ctxData:[{l:"Customer Full Name",v:"Nishank Sharma"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"3"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
@@ -430,10 +417,6 @@ const ALL_INIT_LOGS=[
    category:"Customers & KYC",action:"Reset Customer MPIN",reason:"Customer lost access to phone. Identity verified via KYC documents.",context:"Support Ticket ID: KEDS-2891. Customer physically visited branch.",atts:[{name:"ID_Card.png",size:"1.2 MB"},{name:"Photo_with_ID.png",size:"980 KB"},{name:"Selfie.png",size:"540 KB"}],
    diff:[
      {field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true},
-     {field:"Identity Verification",old:"Not verified",nw:"Verified (Agent Approved)",changed:false},
-     {field:"Support Ticket ID",old:"—",nw:"KEDS-2891",changed:false},
-     {field:"KYC Status",old:"Agent Approved",nw:"Agent Approved",changed:false},
-     {field:"Account Status",old:"Active",nw:"Active",changed:false},
    ],
    ctxData:[{l:"Customer Full Name",v:"Robert R. Bernardo"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
@@ -468,11 +451,6 @@ const ALL_INIT_LOGS=[
    category:"Payments — User Accounts",action:"Freeze Account",reason:"Suspicious login pattern and multiple failed OTP attempts over 2 hours.",context:"Security escalation ticket #SEC-2026-0392.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
-     {field:"Account Type ID",old:"1 — Savings_Bank_Ac_Basic",nw:"1 — Savings_Bank_Ac_Basic",changed:false},
-     {field:"Phone Number",old:"09*****91",nw:"09*****91",changed:false},
-     {field:"Wallet Balance Limit",old:"₱50,000.00",nw:"₱50,000.00",changed:false},
-     {field:"Daily Outgoing Limit",old:"₱25,000.00",nw:"₱25,000.00",changed:false},
-     {field:"Monthly Incoming Limit",old:"₱100,000.00",nw:"₱100,000.00",changed:false},
    ],
    ctxData:[{l:"Account Type Name",v:"Savings_Bank_Ac_Basic"},{l:"Wallet Balance Limit",v:"₱50,000.00"},{l:"Daily Outgoing Limit",v:"₱25,000.00"},{l:"Monthly Incoming Limit",v:"₱100,000.00"}],
    checkerRemark:"Confirmed suspicious activity. Approved for immediate freeze.",checkerName:"Roushan Gupta",checkerDate:"8 May 2026, 03:45 PM",targetTemplateId:null},
@@ -493,10 +471,6 @@ const ALL_INIT_LOGS=[
    category:"Customers & KYC",action:"Block Customer Account",reason:"Suspected mule account based on unusual transaction velocity.",context:"Risk team preliminary assessment. Awaiting final AML clearance.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
-     {field:"User Status",old:"Active",nw:"Active",changed:false},
-     {field:"KYC Status",old:"Agent Approved",nw:"Agent Approved",changed:false},
-     {field:"Violation Count",old:"1",nw:"1",changed:false},
-     {field:"Last Login",old:"May 2, 2026 08:22 AM",nw:"May 2, 2026 08:22 AM",changed:false},
    ],
    ctxData:[{l:"Customer Full Name",v:"Maria Santos"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"1"}],
    checkerRemark:"Insufficient evidence to justify a block at this stage. Transaction velocity is within acceptable range for the account type. Request declined — please escalate via AML team if risk is confirmed.",checkerName:"Roushan Gupta",checkerDate:"3 May 2026, 11:50 AM",targetTemplateId:null},
@@ -505,9 +479,6 @@ const ALL_INIT_LOGS=[
    category:"Customers & KYC",action:"Force Logout Customer",reason:"Active Security Threat — Account Takeover",context:"Unusual login detected from foreign IP. Forcing logout to protect account.",atts:[],
    diff:[
      {field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true},
-     {field:"Account Status",old:"Active",nw:"Active",changed:false},
-     {field:"KYC Status",old:"In Progress",nw:"In Progress",changed:false},
-     {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
    ],
    ctxData:[{l:"Customer Full Name",v:"Test Test"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
@@ -2006,14 +1977,14 @@ function ActivityViewModal({act,onClose}){
    EDIT ACTIVITY MODAL
    Thin wrapper — renders CreateActivityModal
    pre-seeded with the activity's existing values.
-   isRestricted: Config Lock — Save blocked if active requests exist.
+   Changes apply prospectively to new requests only.
 ═══════════════════════════════════════ */
-function EditActivityModal({act,isRestricted,onClose,onSave}){
+function EditActivityModal({act,onClose,onSave}){
   return(
     <CreateActivityModal
       onClose={onClose}
       onSave={onSave}
-      isRestricted={isRestricted}
+      isRestricted={false}
       initialData={act}
     />
   );
@@ -2030,8 +2001,8 @@ function GMCConfigsView({logs=[]}){
   const [actModal,setActModal]=useState(null); /* "view"|"edit"|"deactivate" */
   const [toast,setToast]=useState(null);
   const [configs,setConfigs]=useState(ACTIVITY_CONFIGS);
-  /* Activities with any associated log — Deactivate is disabled for these */
-  const activitiesWithLogs=new Set(logs.map(function(r){return r.activityId;}));
+  /* Activities — no config lock. Edit and Deactivate always available. Changes apply prospectively. */
+  const activitiesWithLogs=new Set();
 
   const filtered=configs.filter(a=>{
     if(statusFilter&&a.status!==statusFilter)return false;
@@ -2132,7 +2103,7 @@ function GMCConfigsView({logs=[]}){
                 <DotMenu items={[
                   ["View",C.blue,()=>{setSelAct(a);setActModal("view");}],
                   ["Edit",C.blue,()=>{setSelAct(a);setActModal("edit");}],
-                  [a.status==="Active"?"Deactivate":"Activate",activitiesWithLogs.has(a.id)&&a.status==="Active"?C.t3:C.red,()=>{setSelAct(a);setActModal("deactivate");}],
+                  [a.status==="Active"?"Deactivate":"Activate",C.red,()=>{setSelAct(a);setActModal("deactivate");}],
                 ]}/>
               </td>
             </tr>
@@ -2150,7 +2121,7 @@ function GMCConfigsView({logs=[]}){
       {selAct&&actModal==="view"&&<ActivityViewModal act={selAct} onClose={()=>{setSelAct(null);setActModal(null);}}/>}
 
       {/* Edit modal — pre-filled, blocks save if activity has associated logs */}
-      {selAct&&actModal==="edit"&&<EditActivityModal act={selAct} isRestricted={activitiesWithLogs.has(selAct.id)&&selAct.id!=="ACT_KYC_003"} onClose={()=>{setSelAct(null);setActModal(null);}} onSave={()=>{setSelAct(null);setActModal(null);setToast("Activity updated successfully.");}}/>}
+      {selAct&&actModal==="edit"&&<EditActivityModal act={selAct} isRestricted={false} onClose={()=>{setSelAct(null);setActModal(null);}} onSave={()=>{setSelAct(null);setActModal(null);setToast("Activity updated successfully.");}}/>}
 
       {/* Deactivate confirm */}
       {selAct&&actModal==="deactivate"&&(
@@ -2161,11 +2132,7 @@ function GMCConfigsView({logs=[]}){
             </div>
             <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:8}}>{selAct.status==="Active"?"Deactivate":"Activate"} Activity?</div>
             <div style={{fontSize:13.5,color:C.t2,marginBottom:6}}>{selAct.name}</div>
-            {selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)&&(
-              <div style={{margin:"0 0 14px",padding:"10px 14px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:12.5,color:C.gray,textAlign:"left"}}>
-                This activity has associated requests in GMC Logs. Deactivation is restricted to preserve audit integrity.
-              </div>
-            )}
+
             <div style={{fontSize:12.5,color:C.t3,lineHeight:1.6,marginBottom:20}}>
               {selAct.status==="Active"
                 ?"This will stop new requests from being created under this activity. Existing pending requests will not be affected."
@@ -2173,7 +2140,7 @@ function GMCConfigsView({logs=[]}){
             </div>
             <div style={{display:"flex",gap:10,justifyContent:"center"}}>
               <Btn variant="outline" onClick={()=>{setSelAct(null);setActModal(null);}}>Cancel</Btn>
-              <button onClick={()=>{if(selAct.status==="Active"&&activitiesWithLogs.has(selAct.id))return;handleDeactivate(selAct.id);}} disabled={selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)} style={{padding:"7px 24px",background:selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)?C.grayB:selAct.status==="Active"?"#dc2626":C.greenT,color:selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)?C.t3:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)?"not-allowed":"pointer",opacity:selAct.status==="Active"&&activitiesWithLogs.has(selAct.id)?0.55:1}}>Yes, {selAct.status==="Active"?"Deactivate":"Activate"}</button>
+              <button onClick={()=>handleDeactivate(selAct.id)} style={{padding:"7px 24px",background:selAct.status==="Active"?"#dc2626":C.greenT,color:"#fff",border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.opacity=".85"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Yes, {selAct.status==="Active"?"Deactivate":"Activate"}</button>
             </div>
           </div>
         </div>
@@ -2334,10 +2301,6 @@ function ConsumerDetail({consumer,onClose,onLogAdd,onOpenLog}){
     /* Full diff: changed field first, then unchanged context fields */
     setPendingDiff([
       {field:"Account Type ID",old:`${acctTypeId} — ${acctTypeName}`,nw:`${t.id} — ${t.name}`,changed:true},
-      {field:"Account ID",old:String(consumer.acctId),nw:String(consumer.acctId),changed:false},
-      {field:"Account Status",old:consumer.status,nw:consumer.status,changed:false},
-      {field:"Phone Number",old:consumer.phone,nw:consumer.phone,changed:false},
-      {field:"Ledger Account ID",old:consumer.ledgerAcctId.substring(0,20)+"...",nw:consumer.ledgerAcctId.substring(0,20)+"...",changed:false},
     ]);
     setGmcAction("acct-type");
     setShowGMC(true);
@@ -2353,11 +2316,6 @@ function ConsumerDetail({consumer,onClose,onLogAdd,onOpenLog}){
     /* Full diff: status change + 5 unchanged account context fields */
     setPendingDiff([
       {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
-      {field:"Account Type ID",old:`${acctTypeId} — ${acctTypeName}`,nw:`${acctTypeId} — ${acctTypeName}`,changed:false},
-      {field:"Phone Number",old:consumer.phone,nw:consumer.phone,changed:false},
-      {field:"Wallet Balance Limit",old:consumer.walletLimit,nw:consumer.walletLimit,changed:false},
-      {field:"Daily Outgoing Limit",old:consumer.dailyOutgoing,nw:consumer.dailyOutgoing,changed:false},
-      {field:"Monthly Incoming Limit",old:consumer.monthlyIncoming,nw:consumer.monthlyIncoming,changed:false},
     ]);
     setGmcAction("freeze");
     setShowGMC(true);
@@ -3248,36 +3206,21 @@ function RiskProfileView({customer,onClose,onLogAdd}){
 
   const handleActionSubmit=(action,reason,context,atts=[])=>{
     const diffMap={
-      /* ACT_KYC_001 — Block: status change + 4 context fields */
+      /* ACT_KYC_001 — Block: single changed field only */
       "Block":[
         {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
-        {field:"User Status",old:customer.userStatus,nw:customer.userStatus,changed:false},
-        {field:"KYC Status",old:customer.kyc,nw:customer.kyc,changed:false},
-        {field:"Violation Count",old:String(customer.violations),nw:String(customer.violations),changed:false},
-        {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
       ],
-      /* ACT_KYC_003 — Freeze: status change + 4 context fields */
+      /* ACT_KYC_003 — Freeze: single changed field only */
       "Freeze":[
         {field:"Account Status",old:"Active",nw:"Frozen",changed:true},
-        {field:"User Status",old:customer.userStatus,nw:customer.userStatus,changed:false},
-        {field:"KYC Status",old:customer.kyc,nw:customer.kyc,changed:false},
-        {field:"Violation Count",old:String(customer.violations),nw:String(customer.violations),changed:false},
-        {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
       ],
-      /* ACT_KYC_004 — Force Logout: session change + 3 context fields */
+      /* ACT_KYC_004 — Force Logout: single changed field only */
       "Force Logout":[
         {field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true},
-        {field:"Account Status",old:customer.acctStatus,nw:customer.acctStatus,changed:false},
-        {field:"KYC Status",old:customer.kyc,nw:customer.kyc,changed:false},
-        {field:"Last Login",old:"May 12, 2026 10:04 AM",nw:"May 12, 2026 10:04 AM",changed:false},
       ],
-      /* ACT_KYC_002 — Reset MPIN: status change + 4 context fields */
+      /* ACT_KYC_002 — Reset MPIN: single changed field only */
       "Reset MPIN":[
         {field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true},
-        {field:"Identity Verification",old:"Not verified",nw:"Verified (Agent Approved)",changed:false},
-        {field:"Support Ticket ID",old:"—",nw:"KEDS-2891",changed:false},
-        {field:"KYC Status",old:customer.kyc,nw:customer.kyc,changed:false},
-        {field:"Account Status",old:customer.acctStatus,nw:customer.acctStatus,changed:false},
       ],
     };
     const actMap={"Block":"ACT_KYC_001","Freeze":"ACT_KYC_003","Force Logout":"ACT_KYC_004","Reset MPIN":"ACT_KYC_002"};

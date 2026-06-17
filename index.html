@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Generic Maker Checker</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%;font-family:-apple-system,'Segoe UI','Inter',sans-serif;background:#f9fafb;color:#111827;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -1487,8 +1487,10 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
 
   const isEditMode=initialData!==null;
   const [approvalCount,setApprovalCount]=useState(1);
-  const [selectedMakerRole,setSelectedMakerRole]=useState(isEditMode?(initialData.makerRole||""):"");
-  const [selectedCheckerRole,setSelectedCheckerRole]=useState(isEditMode?(initialData.checkerRole||""):"");
+  const [makerPerms,setMakerPerms]=useState(isEditMode?(initialData.makerPerms||[]):[]);
+  const [makerIn,setMakerIn]=useState("");
+  const [checkerPerms,setCheckerPerms]=useState(isEditMode?(initialData.checkerPerms||[]):[]);
+  const [checkerIn,setCheckerIn]=useState("");
   const [section,setSection]=useState(isEditMode?(initialData.section||""):"");
   const [actName,setActName]=useState(isEditMode?(initialData.name||""):"");
   const [slaVal,setSlaVal]=useState(isEditMode?(initialData.sla||"4"):"4");
@@ -1561,7 +1563,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
       setSaveBlocked(true);
       return;
     }
-    if(!section||!selectedMakerRole||!selectedCheckerRole)return;
+    if(!section||makerPerms.length===0||checkerPerms.length===0)return;
     if(onSave){onSave();}else{onClose();}
   };
 
@@ -1793,74 +1795,56 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
           {/* ── ASSIGN MAKERS & CHECKERS (Role-based) ── */}
           <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Assign Makers & Checkers</div>
 
-          {/* Maker Role */}
+          {/* Maker Permission */}
           <div style={{marginBottom:16}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <label style={{fontSize:12.5,fontWeight:500,color:C.text}}>
-                Maker Role
-                <span style={{fontSize:11.5,fontWeight:400,color:C.t3,marginLeft:6}}>Any user with this role can submit requests</span>
-              </label>
-              {selectedMakerRole&&<span style={{fontSize:11.5,color:C.greenT,fontWeight:500}}>Role selected</span>}
-            </div>
-            <div style={{position:"relative"}}>
-              <select value={selectedMakerRole} onChange={function(e){if(!(isEditMode&&isRestricted))setSelectedMakerRole(e.target.value);}} disabled={isEditMode&&isRestricted}
-                style={{width:"100%",padding:"9px 32px 9px 12px",border:`1.5px solid ${saveAttempted&&!selectedMakerRole?C.red:selectedMakerRole?C.blue:C.grayB}`,borderRadius:7,fontSize:13,color:selectedMakerRole?C.text:C.t3,background:isEditMode&&isRestricted?C.grayL:C.bg,outline:"none",cursor:isEditMode&&isRestricted?"not-allowed":"pointer",appearance:"none",WebkitAppearance:"none",opacity:isEditMode&&isRestricted?0.7:1}}
-                onFocus={function(e){if(!(isEditMode&&isRestricted))e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
-                onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
-                <option value="">Select maker role...</option>
-                {ALL_ROLES.map(function(r){return <option key={r.key} value={r.key}>{r.label} — {r.key}</option>;})}
-              </select>
-              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={selectedMakerRole?C.blue:C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            {selectedMakerRole&&(
-              <div style={{marginTop:8,display:"flex",alignItems:"center",gap:8}}>
-                <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 10px",background:C.blueL,border:`1px solid ${C.blue}`,borderRadius:20,fontSize:12.5,fontWeight:500,color:C.blue}}>
-                  <span style={{width:6,height:6,borderRadius:"50%",background:C.blue,display:"inline-block"}}/>
-                  {(ALL_ROLES.find(function(r){return r.key===selectedMakerRole;})||{label:selectedMakerRole}).label}
-                  <button onClick={function(){setSelectedMakerRole("");}} style={{background:"none",border:"none",cursor:"pointer",color:C.blue,lineHeight:1,padding:"0 0 0 2px",fontSize:14}}>x</button>
-                </div>
-                <code style={{fontSize:11.5,color:C.t3,background:C.bg2,padding:"3px 8px",borderRadius:4}}>{selectedMakerRole}</code>
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,display:"block",marginBottom:6}}>Maker Permission <span style={{fontSize:11.5,fontWeight:400,color:C.t3}}>Any one of these can submit</span></label>
+            {makerPerms.length>0&&(
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+                {makerPerms.map(function(p){
+                  return <span key={p} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 10px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12.5,color:C.text}}>
+                    <code style={{fontSize:12,color:C.t2}}>{p}</code>
+                    <button onClick={function(){setMakerPerms(function(prev){return prev.filter(function(x){return x!==p;});});}} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:13,lineHeight:1,padding:0}}>x</button>
+                  </span>;
+                })}
               </div>
             )}
-            {saveAttempted&&!selectedMakerRole&&<div style={{marginTop:6,fontSize:12,color:C.red}}>Please select a maker role.</div>}
+            <div style={{display:"flex",gap:8}}>
+              <div style={{position:"relative",flex:1}}>
+                <select value={makerIn} onChange={function(e){setMakerIn(e.target.value);}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1.5px solid ${saveAttempted&&makerPerms.length===0?C.red:C.grayB}`,borderRadius:7,fontSize:13,color:makerIn?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
+                  <option value="">Select permission...</option>
+                  {ALL_ROLES.filter(function(r){return makerPerms.indexOf(r.key)===-1;}).map(function(r){return <option key={r.key} value={r.key}>{r.key}</option>;})}
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <button onClick={function(){if(makerIn){setMakerPerms(function(p){return[...p,makerIn];});setMakerIn("");}}} style={{padding:"8px 14px",background:makerIn?"#111827":C.grayB,color:makerIn?"#fff":C.t3,border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:makerIn?"pointer":"not-allowed",flexShrink:0}}>+ Add</button>
+            </div>
+            {saveAttempted&&makerPerms.length===0&&<div style={{marginTop:6,fontSize:12,color:C.red}}>At least one Maker Permission is required.</div>}
           </div>
 
-          {/* Checker Role */}
+          {/* Checker Permission */}
           <div style={{marginBottom:8}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-              <label style={{fontSize:12.5,fontWeight:500,color:C.text}}>
-                Checker Role
-                <span style={{fontSize:11.5,fontWeight:400,color:C.t3,marginLeft:6}}>Any user with this role can approve or decline</span>
-              </label>
-              {selectedCheckerRole&&<span style={{fontSize:11.5,color:C.greenT,fontWeight:500}}>Role selected</span>}
-            </div>
-            <div style={{position:"relative"}}>
-              <select value={selectedCheckerRole} onChange={function(e){if(!(isEditMode&&isRestricted))setSelectedCheckerRole(e.target.value);}} disabled={isEditMode&&isRestricted}
-                style={{width:"100%",padding:"9px 32px 9px 12px",border:`1.5px solid ${saveAttempted&&!selectedCheckerRole?C.red:selectedCheckerRole?C.blue:C.grayB}`,borderRadius:7,fontSize:13,color:selectedCheckerRole?C.text:C.t3,background:isEditMode&&isRestricted?C.grayL:C.bg,outline:"none",cursor:isEditMode&&isRestricted?"not-allowed":"pointer",appearance:"none",WebkitAppearance:"none",opacity:isEditMode&&isRestricted?0.7:1}}
-                onFocus={function(e){if(!(isEditMode&&isRestricted))e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
-                onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
-                <option value="">Select checker role...</option>
-                {ALL_ROLES.map(function(r){return <option key={r.key} value={r.key}>{r.label} — {r.key}</option>;})}
-              </select>
-              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={selectedCheckerRole?C.blue:C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            {selectedCheckerRole&&(
-              <div style={{marginTop:8,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 10px",background:C.greenL,border:`1px solid ${C.greenT}`,borderRadius:20,fontSize:12.5,fontWeight:500,color:C.greenT}}>
-                  <span style={{width:6,height:6,borderRadius:"50%",background:C.greenT,display:"inline-block"}}/>
-                  {(ALL_ROLES.find(function(r){return r.key===selectedCheckerRole;})||{label:selectedCheckerRole}).label}
-                  <button onClick={function(){setSelectedCheckerRole("");}} style={{background:"none",border:"none",cursor:"pointer",color:C.greenT,lineHeight:1,padding:"0 0 0 2px",fontSize:14}}>x</button>
-                </div>
-                <code style={{fontSize:11.5,color:C.t3,background:C.bg2,padding:"3px 8px",borderRadius:4}}>{selectedCheckerRole}</code>
-                {approvalCount>1&&(
-                  <div style={{width:"100%",marginTop:6,display:"flex",alignItems:"center",gap:6,fontSize:12.5,color:C.amberT,background:C.amberL,padding:"7px 12px",borderRadius:6}}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Approval Count = {approvalCount} — {approvalCount} different users with this role must approve.
-                  </div>
-                )}
+            <label style={{fontSize:12.5,fontWeight:500,color:C.text,display:"block",marginBottom:6}}>Checker Permission <span style={{fontSize:11.5,fontWeight:400,color:C.t3}}>Any one of these can approve or decline</span></label>
+            {checkerPerms.length>0&&(
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+                {checkerPerms.map(function(p){
+                  return <span key={p} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 10px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12.5,color:C.text}}>
+                    <code style={{fontSize:12,color:C.t2}}>{p}</code>
+                    <button onClick={function(){setCheckerPerms(function(prev){return prev.filter(function(x){return x!==p;});});}} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:13,lineHeight:1,padding:0}}>x</button>
+                  </span>;
+                })}
               </div>
             )}
-            {saveAttempted&&!selectedCheckerRole&&<div style={{marginTop:6,fontSize:12,color:C.red}}>Please select a checker role.</div>}
+            <div style={{display:"flex",gap:8}}>
+              <div style={{position:"relative",flex:1}}>
+                <select value={checkerIn} onChange={function(e){setCheckerIn(e.target.value);}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1.5px solid ${saveAttempted&&checkerPerms.length===0?C.red:C.grayB}`,borderRadius:7,fontSize:13,color:checkerIn?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
+                  <option value="">Select permission...</option>
+                  {ALL_ROLES.filter(function(r){return checkerPerms.indexOf(r.key)===-1;}).map(function(r){return <option key={r.key} value={r.key}>{r.key}</option>;})}
+                </select>
+                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <button onClick={function(){if(checkerIn){setCheckerPerms(function(p){return[...p,checkerIn];});setCheckerIn("");}}} style={{padding:"8px 14px",background:checkerIn?"#111827":C.grayB,color:checkerIn?"#fff":C.t3,border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:checkerIn?"pointer":"not-allowed",flexShrink:0}}>+ Add</button>
+            </div>
+            {saveAttempted&&checkerPerms.length===0&&<div style={{marginTop:6,fontSize:12,color:C.red}}>At least one Checker Permission is required.</div>}
           </div>
         </div>
         {/* Config Lock message — edit mode only */}
@@ -1880,15 +1864,15 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             ):section&&modalId?(
               <span style={{display:"flex",alignItems:"center",gap:12}}>
                 <span style={{color:C.greenT}}>✓ {diffRows.length} diff · {ctxRows.filter(r=>r.label).length} ctx queries</span>
-                <span style={{color:selectedMakerRole&&selectedCheckerRole?C.greenT:saveAttempted&&(!selectedMakerRole||!selectedCheckerRole)?C.red:C.t3}}>
-                  {selectedMakerRole&&selectedCheckerRole?"✓ maker + checker roles set":!selectedMakerRole?"select maker role":"select checker role"}
+                <span style={{color:makerPerms.length>0&&checkerPerms.length>0?C.greenT:saveAttempted&&(makerPerms.length===0||checkerPerms.length===0)?C.red:C.t3}}>
+                  {makerPerms.length>0&&checkerPerms.length>0?"✓ maker + checker permissions set":makerPerms.length===0?"add maker permission":"add checker permission"}
                 </span>
               </span>
             ):"Fill in domain and modal ID to configure diff fields"}
           </span>
           <div style={{display:"flex",gap:8}}>
             <Btn variant="outline" onClick={onClose}>Cancel</Btn>
-            <button onClick={handleSaveActivity} style={{padding:"7px 18px",background:isEditMode&&isRestricted?C.grayB:section&&selectedMakerRole&&selectedCheckerRole?"#111827":C.grayB,color:isEditMode&&isRestricted?C.t3:section&&selectedMakerRole&&selectedCheckerRole?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:isEditMode&&isRestricted?"not-allowed":section&&selectedMakerRole&&selectedCheckerRole?"pointer":"not-allowed",opacity:isEditMode&&isRestricted?0.6:1,transition:"background .15s"}}>
+            <button onClick={handleSaveActivity} style={{padding:"7px 18px",background:isEditMode&&isRestricted?C.grayB:section&&makerPerms.length>0&&checkerPerms.length>0?"#111827":C.grayB,color:section&&makerPerms.length>0&&checkerPerms.length>0?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:section&&makerPerms.length>0&&checkerPerms.length>0?"pointer":"not-allowed",transition:"background .15s"}}>
               {isEditMode?"Save Changes":"Save Activity"}
             </button>
           </div>
@@ -1945,8 +1929,8 @@ function ActivityViewModal({act,onClose}){
           {row("Approval Count",<span style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:13}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:24,height:24,borderRadius:"50%",background:C.blueL,color:C.blue,fontSize:12,fontWeight:700}}>1</span><span style={{fontSize:11.5,color:C.t3}}>Single approver (V1)</span></span>)}
           {row("SLA",act.sla)}
           {row("Warning At",act.warn)}
-          {row("Maker Role",<code style={{fontSize:12,background:C.bg2,padding:"2px 8px",borderRadius:4}}>{act.makerRole||"—"}</code>)}
-          {row("Checker Role",<code style={{fontSize:12,background:C.bg2,padding:"2px 8px",borderRadius:4}}>{act.checkerRole||"—"}</code>)}
+          {row("Maker Permission",(act.makerPerms||[]).join(", ")||"—")}
+          {row("Checker Permission",(act.checkerPerms||[]).join(", ")||"—")}
           <div style={{padding:"9px 0",borderBottom:`1px solid ${C.border}`}}>
             <div style={{fontSize:12.5,color:C.t3,marginBottom:8}}>Diff Fields ({(act.diffFields||[]).length})</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:6}}>

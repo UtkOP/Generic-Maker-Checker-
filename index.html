@@ -249,7 +249,7 @@ function Sidebar({page,onPage,pendingCount}){
         {gmcOpen&&<>
           <NavRow label="Configs" indent={14} active={page==="gmc-configs"} onClick={()=>onPage("gmc-configs")}/>
           <NavRow label="Tickets" indent={14} active={page==="gmc-tickets"} onClick={()=>onPage("gmc-tickets")}/>
-          <NavRow label="API Definitions" indent={14} active={page==="gmc-api-defs"} onClick={()=>onPage("gmc-api-defs")}/>
+          <NavRow label="Operations Registry" indent={14} active={page==="gmc-ops-registry"} onClick={()=>onPage("gmc-ops-registry")}/>
           <NavRow label="Service Endpoints" indent={14} active={page==="gmc-service-eps"} onClick={()=>onPage("gmc-service-eps")}/>
         </>}
 
@@ -1533,13 +1533,13 @@ function GMCTicketsView({logs,setLogs,templates,setTemplates,initialOpenId=null,
 ═══════════════════════════════════════ */
 function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=false}){
   /* ── MODAL FIELD REGISTRY ──
-     Maps Domain → Modal ID → all fields that modal exposes.
-     When user selects Domain + Modal ID, we auto-populate diff rows
+     Maps Domain → Operation Point → all fields that modal exposes.
+     When user selects Domain + Operation Point, we auto-populate diff rows
      with ALL fields from that modal. User then removes (×) what they don't need. */
   const MODAL_REGISTRY={
     "Communication":{
       modals:[
-        {id:"edit-template-modal",label:"Edit Template",url:"/communication/templates/:id/edit",
+        {id:"op_comm_template",label:"Edit Template",url:"/communication/templates/:id/edit",
          fields:[
            {name:"body",label:"Body",strategy:"HTML Diff"},
            {name:"subject",label:"Subject",strategy:"Plain Text"},
@@ -1562,14 +1562,14 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
     },
     "Payments":{
       modals:[
-        {id:"edit-fee-modal",label:"Edit Fee",url:"/payments/fees/:id/edit",
+        {id:"op_pay_fee",label:"Edit Fee",url:"/payments/fees/:id/edit",
          fields:[
            {name:"feeName",label:"Fee Name",strategy:"Plain Text"},
            {name:"feePercentage",label:"Fee Percentage",strategy:"Plain Text"},
            {name:"flatFee",label:"Flat Fee",strategy:"Plain Text"},
            {name:"status",label:"Status",strategy:"Select"},
          ]},
-        {id:"edit-limit-modal",label:"Edit Limit",url:"/payments/limits/:id/edit",
+        {id:"op_pay_limit",label:"Edit Limit",url:"/payments/limits/:id/edit",
          fields:[
            {name:"dailyLimit",label:"Daily Limit",strategy:"Plain Text"},
            {name:"monthlyLimit",label:"Monthly Limit",strategy:"Plain Text"},
@@ -1581,7 +1581,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
     },
     "Customers & KYC":{
       modals:[
-        {id:"edit-kyc-rules-modal",label:"Edit KYC Rules",url:"/kyc/rules/:id/edit",
+        {id:"op_kyc_rules",label:"Edit KYC Rules",url:"/kyc/rules/:id/edit",
          fields:[
            {name:"ruleName",label:"Rule Name",strategy:"Plain Text"},
            {name:"ruleCondition",label:"Condition",strategy:"JSON Diff"},
@@ -1634,7 +1634,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
   const [actName,setActName]=useState(isEditMode?(initialData.name||""):"");
   const [slaVal,setSlaVal]=useState(isEditMode?(initialData.sla||"4"):"4");
   const [warnVal,setWarnVal]=useState(isEditMode?(initialData.warn||"80"):"80");
-  const [modalId,setModalId]=useState(isEditMode?(initialData.modalId||""):"");
+  const [operationPoint,setModalId]=useState(isEditMode?(initialData.operationPoint||""):"");
   const [diffRows,setDiffRows]=useState([]);
   const [ctxRows,setCtxRows]=useState([]);
   const [ctxType,setCtxType]=useState(isEditMode?(initialData.ctxType||"generic"):"generic");
@@ -1691,7 +1691,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
 
   const domainData=section&&MODAL_REGISTRY[section]?MODAL_REGISTRY[section]:null;
   const availableModals=domainData?domainData.modals:[];
-  const selectedModal=availableModals.find(m=>m.id===modalId)||null;
+  const selectedModal=availableModals.find(m=>m.id===operationPoint)||null;
   /* Role-based: makers/checkers managed via RBAC, GMC references roles only */
 
   /* Role-based: validation is whether both roles are selected */
@@ -1713,7 +1713,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
     if(selectedModal){
       setDiffRows(selectedModal.fields.map(f=>({...f,removed:false})));
       setDiffAutoLoaded(true);
-    } else if(isEditMode&&section&&!modalId){
+    } else if(isEditMode&&section&&!operationPoint){
       /* Edit mode: show diff fields from activity config if no modal selected */
       const syntheticFields=(initialData.diffFields||[]).map(function(f){return{name:f,label:f,strategy:"Plain Text",removed:false};});
       setDiffRows(syntheticFields);
@@ -1722,7 +1722,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
       setDiffRows([]);
       setDiffAutoLoaded(false);
     }
-  },[modalId,section]);
+  },[operationPoint,section]);
 
   /* Pre-fill context query selection in edit mode */
   useEffect(()=>{
@@ -1784,12 +1784,12 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             </div>
             <div>
               <label style={labelS}>
-                Modal ID / URL
-                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>(identifies which screen this activity intercepts)</span>
+                Operation Point
+                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>(the registered operation this activity governs)</span>
               </label>
               {section?(
                 <div style={{position:"relative"}}>
-                  <select value={modalId} onChange={e=>{if(!isEditMode)setModalId(e.target.value);}} disabled={isEditMode} style={{...selS,background:isEditMode?C.grayL:C.bg,cursor:isEditMode?"not-allowed":"pointer",opacity:isEditMode?0.7:1}}
+                  <select value={operationPoint} onChange={e=>{if(!isEditMode)setModalId(e.target.value);}} disabled={isEditMode} style={{...selS,background:isEditMode?C.grayL:C.bg,cursor:isEditMode?"not-allowed":"pointer",opacity:isEditMode?0.7:1}}
                     onFocus={e=>{if(!isEditMode){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
                     onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
                     <option value="">Select modal / screen...</option>
@@ -1840,9 +1840,9 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             </span>}
           </div>
 
-          {!section||!modalId?(
+          {!section||!operationPoint?(
             <div style={{border:`1px solid ${C.border}`,borderRadius:6,padding:"24px 16px",textAlign:"center",marginBottom:14,background:C.bg2}}>
-              <div style={{fontSize:13,color:C.t3,marginBottom:4}}>Select Domain and Modal ID / URL above</div>
+              <div style={{fontSize:13,color:C.t3,marginBottom:4}}>Select Domain and Operation Point above</div>
               <div style={{fontSize:12,color:C.t3}}>All available diff fields from that modal will be auto-populated here</div>
             </div>
           ):(
@@ -2008,7 +2008,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
         </div>
         <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <span style={{fontSize:12,color:C.t3}}>
-            {section&&modalId?(
+            {section&&operationPoint?(
               <span style={{display:"flex",alignItems:"center",gap:12}}>
                 <span style={{color:C.greenT}}>✓ {diffRows.length} diff · {ctxRows.filter(r=>r.label).length} ctx queries</span>
                 <span style={{color:makerPerms.length>0?C.greenT:saveAttempted&&makerPerms.length===0?C.red:C.t3}}>
@@ -2407,7 +2407,7 @@ function ApiDefModal({def,endpoints,onClose,onSave}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
       <div style={{background:C.bg,borderRadius:10,width:720,maxHeight:"92vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
-          <span style={{fontSize:15,fontWeight:600,color:C.text}}>{isEdit?"Edit API Definition":"New API Definition"}</span>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>{isEdit?"Edit Operation":"New Operation"}</span>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:C.t3,lineHeight:1}}>x</button>
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
@@ -2605,7 +2605,7 @@ function ApiDefModal({def,endpoints,onClose,onSave}){
   );
 }
 
-function GMCApiDefsView({endpoints}){
+function GMCOpsRegistryView({endpoints}){
   const [defs,setDefs]=useState(INIT_API_DEFS);
   const [showModal,setShowModal]=useState(false);
   const [showView,setShowView]=useState(false);
@@ -2627,11 +2627,11 @@ function GMCApiDefsView({endpoints}){
   const handleSave=(data)=>{
     if(selDef){
       setDefs(function(prev){return prev.map(function(d){return d.id===selDef.id?{...d,...data}:d;});});
-      setToast("API definition updated.");
+      setToast("Operation updated.");
     } else {
       var newId="apd_"+Math.random().toString(36).substring(2,7);
       setDefs(function(prev){return[...prev,{id:newId,...data}];});
-      setToast("API definition created.");
+      setToast("Operation created.");
     }
     setShowModal(false);setSelDef(null);
   };
@@ -2640,10 +2640,10 @@ function GMCApiDefsView({endpoints}){
     <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
       <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
         <div>
-          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>API Definitions</div>
-          <div style={{fontSize:12.5,color:C.t3}}>GMC {">"} API Definitions</div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>Operations Registry</div>
+          <div style={{fontSize:12.5,color:C.t3}}>GMC {">"} Operations Registry</div>
         </div>
-        <Btn variant="dark" onClick={()=>{setSelDef(null);setShowModal(true);}}>+ New API Definition</Btn>
+        <Btn variant="dark" onClick={()=>{setSelDef(null);setShowModal(true);}}>+ New Operation</Btn>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:10,padding:"0 24px 10px",flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,height:34}}>
@@ -2712,7 +2712,7 @@ function GMCApiDefsView({endpoints}){
                 </tr>
               );
             })}
-            {filtered.length===0&&<tr><td colSpan={7} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No API definitions found</td></tr>}
+            {filtered.length===0&&<tr><td colSpan={7} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No operations found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -2727,16 +2727,16 @@ function GMCApiDefsView({endpoints}){
    GMC CONFIGS VIEW
 ═══════════════════════════════════════ */
 const ACTIVITY_CONFIGS=[
-  {id:"ACT_CT_001",  name:"Manage Template Edit",         modalId:"edit-template-modal",section:"Communication",   queries:"3 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["communication:manage"],checkerPerms:[["communication:manage"]],diffFields:["body","subject","notifType","client","status","validity","iconUrl"],ctxProviders:["comm_template_reach","comm_template_last_modified","comm_delivery_failure_rate"]},
-  {id:"ACT_PAY_001",name:"Account Type ID Change",       modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["accountTypeId"],ctxType:"tailored",ctxApiUrl:"https://payments-svc/api/context/account-type",ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_account_age"]},
-  {id:"ACT_PAY_002",name:"Freeze Account",               modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 5 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["accountStatus"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_PAY_003",name:"Manual Treasury Transfer",     modalId:"edit-fee-modal",section:"Payments",        queries:"8 diff, 5 ctx", sla:"8 hrs",warn:"70% (336 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["srcGroup","srcAccount","dstGroup","dstAccount","amount","channel","desc","proof"],ctxProviders:["pay_fee_impact","pay_account_age","pay_transaction_volume_30d","pay_open_transactions","pay_account_limits"]},
-  {id:"ACT_PAY_004",name:"Edit Account Type",            modalId:"edit-limit-modal",section:"Payments",        queries:"5 diff, 6 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage","payments:admin"],checkerPerms:[["payments:manage"]],diffFields:["accountName","accountGroup","walletLimit","dailyOutgoing","monthlyIncoming"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_PAY_005",name:"Edit Account Type Constraint", modalId:"edit-fee-modal",section:"Payments",        queries:"4 diff, 5 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["maxAmount","minAmount","destGroups","moneyMovement"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_KYC_001",name:"Block Customer Account",       modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"],["kyc:manage"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_002",name:"Reset Customer MPIN",          modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["mpinStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_003",name:"Freeze Customer Account",      modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage","kyc:admin"],checkerPerms:[["kyc:manage"],["kyc:manage","kyc:admin"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_004",name:"Force Logout Customer",        modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"2 hrs",warn:"80% (96 min)", status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["sessionStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_CT_001",  name:"Manage Template Edit",         operationPoint:"op_comm_template",section:"Communication",   queries:"3 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["communication:manage"],checkerPerms:[["communication:manage"]],diffFields:["body","subject","notifType","client","status","validity","iconUrl"],ctxProviders:["comm_template_reach","comm_template_last_modified","comm_delivery_failure_rate"]},
+  {id:"ACT_PAY_001",name:"Account Type ID Change",       operationPoint:"op_pay_limit",section:"Payments",        queries:"1 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["accountTypeId"],ctxType:"tailored",ctxApiUrl:"https://payments-svc/api/context/account-type",ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_account_age"]},
+  {id:"ACT_PAY_002",name:"Freeze Account",               operationPoint:"op_pay_limit",section:"Payments",        queries:"1 diff, 5 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["accountStatus"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_PAY_003",name:"Manual Treasury Transfer",     operationPoint:"op_pay_fee",section:"Payments",        queries:"8 diff, 5 ctx", sla:"8 hrs",warn:"70% (336 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["srcGroup","srcAccount","dstGroup","dstAccount","amount","channel","desc","proof"],ctxProviders:["pay_fee_impact","pay_account_age","pay_transaction_volume_30d","pay_open_transactions","pay_account_limits"]},
+  {id:"ACT_PAY_004",name:"Edit Account Type",            operationPoint:"op_pay_limit",section:"Payments",        queries:"5 diff, 6 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage","payments:admin"],checkerPerms:[["payments:manage"]],diffFields:["accountName","accountGroup","walletLimit","dailyOutgoing","monthlyIncoming"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_PAY_005",name:"Edit Account Type Constraint", operationPoint:"op_pay_fee",section:"Payments",        queries:"4 diff, 5 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["maxAmount","minAmount","destGroups","moneyMovement"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_KYC_001",name:"Block Customer Account",       operationPoint:"op_kyc_rules",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"],["kyc:manage"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_002",name:"Reset Customer MPIN",          operationPoint:"op_kyc_rules",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["mpinStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_003",name:"Freeze Customer Account",      operationPoint:"op_kyc_rules",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage","kyc:admin"],checkerPerms:[["kyc:manage"],["kyc:manage","kyc:admin"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_004",name:"Force Logout Customer",        operationPoint:"op_kyc_rules",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"2 hrs",warn:"80% (96 min)", status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["sessionStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
 ];
 const ROLE_CONFIGS=[];
 
@@ -4291,13 +4291,13 @@ function App(){
         {page==="manage-template"&&<ManageTemplateView templates={templates} onTemplateUpdate={handleTemplateUpdate} onLogAdd={handleLogAdd}/>}
         {page==="gmc-tickets"&&<GMCTicketsView logs={logs} setLogs={setLogs} templates={templates} setTemplates={setTemplates} initialOpenId={openLogId} onInitialOpenConsumed={()=>setOpenLogId(null)}/>}
         {page==="gmc-configs"&&<GMCConfigsView logs={logs}/>}
-        {page==="gmc-api-defs"&&<GMCApiDefsView endpoints={serviceEndpoints}/>}
+        {page==="gmc-ops-registry"&&<GMCOpsRegistryView endpoints={serviceEndpoints}/>}
         {page==="gmc-service-eps"&&<GMCServiceEndpointsView/>}
         {page==="pay-consumers"&&<ConsumersView onLogAdd={handleLogAdd} onPage={setPage} onOpenLog={(id)=>{setOpenLogId(id);setPage("gmc-tickets");}}/>}
         {page==="pay-manual-transfer"&&<ManualTransferView onLogAdd={handleLogAdd}/>}
         {page==="pay-account-types"&&<AccountTypesView onLogAdd={handleLogAdd}/>}
         {page==="kyc-customers"&&<KycCustomersView onLogAdd={handleLogAdd}/>}
-        {page!=="manage-template"&&page!=="gmc-tickets"&&page!=="gmc-configs"&&page!=="gmc-api-defs"&&page!=="gmc-service-eps"&&page!=="pay-consumers"&&page!=="pay-manual-transfer"&&page!=="pay-account-types"&&page!=="kyc-customers"&&(
+        {page!=="manage-template"&&page!=="gmc-tickets"&&page!=="gmc-configs"&&page!=="gmc-ops-registry"&&page!=="gmc-service-eps"&&page!=="pay-consumers"&&page!=="pay-manual-transfer"&&page!=="pay-account-types"&&page!=="kyc-customers"&&(
           <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.t3,fontSize:13,flexDirection:"column",gap:8}}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             <span>Select a section from the sidebar</span>

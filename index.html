@@ -160,7 +160,7 @@ function Sidebar({page,onPage,pendingCount}){
         <div onClick={()=>setKycOpen(o=>!o)} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px",cursor:"pointer",color:C.text,fontSize:13}}
           onMouseEnter={e=>{if(!kycOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!kycOpen)e.currentTarget.style.background="transparent"}}>
           <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.kyc}</span>
-          <span style={{flex:1}}>Customers & KYC</span>
+          <span style={{flex:1}}>Customers {"&"} KYC</span>
           <span style={{fontSize:11,color:C.t3,transform:kycOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
         </div>
         {kycOpen&&<div style={{borderLeft:`2px solid ${C.border}`,marginLeft:14}}>
@@ -243,12 +243,14 @@ function Sidebar({page,onPage,pendingCount}){
           onMouseEnter={e=>{if(!gmcOpen)e.currentTarget.style.background=C.bg}} onMouseLeave={e=>{if(!gmcOpen)e.currentTarget.style.background="transparent"}}>
           <span style={{color:C.t2,display:"flex",alignItems:"center",flexShrink:0}}>{ICONS.gmc}</span>
           <span style={{flex:1}}>GMC</span>
-          {!gmcOpen&&pendingCount>0&&<span style={{background:C.red,color:"#fff",fontSize:10,fontWeight:700,borderRadius:10,padding:"1px 6px",marginRight:4,lineHeight:1.6}}>{pendingCount}</span>}
+          
           <span style={{fontSize:11,color:C.t3,transform:gmcOpen?"rotate(90deg)":"none",transition:"transform .15s"}}>›</span>
         </div>
         {gmcOpen&&<>
           <NavRow label="Configs" indent={14} active={page==="gmc-configs"} onClick={()=>onPage("gmc-configs")}/>
-          <NavRow label="Logs" indent={14} active={page==="gmc-logs"} onClick={()=>onPage("gmc-logs")} badge={pendingCount}/>
+          <NavRow label="Tickets" indent={14} active={page==="gmc-tickets"} onClick={()=>onPage("gmc-tickets")}/>
+          <NavRow label="API Definitions" indent={14} active={page==="gmc-api-defs"} onClick={()=>onPage("gmc-api-defs")}/>
+          <NavRow label="Service Endpoints" indent={14} active={page==="gmc-service-eps"} onClick={()=>onPage("gmc-service-eps")}/>
         </>}
 
       </nav>
@@ -309,6 +311,7 @@ const tdS={padding:"14px 16px",borderBottom:`1px solid ${C.border}`,verticalAlig
 ═══════════════════════════════════════ */
 const GMC_STATUS={
   Pending:{bg:C.amberL,c:C.amberT,b:C.amberB},
+  "In Progress":{bg:"#eff6ff",c:"#1d4ed8",b:"#bfdbfe"},
   Approved:{bg:C.greenL,c:C.greenT,b:C.greenB},
   Declined:{bg:C.redL,c:C.redT,b:C.redB},
   Withdrawn:{bg:C.grayL,c:C.gray,b:C.grayB},
@@ -336,7 +339,7 @@ const INIT_TEMPLATES=[
 
 const ALL_INIT_LOGS=[
   /* Communication */
-  {id:"REQ_1089",activityId:"ACT_CT_001",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"13 May 2026, 12:58 PM",status:"Pending",targetId:"TMPL_101",
+  {id:"REQ_1089",activityId:"ACT_CT_001",targetType:"Template",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"13 May 2026, 12:58 PM",status:"Pending",targetId:"TMPL_101",
    category:"Communication",action:"Manage Template Edit",reason:"",context:"",atts:[],
    diff:[
      {field:"Body",old:"<!DOCTYPE html>\n<html lang=\"en\">",nw:"<!DOCTYPE html>\n<html lang=\"en\"><!-- Updated -->",changed:true},
@@ -350,15 +353,15 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Template Type",v:"Email"},{l:"Client",v:"smart_app_consumer"},{l:"Total Affected Users",v:"2,847"},{l:"Notification Type",v:"Email"},{l:"Template Status",v:"Active"},{l:"Silent Delivery",v:"No"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:101},
   /* UC1a — Account Type ID Change */
-  {id:"REQ_1201",activityId:"ACT_PAY_001",approvalCount:1,approvalsReceived:0,flowName:"Account Type ID Change",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 9:15 AM",status:"Pending",targetId:"CONS_343",
+  {id:"REQ_1201",activityId:"ACT_PAY_001",targetType:"Consumer",ctxType:"tailored",approvalCount:1,approvalsReceived:0,flowName:"Account Type ID Change",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 9:15 AM",status:"Pending",targetId:"CONS_343",
    category:"Payments — User Accounts",action:"Account Type ID Change",reason:"Customer upgraded to premium tier as per request #CUS-2891. Account type needs to reflect new permissions.",context:"Verified with operations team. Customer has completed enhanced KYC.",atts:[],
    diff:[
      {field:"Account Type ID",old:"3 — Current_Account",nw:"1 — Savings_Bank_Ac_Basic",changed:true},
    ],
-   ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
+   ctxData:[{l:"Account Type Name",old:"Current_Account",v:"Savings_Bank_Ac_Basic"},{l:"Wallet Balance Limit",old:"₱10,000.00",v:"₱50,000.00"},{l:"Daily Outgoing Limit",old:"₱10,000.00",v:"₱25,000.00"},{l:"Monthly Incoming Limit",old:"₱10,000.00",v:"₱100,000.00"},{l:"Allowed Transaction Types",old:"Bank Transfer, Bill Payments",v:"Bank Transfer, Scan & Pay, Bill Payments, Mobile Load"},{l:"Applicable Charges",old:"Standard — 1.2% per transaction",v:"Preferred — 0.8% per transaction"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC1b — Freeze Account */
-  {id:"REQ_1202",activityId:"ACT_PAY_002",approvalCount:2,approvalsReceived:0,flowName:"Freeze Account",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 9:45 AM",status:"Pending",targetId:"CONS_343",
+  {id:"REQ_1202",activityId:"ACT_PAY_002",targetType:"Consumer",approvalCount:2,approvalsReceived:0,flowName:"Freeze Account",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 9:45 AM",status:"Pending",targetId:"CONS_343",
    category:"Payments — User Accounts",action:"Freeze Account",reason:"Multiple failed login attempts detected. Suspicious transaction pattern observed. Freezing pending investigation per SEC-04.",context:"AML team notified. Investigation ticket #AML-5521 raised.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
@@ -366,7 +369,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Account Type Name",v:"Current_Account"},{l:"Wallet Balance Limit",v:"₱10,000.00"},{l:"Daily Outgoing Limit",v:"₱10,000.00"},{l:"Monthly Incoming Limit",v:"₱10,000.00"},{l:"Allowed Transaction Types",v:"Bank Transfer, Scan & Pay, Bill Payments"},{l:"Applicable Charges",v:"Standard — 1.2% per transaction"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC2 — Manual Transfer */
-  {id:"REQ_1203",activityId:"ACT_PAY_003",approvalCount:2,approvalsReceived:0,flowName:"Manual Treasury Transfer",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 10:00 AM",status:"Pending",targetId:"TXN_BHP_CV",
+  {id:"REQ_1203",activityId:"ACT_PAY_003",targetType:"Treasury Account",approvalCount:2,approvalsReceived:0,flowName:"Manual Treasury Transfer",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 10:00 AM",status:"Pending",targetId:"TXN_BHP_CV",
    category:"Payments — Treasury",action:"Manual Treasury Transfer",reason:"Add money to treasury reserve for end-of-day settlement processing.",context:"Approved by finance team. Reference: FIN-2026-0525.",atts:[{name:"Screenshot_2026-05-26_proof.png",size:"440 KB"}],
    diff:[
      {field:"Source Account Group",old:"—",nw:"Internal Cash",changed:true},
@@ -381,7 +384,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Fee Amount",v:"₱50.00"},{l:"Tax Amount",v:"₱12.00"},{l:"Payment Channel ID",v:"49"},{l:"Payment Channel Name",v:"SMART_MONEY"},{l:"Status",v:"Pending"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC3a — Edit Account Type */
-  {id:"REQ_1204",activityId:"ACT_PAY_004",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 10:30 AM",status:"Pending",targetId:"AT_1020",
+  {id:"REQ_1204",activityId:"ACT_PAY_004",targetType:"Account Type",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Dipanshu",submittedBy:{userId:"usr_009",name:"Dipanshu"},date:"25 May 2026, 10:30 AM",status:"Pending",targetId:"AT_1020",
    category:"Payments — Configs",action:"Edit Account Type",reason:"Updating wallet limits as per new policy effective June 2026. Daily outgoing limit increased for premium consumer accounts.",context:"Policy document: POL-2026-LIMITS-004.",atts:[],
    diff:[
      {field:"Daily Outgoing Limit",old:"₱10,000",nw:"₱25,000",changed:true},
@@ -393,7 +396,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Core Features",v:"Bank Transfer, Scan & Pay, Bill Payments, Mobile Load"},{l:"Send Money Access",v:"Consumer, Merchant, Seller"},{l:"Transaction Channel",v:"SMART_MONEY"},{l:"Money Movement",v:"Send & Receive"},{l:"Min Transaction Amount",v:"₱1"},{l:"Max Transaction Amount",v:"₱50,000"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC3b — Edit Constraint */
-  {id:"REQ_1205",activityId:"ACT_PAY_005",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 11:00 AM",status:"Pending",targetId:"CONS_495",
+  {id:"REQ_1205",activityId:"ACT_PAY_005",targetType:"Account Type",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Dipanshu",submittedBy:{userId:"usr_009",name:"Dipanshu"},date:"25 May 2026, 11:00 AM",status:"Pending",targetId:"CONS_495",
    category:"Payments — Configs",action:"Edit Account Type Constraint",reason:"Increasing max amount limit for PesoNet bill payments as per merchant agreement renewal.",context:"Merchant agreement #MA-2026-0491 signed.",atts:[],
    diff:[
      {field:"Max Amount",old:"₱50,000",nw:"₱100,000",changed:true},
@@ -405,7 +408,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Account Type Name",v:"UTKARSH_BAWA_0"},{l:"Account Type Group",v:"Consumer"},{l:"Wallet Balance Limit",v:"₱100,000"},{l:"Daily Outgoing Limit",v:"₱10,000"},{l:"Monthly Incoming Limit",v:"₱100,000"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC4a — Block */
-  {id:"REQ_1206",activityId:"ACT_KYC_001",approvalCount:2,approvalsReceived:0,flowName:"Block Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 11:30 AM",status:"Pending",targetId:"KYC_99",
+  {id:"REQ_1206",activityId:"ACT_KYC_001",targetType:"Customer",approvalCount:2,approvalsReceived:0,flowName:"Block Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 11:30 AM",status:"Pending",targetId:"KYC_99",
    category:"Customers & KYC",action:"Block Customer Account",reason:"Confirmed Fraudulent Activity",context:"Multiple chargeback disputes filed. AML team flagged this account for suspicious outgoing transfers totalling ₱450,000 in 48 hours.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
@@ -413,7 +416,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Customer Full Name",v:"Nishank Sharma"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"3"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC4b — Reset MPIN */
-  {id:"REQ_1207",activityId:"ACT_KYC_002",approvalCount:1,approvalsReceived:0,flowName:"Reset Customer MPIN",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 12:00 PM",status:"Pending",targetId:"KYC_80",
+  {id:"REQ_1207",activityId:"ACT_KYC_002",targetType:"Customer",approvalCount:1,approvalsReceived:0,flowName:"Reset Customer MPIN",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 12:00 PM",status:"Pending",targetId:"KYC_80",
    category:"Customers & KYC",action:"Reset Customer MPIN",reason:"Customer lost access to phone. Identity verified via KYC documents.",context:"Support Ticket ID: KEDS-2891. Customer physically visited branch.",atts:[{name:"ID_Card.png",size:"1.2 MB"},{name:"Photo_with_ID.png",size:"980 KB"},{name:"Selfie.png",size:"540 KB"}],
    diff:[
      {field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true},
@@ -421,7 +424,7 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Customer Full Name",v:"Robert R. Bernardo"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"0"}],
    checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null},
   /* UC4c — Freeze */
-  {id:"REQ_1087",activityId:"ACT_PAY_004",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"10 May 2026, 08:00 AM",status:"Expired",targetId:"AT_1019",
+  {id:"REQ_1087",activityId:"ACT_PAY_004",targetType:"Account Type",approvalCount:1,approvalsReceived:0,flowName:"Edit Account Type",domain:"Payments",maker:"Dipanshu",submittedBy:{userId:"usr_009",name:"Dipanshu"},date:"10 May 2026, 08:00 AM",status:"Expired",targetId:"AT_1019",
    category:"Payments — Configs",action:"Edit Account Type",reason:"Increasing daily outgoing limit for merchant accounts.",context:"Merchant agreement renewal MAG-2026-0301.",atts:[],
    diff:[
      {field:"Daily Outgoing Limit",old:"₱1,000",nw:"₱5,000",changed:true},
@@ -432,8 +435,36 @@ const ALL_INIT_LOGS=[
    ],
    ctxData:[{l:"Account Type Name",v:"USER_KYB_10"},{l:"Wallet Balance Limit",v:"₱1,000"},{l:"Daily Outgoing Limit",v:"₱1,000"},{l:"Monthly Incoming Limit",v:"₱1,000"}],
    checkerRemark:"",checkerName:"",checkerDate:"10 May 2026, 12:00 PM",targetTemplateId:null},
+  /* ACT_KYC_003 Multi-checker demos */
+  {id:"REQ_KYC_001",activityId:"ACT_KYC_003",approvalCount:2,approvalsReceived:1,flowName:"Freeze Customer Account",domain:"Customers & KYC",targetType:"Customer",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"28 Jun 2026, 09:15 AM",status:"In Progress",targetId:"KYC_88",
+   category:"Customers & KYC",action:"Freeze Customer Account",reason:"AMLC investigation order received. Immediate freeze required.",context:"",atts:[],
+   diff:[{field:"Account Status",old:"Active",nw:"Frozen",changed:true}],
+   ctxData:[{l:"Customer Full Name",v:"Jose Reyes"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"Violation Count",v:"2"}],
+   approvals:[
+     {position:1,checkerPerms:["kyc:manage"],decision:"Approved",actedBy:"Roushan Gupta",actedByUserId:"usr_006",actedAt:"28 Jun 2026, 10:00 AM",remarks:"Verified AMLC order. Approved for freeze."},
+     {position:2,checkerPerms:["kyc:manage","kyc:admin"],decision:null,actedBy:null,actedByUserId:null,actedAt:null,remarks:null},
+   ],
+   checkerRemark:"",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:"",targetTemplateId:null},
+  {id:"REQ_KYC_002",activityId:"ACT_KYC_003",approvalCount:2,approvalsReceived:1,flowName:"Freeze Customer Account",domain:"Customers & KYC",targetType:"Customer",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"27 Jun 2026, 02:30 PM",status:"Declined",targetId:"KYC_89",
+   category:"Customers & KYC",action:"Freeze Customer Account",reason:"Suspicious transaction pattern flagged by risk team.",context:"",atts:[],
+   diff:[{field:"Account Status",old:"Active",nw:"Frozen",changed:true}],
+   ctxData:[{l:"Customer Full Name",v:"Ana Cruz"},{l:"KYC Status",v:"In Progress"},{l:"Account Status",v:"Active"},{l:"Violation Count",v:"0"}],
+   approvals:[
+     {position:1,checkerPerms:["kyc:manage"],decision:"Approved",actedBy:"Roushan Gupta",actedByUserId:"usr_006",actedAt:"27 Jun 2026, 03:00 PM",remarks:"Pattern looks suspicious. Approving to proceed to Checker 2."},
+     {position:2,checkerPerms:["kyc:manage","kyc:admin"],decision:"Declined",actedBy:"Jitendra Kumar",actedByUserId:"usr_009",actedAt:"27 Jun 2026, 04:15 PM",remarks:"Insufficient evidence. Transaction pattern within acceptable range. Declined."},
+   ],
+   checkerRemark:"Insufficient evidence. Declined.",checkerName:"Jitendra Kumar",checkerUserId:"usr_009",checkerDate:"27 Jun 2026, 04:15 PM",targetTemplateId:null},
+  {id:"REQ_KYC_003",activityId:"ACT_KYC_003",approvalCount:2,approvalsReceived:2,flowName:"Freeze Customer Account",domain:"Customers & KYC",targetType:"Customer",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"26 Jun 2026, 11:00 AM",status:"Approved",targetId:"KYC_90",
+   category:"Customers & KYC",action:"Freeze Customer Account",reason:"Confirmed fraudulent activity. Multiple chargebacks in 24 hours.",context:"",atts:[],
+   diff:[{field:"Account Status",old:"Active",nw:"Frozen",changed:true}],
+   ctxData:[{l:"Customer Full Name",v:"Marco Santos"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"Violation Count",v:"5"}],
+   approvals:[
+     {position:1,checkerPerms:["kyc:manage"],decision:"Approved",actedBy:"Roushan Gupta",actedByUserId:"usr_006",actedAt:"26 Jun 2026, 11:45 AM",remarks:"Confirmed fraudulent pattern. Approved."},
+     {position:2,checkerPerms:["kyc:manage","kyc:admin"],decision:"Approved",actedBy:"Jitendra Kumar",actedByUserId:"usr_009",actedAt:"26 Jun 2026, 12:30 PM",remarks:"Reviewed Checker 1 remarks and supporting data. Approved."},
+   ],
+   checkerRemark:"All checkers approved. Freeze executed.",checkerName:"Saurabh",checkerUserId:"usr_008",checkerDate:"26 Jun 2026, 12:30 PM",targetTemplateId:null},
   /* Demo: Withdrawn entry */
-  {id:"REQ_1088",activityId:"ACT_CT_001",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"12 May 2026, 09:30 AM",status:"Withdrawn",targetId:"TMPL_100",
+  {id:"REQ_1088",activityId:"ACT_CT_001",targetType:"Template",approvalCount:1,approvalsReceived:0,flowName:"Manage Template Edit",domain:"Communication",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"12 May 2026, 09:30 AM",status:"Withdrawn",targetId:"TMPL_100",
    category:"Communication",action:"Manage Template Edit",reason:"Subject line update for compliance.",context:"Compliance review #CR-2026-044 requested change.",atts:[],
    diff:[
      {field:"Subject",old:"[AML] Manual Termination",nw:"[AML] Manual Termination - Notice",changed:true},
@@ -447,15 +478,15 @@ const ALL_INIT_LOGS=[
    ctxData:[{l:"Template Type",v:"Email"},{l:"Client",v:"smart_app_consumer"},{l:"Total Affected Users",v:"1,203"},{l:"Template Status",v:"Active"}],
    checkerRemark:"",checkerName:"",checkerDate:"12 May 2026, 10:15 AM",targetTemplateId:100},
   /* Demo: Callback Error entry */
-  {id:"REQ_1086",activityId:"ACT_PAY_002",approvalCount:1,approvalsReceived:0,flowName:"Freeze Account",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"8 May 2026, 03:15 PM",status:"Error",targetId:"CONS_344",
+  {id:"REQ_1086",activityId:"ACT_PAY_002",targetType:"Consumer",approvalCount:1,approvalsReceived:0,flowName:"Freeze Account",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"8 May 2026, 03:15 PM",status:"Error",targetId:"CONS_344",
    category:"Payments — User Accounts",action:"Freeze Account",reason:"Suspicious login pattern and multiple failed OTP attempts over 2 hours.",context:"Security escalation ticket #SEC-2026-0392.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Freeze Initiated",changed:true},
    ],
    ctxData:[{l:"Account Type Name",v:"Savings_Bank_Ac_Basic"},{l:"Wallet Balance Limit",v:"₱50,000.00"},{l:"Daily Outgoing Limit",v:"₱25,000.00"},{l:"Monthly Incoming Limit",v:"₱100,000.00"}],
-   checkerRemark:"Confirmed suspicious activity. Approved for immediate freeze.",checkerName:"Roushan Gupta",checkerDate:"8 May 2026, 03:45 PM",targetTemplateId:null},
+   checkerRemark:"Confirmed suspicious activity. Approved for immediate freeze.",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:"8 May 2026, 03:45 PM",targetTemplateId:null},
   /* Demo: Approved entry (ACT_PAY_005 — Edit Account Type Constraint) */
-  {id:"REQ_1085",activityId:"ACT_PAY_005",approvalCount:1,approvalsReceived:1,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"5 May 2026, 02:30 PM",status:"Approved",targetId:"CONS_188",
+  {id:"REQ_1085",activityId:"ACT_PAY_005",targetType:"Account Type",approvalCount:1,approvalsReceived:1,flowName:"Edit Account Type Constraint",domain:"Payments",maker:"Dipanshu",submittedBy:{userId:"usr_009",name:"Dipanshu"},date:"5 May 2026, 02:30 PM",status:"Approved",targetId:"CONS_188",
    category:"Payments — Configs",action:"Edit Account Type Constraint",reason:"Raising max transfer cap for high-volume merchant accounts per quarterly review.",context:"Finance sign-off FIN-2026-0505. Board approval on record.",atts:[],
    diff:[
      {field:"Max Amount",old:"₱50,000",nw:"₱150,000",changed:true},
@@ -465,17 +496,17 @@ const ALL_INIT_LOGS=[
      {field:"Money Movement",old:"Send: Yes, Receive: No",nw:"Send: Yes, Receive: No",changed:false},
    ],
    ctxData:[{l:"Account Type Name",v:"MERCHANT_PRO_1"},{l:"Account Type Group",v:"Merchant"},{l:"Wallet Balance Limit",v:"₱500,000"},{l:"Daily Outgoing Limit",v:"₱150,000"},{l:"Monthly Incoming Limit",v:"₱2,000,000"}],
-   checkerRemark:"Reviewed and approved. Limits are within regulatory bounds per BSP Circular 1108.",checkerName:"Roushan Gupta",checkerDate:"5 May 2026, 03:05 PM",targetTemplateId:null},
+   checkerRemark:"Reviewed and approved. Limits are within regulatory bounds per BSP Circular 1108.",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:"5 May 2026, 03:05 PM",targetTemplateId:null},
   /* Demo: Declined entry (ACT_KYC_001 — Block Customer Account) */
-  {id:"REQ_1084",activityId:"ACT_KYC_001",approvalCount:2,approvalsReceived:0,flowName:"Block Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"3 May 2026, 10:15 AM",status:"Declined",targetId:"KYC_51",
+  {id:"REQ_1084",activityId:"ACT_KYC_001",targetType:"Customer",approvalCount:2,approvalsReceived:0,flowName:"Block Customer Account",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"3 May 2026, 10:15 AM",status:"Declined",targetId:"KYC_51",
    category:"Customers & KYC",action:"Block Customer Account",reason:"Suspected mule account based on unusual transaction velocity.",context:"Risk team preliminary assessment. Awaiting final AML clearance.",atts:[],
    diff:[
      {field:"Account Status",old:"Active",nw:"Blocked",changed:true},
    ],
    ctxData:[{l:"Customer Full Name",v:"Maria Santos"},{l:"KYC Status",v:"Agent Approved"},{l:"Account Status",v:"Active"},{l:"User Status",v:"Active"},{l:"Current Violation Count",v:"1"}],
-   checkerRemark:"Insufficient evidence to justify a block at this stage. Transaction velocity is within acceptable range for the account type. Request declined — please escalate via AML team if risk is confirmed.",checkerName:"Roushan Gupta",checkerDate:"3 May 2026, 11:50 AM",targetTemplateId:null},
+   checkerRemark:"Insufficient evidence to justify a block at this stage. Transaction velocity is within acceptable range for the account type. Request declined — please escalate via AML team if risk is confirmed.",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:"3 May 2026, 11:50 AM",targetTemplateId:null},
   /* UC4d — Force Logout */
-  {id:"REQ_1209",activityId:"ACT_KYC_004",approvalCount:1,approvalsReceived:0,flowName:"Force Logout Customer",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 12:30 PM",status:"Pending",targetId:"KYC_33",
+  {id:"REQ_1209",activityId:"ACT_KYC_004",targetType:"Customer",approvalCount:1,approvalsReceived:0,flowName:"Force Logout Customer",domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:"25 May 2026, 12:30 PM",status:"Pending",targetId:"KYC_33",
    category:"Customers & KYC",action:"Force Logout Customer",reason:"Active Security Threat — Account Takeover",context:"Unusual login detected from foreign IP. Forcing logout to protect account.",atts:[],
    diff:[
      {field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true},
@@ -501,7 +532,7 @@ function countWords(str){
   if(!trimmed)return 0;
   return trimmed.split(/\s+/).length;
 }
-const WORD_LIMIT=100;
+const WORD_LIMIT=200;
 
 /* ═══════════════════════════════════════
    VALIDATION TOAST (inline, for modal)
@@ -527,9 +558,7 @@ function ValidationToast({msg,onClose}){
 ═══════════════════════════════════════ */
 function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=null}){
   const [reason,setReason]=useState("");
-  const [ctx,setCtx]=useState("");
   const [reasonErr,setReasonErr]=useState("");
-  const [ctxErr,setCtxErr]=useState("");
   const [fileErr,setFileErr]=useState("");
   const [fileCount,setFileCount]=useState(0);
   const [validationToast,setValidationToast]=useState(null);
@@ -537,16 +566,14 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
   const [dupLoading,setDupLoading]=useState(false);
 
   const reasonWords=countWords(reason);
-  const ctxWords=countWords(ctx);
   const reasonOver=reasonWords>WORD_LIMIT;
-  const ctxOver=ctxWords>WORD_LIMIT;
 
   /* ── Simulated file add (input validation scenario) ── */
   const handleAddFile=()=>{
     if(scenario==="input"){
       const newCount=fileCount+1;
-      if(newCount>3){
-        setFileErr("You can attach a maximum of 3 files. Remove one before adding another.");
+      if(newCount>1){
+        setFileErr("You can attach a maximum of 1 file. Remove it before adding another.");
         return;
       }
       setFileCount(newCount);
@@ -556,20 +583,18 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
 
   const handleConfirm=()=>{
     /* Reset errors */
-    setReasonErr(""); setCtxErr(""); setFileErr("");
+    setReasonErr(""); setFileErr("");
 
     /* ── Input validation scenario ── */
     if(scenario==="input"){
       let blocked=false;
       if(!reason.trim()){setReasonErr("Reason is required.");blocked=true;}
       else if(reasonOver){setReasonErr(`Reason must not exceed ${WORD_LIMIT} words. Currently ${reasonWords} words.`);blocked=true;}
-      if(ctxOver){setCtxErr(`Context must not exceed ${WORD_LIMIT} words. Currently ${ctxWords} words.`);blocked=true;}
-      if(fileCount>3){setFileErr("You can attach a maximum of 3 files.");blocked=true;}
+      if(fileCount>1){setFileErr("You can attach a maximum of 1 file.");blocked=true;}
       if(blocked){
         const parts=[];
         if(reasonErr||(!reason.trim())||reasonOver) parts.push("Reason: "+(!reason.trim()?"required":reasonOver?`exceeds ${WORD_LIMIT}-word limit (${reasonWords} words)`:""));
-        if(ctxOver) parts.push(`Context: exceeds ${WORD_LIMIT}-word limit (${ctxWords} words)`);
-        if(fileCount>3) parts.push("Attachments: max 3 files allowed");
+        if(fileCount>1) parts.push("Attachments: max 1 file allowed");
         setValidationToast("Request creation blocked. "+parts.filter(Boolean).join(". ")+".");
         return;
       }
@@ -602,8 +627,7 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
     /* ── Normal validation ── */
     if(!reason.trim()){setReasonErr("Reason is required.");return;}
     if(reasonOver){setReasonErr(`Reason must not exceed ${WORD_LIMIT} words. Currently ${reasonWords} words.`);return;}
-    if(ctxOver){setCtxErr(`Context must not exceed ${WORD_LIMIT} words. Currently ${ctxWords} words.`);return;}
-    onConfirm(reason,ctx);
+    onConfirm(reason,"");
   };
 
   const isDupToast=validationToast==="DUPLICATE_PENDING";
@@ -623,11 +647,7 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
         </div>
 
         <div style={{flex:1,overflowY:"auto",padding:"0 20px 16px"}}>
-          {/* Diff preview */}
-          <div style={{margin:"14px 0",padding:"10px 14px",background:C.bg2,borderRadius:6,border:`1px solid ${C.border}`}}>
-            <div style={{fontSize:11,fontWeight:600,color:C.t2,textTransform:"uppercase",letterSpacing:".06em",marginBottom:8}}>Changes Detected</div>
-            {diff.filter(d=>d.changed).slice(0,4).map((d,i)=>{const oldVal=d.old||"—";return(<div key={i} style={{fontSize:12.5,color:C.text,marginBottom:4}}><span style={{fontWeight:600}}>{d.field}:</span> <span style={{color:C.t3,textDecoration:"line-through",marginRight:6}}>{oldVal.length>40?oldVal.substring(0,40)+"…":oldVal}</span><span style={{color:C.green}}>→ {(d.nw||"Modified").length>40?(d.nw||"Modified").substring(0,40)+"…":(d.nw||"Modified")}</span></div>);})}
-          </div>
+
 
           {/* Reason */}
           <div style={{marginBottom:14}}>
@@ -641,20 +661,13 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
 
           {/* Context + Attachments — hidden for reasonOnly flows */}
           {!reasonOnly&&<>
-          <div style={{marginBottom:14}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-              <span style={{fontSize:12.5,fontWeight:500,color:C.text}}>Context <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional)</span></span>
-              <span style={{fontSize:11.5,color:ctxOver?C.red:ctxWords>80?C.amber:C.t3,fontWeight:ctxOver?600:400}}>{ctxWords}/{WORD_LIMIT} words</span>
-            </div>
-            <textarea value={ctx} onChange={e=>{setCtx(e.target.value);setCtxErr("");}} placeholder="Include all evidences and links. May be used for audit purposes." style={{width:"100%",padding:"8px 10px",border:`1px solid ${ctxErr||ctxOver?C.red:C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",minHeight:70,fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=ctxErr||ctxOver?C.red:C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${ctxOver?C.redL:C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=ctxErr||ctxOver?C.red:C.grayB;e.currentTarget.style.boxShadow="none";}}/>
-            {ctxErr&&<div style={{fontSize:12,color:C.red,marginTop:4,display:"flex",alignItems:"center",gap:4}}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{ctxErr}</div>}
-          </div>
+
 
           {/* Supporting Documents */}
           <div style={{marginBottom:4}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-              <span style={{fontSize:12.5,fontWeight:500,color:C.text}}>Supporting Documents <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional · max 3 files · max 3 MB each)</span></span>
-              {scenario==="input"&&<span style={{fontSize:11.5,color:fileCount>=3?C.red:C.t3}}>{fileCount}/3 files</span>}
+              <span style={{fontSize:12.5,fontWeight:500,color:C.text}}>Supporting Document <span style={{fontSize:12,color:C.t3,fontWeight:400}}>(Optional · max 1 file · max 5 MB)</span></span>
+              {scenario==="input"&&<span style={{fontSize:11.5,color:fileCount>=3?C.red:C.t3}}>{fileCount}/1 files</span>}
             </div>
             {scenario==="input"?(
               /* Interactive file demo for input validation scenario */
@@ -669,7 +682,7 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
                 ))}
                 <div onClick={handleAddFile} style={{border:`1.5px dashed ${fileCount>=3?C.red:C.grayB}`,borderRadius:6,padding:"12px",textAlign:"center",cursor:fileCount>=3?"not-allowed":"pointer",color:fileCount>=3?C.red:C.t3,fontSize:12.5,transition:"all .12s"}} onMouseEnter={e=>{if(fileCount<3)e.currentTarget.style.borderColor=C.blue;}} onMouseLeave={e=>{e.currentTarget.style.borderColor=fileCount>=3?C.red:C.grayB;}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{display:"block",margin:"0 auto 4px"}}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  {fileCount>=3?"Maximum 3 files reached":"Add File (click to simulate)"}
+                  {fileCount>=1?"Maximum 1 file reached":"Add File (click to simulate)"}
                 </div>
                 {fileErr&&<div style={{fontSize:12,color:C.red,marginTop:6,display:"flex",alignItems:"center",gap:4}}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{fileErr}</div>}
               </div>
@@ -677,7 +690,7 @@ function GMCReasoningModal({diff,onConfirm,onCancel,reasonOnly=false,scenario=nu
               <div style={{border:`1.5px dashed ${C.grayB}`,borderRadius:6,padding:"14px",textAlign:"center",cursor:"pointer",color:C.t3,fontSize:12.5}} onMouseEnter={e=>e.currentTarget.style.borderColor=C.blue} onMouseLeave={e=>e.currentTarget.style.borderColor=C.grayB}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{display:"block",margin:"0 auto 6px"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Attach Document
-                <div style={{fontSize:11,marginTop:3,color:C.t3}}>PDF, PNG, JPG · max 3 files · max 3 MB each</div>
+                <div style={{fontSize:11,marginTop:3,color:C.t3}}>PDF, PNG, JPG · max 1 file · max 5 MB</div>
               </div>
             )}
           </div>
@@ -969,7 +982,7 @@ function ExpandableFields({diff,mainCount}){
           <tbody>{hidden.map((d,i)=>(
             <tr key={i} style={{background:i%2===0?"#fff":"#fafbff"}}>
               <td style={{...pCell2,fontWeight:600,width:110,whiteSpace:"nowrap"}}>{d.field}</td>
-              <td style={{...pCell2,color:C.t2,fontFamily:"monospace",fontSize:12}}>{d.old||"—"}</td>
+              <td style={{...pCell2,color:C.t2,fontFamily:"monospace",fontSize:12,borderLeft:`1px solid #EDE9FF`}}>{d.old||"—"}</td>
               <td style={{...pCell2,color:C.t2,fontFamily:"monospace",fontSize:12,borderLeft:`1px solid #EDE9FF`}}>{d.nw||d.old||"—"}</td>
             </tr>
           ))}</tbody>
@@ -980,9 +993,8 @@ function ExpandableFields({diff,mainCount}){
 }
 
 function DiffSection(diff,pHdr,pCell,C){
-  var changedFields=diff.filter(function(d){return d.changed;});
-  var otherFields=diff.filter(function(d){return !d.changed;});
-  var orderedDiff=changedFields.concat(otherFields);
+  /* Only fields that actually changed are shown — unchanged fields are dropped entirely */
+  var orderedDiff=diff.filter(function(d){return d.changed;});
   var mainCount=Math.min(3,orderedDiff.length);
   var buildDiff=function(d){
     var oldStr=d.old||"";var newStr=d.nw||"";
@@ -1017,7 +1029,7 @@ function DiffSection(diff,pHdr,pCell,C){
       <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
         <thead><tr>
           <th style={pHdr}>Field</th>
-          <th style={pHdr}>Current Value</th>
+          <th style={{...pHdr,borderLeft:"1px solid #DDD6FE"}}>Current Value</th>
           <th style={{...pHdr,borderLeft:"1px solid #DDD6FE"}}>Proposed Value</th>
         </tr></thead>
         <tbody>{orderedDiff.slice(0,mainCount).map(function(d,i){
@@ -1026,7 +1038,7 @@ function DiffSection(diff,pHdr,pCell,C){
           return(
             <tr key={i} style={{background:i%2===0?C.bg:"#fafbff",borderBottom:"1px solid #EDE9FF"}}>
               <td style={{...pCell,fontWeight:600,verticalAlign:"top",whiteSpace:"nowrap",width:110}}>{d.field}</td>
-              <td style={{...pCell,verticalAlign:"top",background:d.changed?"#fff8f8":C.bg,padding:"12px 16px"}}>
+              <td style={{...pCell,verticalAlign:"top",background:d.changed?"#fff8f8":C.bg,padding:"12px 16px",borderLeft:"1px solid #EDE9FF"}}>
                 <div style={{maxHeight:isLong?180:80,overflowY:isLong?"auto":"visible"}}>{res.oldEl}</div>
               </td>
               <td style={{...pCell,verticalAlign:"top",background:d.changed?"#f8fff9":C.bg,padding:"12px 16px",borderLeft:"1px solid #EDE9FF"}}>
@@ -1037,6 +1049,74 @@ function DiffSection(diff,pHdr,pCell,C){
         })}</tbody>
       </table>
       <ExpandableFields diff={orderedDiff} mainCount={mainCount}/>
+    </div>
+  );
+}
+
+function ExpandableCtxTailored({rows,ctxHdr,ctxCell}){
+  const [open,setOpen]=useState(false);
+  return(
+    <div style={{marginTop:8,border:"1px solid #EDE9FF",borderRadius:6,overflow:"hidden"}}>
+      <button onClick={function(){setOpen(function(o){return !o;});}} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"#f8f7ff",border:"none",cursor:"pointer",fontSize:12.5,color:"#3B3FFF",fontWeight:500}}>
+        <span style={{display:"flex",alignItems:"center",gap:6}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          {open?"Hide":"View"} {rows.length} other field{rows.length!==1?"s":""}
+        </span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{transform:open?"rotate(180deg)":"none",transition:"transform .15s"}}><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      {open&&(
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={ctxHdr}>Field</th>
+            <th style={{...ctxHdr,borderLeft:"1px solid #DDD6FE"}}>Current Value</th>
+            <th style={{...ctxHdr,borderLeft:"1px solid #DDD6FE"}}>Proposed Value</th>
+          </tr></thead>
+          <tbody>{rows.map(function(c,i){
+            var hasOld=c.old!==undefined&&c.old!==null&&c.old!=="";
+            return(
+              <tr key={i} style={{background:i%2===0?"#fff":"#fafbff"}}>
+                <td style={{...ctxCell,fontWeight:600,verticalAlign:"top"}}>{c.l}</td>
+                <td style={{...ctxCell,verticalAlign:"top",color:"#6b7280",fontFamily:"monospace",fontSize:12,borderLeft:"1px solid #EDE9FF"}}>{hasOld?c.old:""}</td>
+                <td style={{...ctxCell,verticalAlign:"top",color:"#6b7280",fontFamily:"monospace",fontSize:12,borderLeft:"1px solid #EDE9FF"}}>{c.v}</td>
+              </tr>
+            );
+          })}</tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+function ExpandableCtxGeneric({rows,ctxHdr,ctxCell}){
+  const [open,setOpen]=useState(false);
+  var half=Math.ceil(rows.length/2);
+  var left=rows.slice(0,half);
+  var right=rows.slice(half);
+  return(
+    <div style={{marginTop:8,border:"1px solid #EDE9FF",borderRadius:6,overflow:"hidden"}}>
+      <button onClick={function(){setOpen(function(o){return !o;});}} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",background:"#f8f7ff",border:"none",cursor:"pointer",fontSize:12.5,color:"#3B3FFF",fontWeight:500}}>
+        <span style={{display:"flex",alignItems:"center",gap:6}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          {open?"Hide":"View"} {rows.length} other field{rows.length!==1?"s":""}
+        </span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{transform:open?"rotate(180deg)":"none",transition:"transform .15s"}}><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      {open&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,padding:"12px"}}>
+          <table style={{borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
+            <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Value</th></tr></thead>
+            <tbody>{left.map(function(c,i){return(
+              <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:"#6b7280"}}>{c.v}</td></tr>
+            );})}</tbody>
+          </table>
+          <table style={{borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
+            <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Value</th></tr></thead>
+            <tbody>{right.map(function(c,i){return(
+              <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:"#6b7280"}}>{c.v}</td></tr>
+            );})}</tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -1080,12 +1160,12 @@ function LogDetailModal({req,viewerPerm,currentUserId,onClose,onApprove,onDeclin
               </div>
               {/* Right of header: requested by + date + category + action */}
               <div style={{marginLeft:32}}>
-                <div style={{fontSize:12.5,color:C.t2,marginBottom:2}}>Requested by <span style={{color:C.blue,fontWeight:600}}>{req.maker}</span></div>
+                <div style={{fontSize:12.5,color:C.t2,marginBottom:2}}>Requested by <span style={{color:C.blue,fontWeight:600}}>{req.maker}{req.submittedBy&&req.submittedBy.userId?" ("+req.submittedBy.userId+")":""}</span></div>
                 <div style={{fontSize:11.5,color:C.t3,marginBottom:8}}>{req.date}</div>
                 <div style={{display:"flex",gap:24}}>
-                  <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Category</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.category}</div></div>
+                  <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Domain</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.domain||req.category}</div></div>
                   <div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Action</span><div style={{fontSize:13,color:C.t2,marginTop:2}}>{req.action}</div></div>
-                  {req.checkerName&&<div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approved by</span><div style={{fontSize:13,color:C.blue,marginTop:2}}>{req.checkerName}</div></div>}
+                  {req.checkerName&&<div><span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approved by</span><div style={{fontSize:13,color:C.blue,marginTop:2}}>{req.checkerName}{req.checkerUserId?" ("+req.checkerUserId+")":""}</div></div>}
                   <div style={{marginLeft:8}}>
                     <span style={{fontSize:12.5,fontWeight:600,color:C.text}}>Approvals</span>
                     <div style={{marginTop:4,display:"flex",alignItems:"center",gap:6}}>
@@ -1144,24 +1224,59 @@ function LogDetailModal({req,viewerPerm,currentUserId,onClose,onApprove,onDeclin
 
             {/* ── SECTION B: Data Difference Review ── */}
             {DiffSection(req.diff,pHdr,pCell,C)}
-            {/* ── SECTION B: Additional Context (two side-by-side mini tables) ── */}
-            <div style={{marginBottom:20}}>
-              <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Additional Context</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <table style={{borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
-                  <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Current Value</th></tr></thead>
-                  <tbody>{req.ctxData.slice(0,Math.ceil(req.ctxData.length/2)).map((c,i)=>(
-                    <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
-                  ))}</tbody>
-                </table>
-                <table style={{borderCollapse:"collapse",border:`1px solid #DDD6FE`}}>
-                  <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Current Value</th></tr></thead>
-                  <tbody>{req.ctxData.slice(Math.ceil(req.ctxData.length/2)).map((c,i)=>(
-                    <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
-                  ))}</tbody>
-                </table>
-              </div>
-            </div>
+            {/* ── SECTION B: Additional Context ── */}
+            {(function(){
+              var ctx=req.ctxData||[];
+              var mainCtx=ctx.slice(0,3);
+              var hiddenCtx=ctx.slice(3);
+              if(req.ctxType==="tailored"){
+                return(
+                  <div style={{marginBottom:20}}>
+                    <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Additional Context</div>
+                    <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
+                      <thead><tr>
+                        <th style={ctxHdr}>Field</th>
+                        <th style={{...ctxHdr,borderLeft:"1px solid #DDD6FE"}}>Current Value</th>
+                        <th style={{...ctxHdr,borderLeft:"1px solid #DDD6FE"}}>Proposed Value</th>
+                      </tr></thead>
+                      <tbody>{mainCtx.map(function(c,i){
+                        var hasOld=c.old!==undefined&&c.old!==null&&c.old!=="";
+                        return(
+                          <tr key={i} style={{background:i%2===0?C.bg:"#fafbff"}}>
+                            <td style={{...ctxCell,fontWeight:600,verticalAlign:"top"}}>{c.l}</td>
+                            <td style={{...ctxCell,verticalAlign:"top",color:C.t2,fontFamily:"monospace",fontSize:12,borderLeft:"1px solid #EDE9FF"}}>{hasOld?c.old:""}</td>
+                            <td style={{...ctxCell,verticalAlign:"top",color:C.t2,fontFamily:"monospace",fontSize:12,borderLeft:"1px solid #EDE9FF"}}>{c.v}</td>
+                          </tr>
+                        );
+                      })}</tbody>
+                    </table>
+                    {hiddenCtx.length>0&&<ExpandableCtxTailored rows={hiddenCtx} ctxHdr={ctxHdr} ctxCell={ctxCell}/>}
+                  </div>
+                );
+              }
+              var half=Math.ceil(ctx.length/2);
+              var leftAll=ctx.slice(0,half);
+              var rightAll=ctx.slice(half);
+              return(
+                <div style={{marginBottom:20}}>
+                  <div style={{fontSize:14,fontWeight:700,color:C.text,textAlign:"center",marginBottom:10}}>Additional Context</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                    <table style={{borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
+                      <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Value</th></tr></thead>
+                      <tbody>{leftAll.map(function(c,i){return(
+                        <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
+                      );})}</tbody>
+                    </table>
+                    <table style={{borderCollapse:"collapse",border:"1px solid #DDD6FE"}}>
+                      <thead><tr><th style={ctxHdr}>Field</th><th style={ctxHdr}>Value</th></tr></thead>
+                      <tbody>{rightAll.map(function(c,i){return(
+                        <tr key={i}><td style={{...ctxCell,fontWeight:600,fontSize:12.5}}>{c.l}</td><td style={{...ctxCell,color:C.t2}}>{c.v}</td></tr>
+                      );})}</tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── SECTION C: Action Zone ── */}
             {!isClosed&&isChecker&&(
@@ -1183,26 +1298,50 @@ function LogDetailModal({req,viewerPerm,currentUserId,onClose,onApprove,onDeclin
                 </div>
                 <div>
                   <div style={{fontSize:13,fontWeight:700,color:"#9d174d",marginBottom:4}}>Callback Failed — Source Service Unreachable</div>
-                  <div style={{fontSize:12.5,color:"#be185d",lineHeight:1.6}}>The Checker approved this request but the callback to the source service returned a non-200 response. <strong>The target record was NOT changed.</strong> Engineering has been alerted. Manual intervention is required to resolve this request.</div>
-                  <div style={{marginTop:10,padding:"8px 12px",background:"#fff",border:"1px solid #f9a8d4",borderRadius:6,fontSize:12,color:"#9d174d",fontFamily:"monospace"}}>HTTP 503 — Service Temporarily Unavailable · payments-svc/gmc-callback/freeze-account</div>
+                  <div style={{fontSize:12.5,color:"#be185d",lineHeight:1.6}}>The Checker approved this request but the callback to the source service returned a non-200 response. <strong>The target record was NOT changed.</strong> Engineering has been alerted.</div>
+                  <div style={{marginTop:10,padding:"8px 12px",background:"#fff",border:"1px solid #f9a8d4",borderRadius:6,fontSize:12,color:"#9d174d",fontFamily:"monospace"}}>HTTP 503 — Service Temporarily Unavailable</div>
                 </div>
               </div>
             )}
-            <div style={{marginBottom:14}}>
-              <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>Request Decision</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:12}}>
-                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>{req.status==="Withdrawn"?"Withdrawn By":req.status==="Expired"?"Expired At":"Reviewed By"}</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.status==="Withdrawn"?req.maker:req.status==="Expired"?"System":req.checkerName||"—"}</div></div>
-                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>{req.status==="Withdrawn"?"Withdrawn At":req.status==="Expired"?"Expired At":"Decision Date"}</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.checkerDate||"—"}</div></div>
-                <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>Final Status</div><GBadge v={req.status}/></div>
+            {req.approvals&&req.approvals.length>0?(
+              <div>
+                {req.approvals.map(function(a,i){
+                  return(
+                    <div key={i} style={{marginBottom:14,padding:"12px 14px",border:`1px solid ${C.border}`,borderRadius:8,background:C.bg}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                        <span style={{fontSize:12.5,fontWeight:700,color:C.text}}>Checker {a.position}</span>
+                        {a.decision?<GBadge v={a.decision}/>:<span style={{fontSize:12,color:C.t3,fontStyle:"italic"}}>Awaiting action</span>}
+                      </div>
+                      {a.decision?(
+                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+                          <div><div style={{fontSize:11,color:C.t3,marginBottom:2,textTransform:"uppercase",letterSpacing:".05em"}}>Reviewed By</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{a.actedBy} {a.actedByUserId?"("+a.actedByUserId+")":""}</div></div>
+                          <div><div style={{fontSize:11,color:C.t3,marginBottom:2,textTransform:"uppercase",letterSpacing:".05em"}}>Decision Date</div><div style={{fontSize:13,color:C.t2}}>{a.actedAt}</div></div>
+                        </div>
+                      ):null}
+                      {a.remarks&&<div><div style={{fontSize:12,color:C.t3,marginBottom:4}}>Remarks</div><div style={{fontSize:13,color:C.text,background:C.bg,padding:"8px 12px",borderRadius:6,border:`1px solid ${C.border}`,lineHeight:1.6}}>{a.remarks}</div></div>}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-            <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:6}}>Remarks</div>
-            <div style={{fontSize:13,color:C.text,background:C.bg2,padding:"12px 14px",borderRadius:6,border:`1px solid ${C.border}`,lineHeight:1.7}}>
-              {req.status==="Withdrawn"?"Request was withdrawn by the maker before checker action."
-               :req.status==="Expired"?"Request expired due to SLA timeout with no checker action. Target ID lock has been released."
-               :req.status==="Error"?"Checker approved. Callback to source service failed. No changes were applied."
-               :req.checkerRemark||"No remarks provided."}
-            </div>
+            ):(
+              <div>
+                <div style={{marginBottom:14}}>
+                  <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>Request Decision</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:12}}>
+                    <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>{req.status==="Withdrawn"?"Withdrawn By":req.status==="Expired"?"Expired At":"Reviewed By"}</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.status==="Withdrawn"?req.maker:req.status==="Expired"?"System":req.checkerName+" "+(req.checkerUserId?"("+req.checkerUserId+")":"")}</div></div>
+                    <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>{req.status==="Withdrawn"?"Withdrawn At":req.status==="Expired"?"Expired At":"Decision Date"}</div><div style={{fontSize:13,fontWeight:500,color:C.text}}>{req.checkerDate||"—"}</div></div>
+                    <div><div style={{fontSize:11,color:C.t3,marginBottom:3,textTransform:"uppercase",letterSpacing:".05em"}}>Final Status</div><GBadge v={req.status}/></div>
+                  </div>
+                </div>
+                <div style={{fontSize:12.5,fontWeight:600,color:C.text,marginBottom:6}}>Remarks</div>
+                <div style={{fontSize:13,color:C.text,background:C.bg2,padding:"12px 14px",borderRadius:6,border:`1px solid ${C.border}`,lineHeight:1.7}}>
+                  {req.status==="Withdrawn"?"Request was withdrawn by the maker before checker action."
+                   :req.status==="Expired"?"Request expired due to SLA timeout with no checker action. Target ID lock has been released."
+                   :req.status==="Error"?"Checker approved. Callback to source service failed. No changes were applied."
+                   :req.checkerRemark||"No remarks provided."}
+                </div>
+              </div>
+            )}
           </>}
         </div>
 
@@ -1243,7 +1382,7 @@ function LogDetailModal({req,viewerPerm,currentUserId,onClose,onApprove,onDeclin
   );
 }
 
-function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onInitialOpenConsumed=null}){
+function GMCTicketsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onInitialOpenConsumed=null}){
   const [sel,setSel]=useState(null);
   /* Open a specific log entry when navigated from another page */
   useEffect(()=>{
@@ -1269,7 +1408,7 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
     return true;
   });
   const handleApprove=(id,remark)=>{
-    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Approved",checkerName:"Roushan Gupta",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Approved."}:r));
+    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Approved",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Approved."}:r));
     const log=logs.find(r=>r.id===id);
     if(log&&log.targetTemplateId){
       const newVals={};
@@ -1279,7 +1418,7 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
     setSel(null);setToast("Request approved. Template updated successfully.");
   };
   const handleDecline=(id,remark)=>{
-    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Declined",checkerName:"Roushan Gupta",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Declined."}:r));
+    setLogs(p=>p.map(r=>r.id===id?{...r,status:"Declined",checkerName:"Roushan Gupta",checkerUserId:"usr_006",checkerDate:new Date().toLocaleString(),checkerRemark:remark||"Declined."}:r));
     setSel(null);setToast("Request declined.");
   };
   const handleWithdraw=(id)=>{
@@ -1290,11 +1429,11 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
     <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
       <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
         <div>
-          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>GMC Logs</div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>GMC Tickets</div>
           <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12.5,color:C.t3}}>
             <span style={{color:C.t3}}>GMC</span>
             <span style={{fontSize:11}}>›</span>
-            <span style={{color:C.t2,fontWeight:500}}>Logs</span>
+            <span style={{color:C.t2,fontWeight:500}}>Tickets</span>
           </div>
         </div>
         {/* Viewer switcher */}
@@ -1326,7 +1465,7 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
             <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Status</div>
             <div style={{position:"relative"}}>
               <select value={logStatusF} onChange={e=>setLogStatusF(e.target.value)} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
-                <option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Declined">Declined</option><option value="Withdrawn">Withdrawn</option><option value="Expired">Expired</option><option value="Error">Error</option>
+                <option value="">All</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Approved">Approved</option><option value="Declined">Declined</option><option value="Withdrawn">Withdrawn</option><option value="Expired">Expired</option><option value="Error">Error</option>
               </select>
               <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
@@ -1346,8 +1485,8 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
       <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
         <table style={{width:"100%",borderCollapse:"collapse"}}>
           <thead><tr>
-            <th style={thS}>Request ID</th><th style={thS}>Activity ID</th><th style={thS}>Target ID</th>
-            <th style={thS}>Flow Name</th><th style={thS}>Domain</th><th style={thS}>Maker</th>
+            <th style={thS}>Request ID</th><th style={thS}>Activity ID</th><th style={thS}>Activity Name</th><th style={thS}>Target Type</th><th style={thS}>Target ID</th>
+            <th style={thS}>Domain</th>
             <th style={thS}>Date</th><th style={thS}>Status</th><th style={thSL}>Actions</th>
           </tr></thead>
           <tbody>
@@ -1355,10 +1494,10 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
               <tr key={r.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={()=>setSel(r)}>
                 <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.id}</td>
                 <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.activityId}</td>
-                <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.blue}}>{r.targetId||"—"}</td>
                 <td style={tdS}>{r.flowName}</td>
+                <td style={{...tdS,fontSize:12,color:C.t2}}>{r.targetType||"—"}</td>
+                <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.blue}}>{r.targetId||"—"}</td>
                 <td style={tdS}>{r.domain}</td>
-                <td style={tdS}>{r.maker}</td>
                 <td style={{...tdS,fontSize:12,color:C.t2}}>{r.date}</td>
                 <td style={tdS}><GBadge v={r.status}/></td>
                 <td style={{...tdS,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
@@ -1366,7 +1505,7 @@ function GMCLogsView({logs,setLogs,templates,setTemplates,initialOpenId=null,onI
                 </td>
               </tr>
             ))}
-            {filteredLogs.length===0&&<tr><td colSpan={9} style={{...tdS,textAlign:"center",color:C.t3}}>No logs match your filters</td></tr>}
+            {filteredLogs.length===0&&<tr><td colSpan={9} style={{...tdS,textAlign:"center",color:C.t3}}>No tickets match your filters</td></tr>}
           </tbody>
         </table>
       </div>
@@ -1486,7 +1625,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
   };
 
   const isEditMode=initialData!==null;
-  const [approvalCount,setApprovalCount]=useState(1);
+  const [approvalCount,setApprovalCount]=useState(isEditMode?(initialData.approvalCount||1):1);
   const [makerPerms,setMakerPerms]=useState(isEditMode?(initialData.makerPerms||[]):[]);
   const [makerIn,setMakerIn]=useState("");
   const [checkerPerms,setCheckerPerms]=useState(isEditMode?(initialData.checkerPerms||[]):[]);
@@ -1495,10 +1634,11 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
   const [actName,setActName]=useState(isEditMode?(initialData.name||""):"");
   const [slaVal,setSlaVal]=useState(isEditMode?(initialData.sla||"4"):"4");
   const [warnVal,setWarnVal]=useState(isEditMode?(initialData.warn||"80"):"80");
-  const [callbackUrl,setCallbackUrl]=useState(isEditMode?(`/api/gmc-callback/${(initialData.section||"").toLowerCase().replace(/ & /g,"-")}`):"");
   const [modalId,setModalId]=useState(isEditMode?(initialData.modalId||""):"");
   const [diffRows,setDiffRows]=useState([]);
   const [ctxRows,setCtxRows]=useState([]);
+  const [ctxType,setCtxType]=useState(isEditMode?(initialData.ctxType||"generic"):"generic");
+  const [ctxApiUrl,setCtxApiUrl]=useState(isEditMode?(initialData.ctxApiUrl||""):"");
   const [diffAutoLoaded,setDiffAutoLoaded]=useState(false);
   const [saveAttempted,setSaveAttempted]=useState(false);
   const [saveBlocked,setSaveBlocked]=useState(false);
@@ -1563,7 +1703,8 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
       setSaveBlocked(true);
       return;
     }
-    if(!section||makerPerms.length===0||checkerPerms.length===0)return;
+    var checkerValid=Array.from({length:approvalCount}).every(function(_,i){return(checkerPerms[i]||[]).length>0;});
+    if(!section||makerPerms.length===0||!checkerValid)return;
     if(onSave){onSave();}else{onClose();}
   };
 
@@ -1620,8 +1761,6 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
               </div>
             </div>
           )}
-          {/* ── BASIC DETAILS ── */}
-          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Basic Details</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
             <div>
               <label style={labelS}>Activity Name</label>
@@ -1633,12 +1772,12 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             <div>
               <label style={labelS}>Domain</label>
               <div style={{position:"relative"}}>
-                <select value={section} onChange={e=>{if(!(isEditMode&&isRestricted)){setSection(e.target.value);setModalId("");}}} disabled={isEditMode&&isRestricted} style={{...selS,background:isEditMode&&isRestricted?C.grayL:C.bg,cursor:isEditMode&&isRestricted?"not-allowed":"pointer",opacity:isEditMode&&isRestricted?0.7:1}}
-                  onFocus={e=>{if(!(isEditMode&&isRestricted)){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
+                <select value={section} onChange={e=>{if(!isEditMode){setSection(e.target.value);setModalId("");}}} disabled={isEditMode} style={{...selS,background:isEditMode?C.grayL:C.bg,cursor:isEditMode?"not-allowed":"pointer",opacity:isEditMode?0.7:1}}
+                  onFocus={e=>{if(!isEditMode){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
                   onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
                   <option value="">Select domain...</option>
                   <option>Communication</option><option>Payments</option>
-                  <option>Customers & KYC</option><option>Admin</option><option>Platform</option>
+                  <option>Customers {"&"} KYC</option><option>Admin</option><option>Platform</option>
                 </select>
                 <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
               </div>
@@ -1650,8 +1789,8 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
               </label>
               {section?(
                 <div style={{position:"relative"}}>
-                  <select value={modalId} onChange={e=>setModalId(e.target.value)} style={selS}
-                    onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                  <select value={modalId} onChange={e=>{if(!isEditMode)setModalId(e.target.value);}} disabled={isEditMode} style={{...selS,background:isEditMode?C.grayL:C.bg,cursor:isEditMode?"not-allowed":"pointer",opacity:isEditMode?0.7:1}}
+                    onFocus={e=>{if(!isEditMode){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
                     onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}>
                     <option value="">Select modal / screen...</option>
                     {availableModals.map(m=><option key={m.id} value={m.id}>{m.label} — {m.url}</option>)}
@@ -1662,15 +1801,7 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
                 <input style={{...inputS,background:C.bg2,color:C.t3}} disabled placeholder="Select a domain first..."/>
               )}
             </div>
-            <div>
-              <label style={labelS}>Callback URL</label>
-              <input readOnly={isEditMode&&isRestricted} style={{...inputS,background:isEditMode&&isRestricted?C.grayL:C.bg,cursor:isEditMode&&isRestricted?"not-allowed":"text",opacity:isEditMode&&isRestricted?0.7:1}}
-                value={selectedModal?`/api/gmc-callback${selectedModal.url.replace("/:id/edit","").replace("/new","")}`:callbackUrl} 
-                placeholder="https://service/gmc-callback/..."
-                onFocus={e=>{if(!(isEditMode&&isRestricted)){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
-                onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}
-                onChange={e=>{if(!(isEditMode&&isRestricted))setCallbackUrl(e.target.value);}}/>
-            </div>
+
             <div>
               <label style={labelS}>SLA Duration (hrs)</label>
               <input type="number" value={slaVal} onChange={e=>{if(!(isEditMode&&isRestricted))setSlaVal(e.target.value);}} readOnly={isEditMode&&isRestricted} style={{...inputS,background:isEditMode&&isRestricted?C.grayL:C.bg,cursor:isEditMode&&isRestricted?"not-allowed":"text",opacity:isEditMode&&isRestricted?0.7:1}}
@@ -1683,18 +1814,20 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
                 onFocus={e=>{if(!(isEditMode&&isRestricted)){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
                 onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
             </div>
-            <div style={{gridColumn:"1/-1"}}>
+            <div>
               <label style={labelS}>
                 Approval Count
-                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>Checkers required to approve before execution</span>
+                <span style={{fontSize:11,fontWeight:400,color:C.t3,marginLeft:6}}>Checkers required</span>
               </label>
-              <div style={{position:"relative",maxWidth:200,marginTop:6}}>
-                <select disabled style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,fontWeight:500,color:C.text,background:C.bg2,outline:"none",cursor:"not-allowed",appearance:"none",WebkitAppearance:"none",opacity:0.75}}>
-                  <option>1</option>
+              <div style={{position:"relative"}}>
+                <select value={approvalCount} onChange={function(e){setApprovalCount(Number(e.target.value));}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,fontWeight:500,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
                 </select>
                 <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
               </div>
-              <div style={{fontSize:11.5,color:C.t3,marginTop:5}}>V1 — multi-checker support is a future release. Fixed at 1.</div>
             </div>
           </div>
 
@@ -1718,19 +1851,17 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
                 <thead><tr>
                   <th style={miniTh}>#</th>
                   <th style={miniTh}>Field Name</th>
-                  <th style={miniTh}>Display Label</th>
-                  <th style={miniTh}>Diff Strategy</th>
+                  <th style={miniTh}>Data Type</th>
                 </tr></thead>
                 <tbody>
-                  {diffRows.length===0&&<tr><td colSpan={4} style={{...miniTd,textAlign:"center",color:C.t3}}>No fields available for this modal</td></tr>}
+                  {diffRows.length===0&&<tr><td colSpan={3} style={{...miniTd,textAlign:"center",color:C.t3}}>No fields available for this modal</td></tr>}
                   {diffRows.map((r,i)=>(
                     <tr key={i} style={{background:C.bg}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
                       <td style={{...miniTd,width:32,color:C.t3}}>{i+1}</td>
                       <td style={{...miniTd,fontFamily:"monospace",fontSize:12,color:C.t2}}>{r.name}</td>
-                      <td style={miniTd}>{r.label}</td>
                       <td style={miniTd}>
-                        <span style={{display:"inline-flex",padding:"2px 8px",borderRadius:4,fontSize:11.5,fontWeight:500,background:(strategyColors[r.strategy]||{}).bg||C.grayL,color:(strategyColors[r.strategy]||{}).c||C.gray}}>
-                          {r.strategy}
+                        <span style={{display:"inline-flex",padding:"2px 8px",borderRadius:4,fontSize:11.5,fontWeight:500,background:C.grayL,color:C.gray}}>
+                          {r.strategy==="HTML Diff"?"HTML":r.strategy==="Plain Text"?"String":r.strategy==="Select"?"Dropdown":r.strategy==="JSON Diff"?"JSON":r.strategy}
                         </span>
                       </td>
                     </tr>
@@ -1744,56 +1875,79 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             </div>
           )}
 
-          {/* ── CONTEXT QUERIES (Hybrid: backend-registered, ops-selected) ── */}
+          {/* ── CONTEXT QUERIES (Generic checklist OR Tailored API) ── */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>
             <span style={{fontSize:12,fontWeight:700,color:C.text,textTransform:"uppercase",letterSpacing:".06em"}}>Context Queries</span>
-            <span style={{fontSize:11.5,color:C.t3}}>Select from backend-registered queries</span>
+            <span style={{fontSize:11.5,color:C.t3}}>{ctxType==="generic"?"Select from backend-registered queries":"Point to a tailored context endpoint"}</span>
           </div>
-          {!section?(
-            <div style={{border:`1px solid ${C.border}`,borderRadius:6,padding:"16px",textAlign:"center",marginBottom:14,background:C.bg2}}>
-              <div style={{fontSize:13,color:C.t3}}>Select a domain to see available context queries</div>
+
+          {/* Context Type selector */}
+          <div style={{marginBottom:14}}>
+            <label style={labelS}>Context Type</label>
+            <div style={{position:"relative",maxWidth:280}}>
+              <select value={ctxType} onChange={function(e){setCtxType(e.target.value);}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,fontWeight:500,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
+                <option value="generic">Generic Additional Context</option>
+                <option value="tailored">Tailored Additional Context</option>
+              </select>
+              <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
-          ):(
-            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden",marginBottom:14}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr>
-                  <th style={{...miniTh,width:36}}>Show</th>
-                  <th style={miniTh}>Query Name</th>
-                  <th style={miniTh}>What It Shows the Checker</th>
-                </tr></thead>
-                <tbody>
-                  {(CONTEXT_PROVIDERS[section]||[]).length===0
-                    ?<tr><td colSpan={3} style={{...miniTd,color:C.t3,textAlign:"center"}}>No context queries registered for this domain yet</td></tr>
-                    :(CONTEXT_PROVIDERS[section]||[]).map(function(p,i){
-                      var isSel=ctxRows.some(function(r){return r.id===p.id;});
-                      return(
-                        <tr key={i} onClick={function(){if(isEditMode&&isRestricted)return;setCtxRows(function(prev){return isSel?prev.filter(function(r){return r.id!==p.id;}):[...prev,{id:p.id,label:p.label,query:p.id}];});}}
-                          style={{background:isSel?"#f0fdf4":C.bg,cursor:isEditMode&&isRestricted?"not-allowed":"pointer",transition:"background .1s",opacity:isEditMode&&isRestricted?0.7:1}}
-                          onMouseEnter={function(e){e.currentTarget.style.background=isSel?"#dcfce7":C.bg2;}}
-                          onMouseLeave={function(e){e.currentTarget.style.background=isSel?"#f0fdf4":C.bg;}}>
-                          <td style={{...miniTd,width:36,textAlign:"center"}}>
-                            <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${isSel?C.blue:C.grayB}`,background:isSel?C.blue:"transparent",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",transition:"all .12s"}}>
-                              {isSel&&<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
-                            </div>
-                          </td>
-                          <td style={{...miniTd,fontWeight:isSel?600:400,color:isSel?C.text:C.t2}}>{p.label}</td>
-                          <td style={{...miniTd,fontSize:12,color:C.t3}}>{p.desc}</td>
-                        </tr>
-                      );
-                    })
-                  }
-                </tbody>
-              </table>
-              <div style={{padding:"8px 14px",background:C.bg2,borderTop:`1px solid ${C.border}`,fontSize:12,color:C.t3,display:"flex",alignItems:"center",gap:6}}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                {ctxRows.length} of {(CONTEXT_PROVIDERS[section]||[]).length} context queries selected.
-                Engineering owns the queries — ops picks which ones to show.
+          </div>
+
+          {ctxType==="generic"?(
+            !section?(
+              <div style={{border:`1px solid ${C.border}`,borderRadius:6,padding:"16px",textAlign:"center",marginBottom:14,background:C.bg2}}>
+                <div style={{fontSize:13,color:C.t3}}>Select a domain to see available context queries</div>
               </div>
+            ):(
+              <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden",marginBottom:14}}>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr>
+                    <th style={{...miniTh,width:36,textAlign:"center"}}>Show</th>
+                    <th style={miniTh}>Query Name</th>
+                    <th style={miniTh}>Description</th>
+                  </tr></thead>
+                  <tbody>
+                    {(CONTEXT_PROVIDERS[section]||[]).length===0
+                      ?<tr><td colSpan={3} style={{...miniTd,color:C.t3,textAlign:"center"}}>No context queries registered for this domain yet</td></tr>
+                      :(CONTEXT_PROVIDERS[section]||[]).map(function(p,i){
+                        var isSel=ctxRows.some(function(r){return r.id===p.id;});
+                        return(
+                          <tr key={i} onClick={function(){if(isEditMode&&isRestricted)return;setCtxRows(function(prev){return isSel?prev.filter(function(r){return r.id!==p.id;}):[...prev,{id:p.id,label:p.label,query:p.id}];});}}
+                            style={{background:isSel?"#f0fdf4":C.bg,cursor:isEditMode&&isRestricted?"not-allowed":"pointer",transition:"background .1s",opacity:isEditMode&&isRestricted?0.7:1}}
+                            onMouseEnter={function(e){e.currentTarget.style.background=isSel?"#dcfce7":C.bg2;}}
+                            onMouseLeave={function(e){e.currentTarget.style.background=isSel?"#f0fdf4":C.bg;}}>
+                            <td style={{...miniTd,width:36,textAlign:"center"}}>
+                              <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${isSel?C.blue:C.grayB}`,background:isSel?C.blue:"transparent",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",transition:"all .12s"}}>
+                                {isSel&&<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                              </div>
+                            </td>
+                            <td style={{...miniTd,fontWeight:isSel?600:400,color:isSel?C.text:C.t2}}>{p.label}</td>
+                            <td style={{...miniTd,fontSize:12,color:C.t3}}>{p.desc}</td>
+                          </tr>
+                        );
+                      })
+                    }
+                  </tbody>
+                </table>
+                <div style={{padding:"8px 14px",background:C.bg2,borderTop:`1px solid ${C.border}`,fontSize:12,color:C.t3,display:"flex",alignItems:"center",gap:6}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  {ctxRows.length} of {(CONTEXT_PROVIDERS[section]||[]).length} context queries selected.
+                  Engineering owns the queries — ops picks which ones to show.
+                </div>
+              </div>
+            )
+          ):(
+            <div style={{marginBottom:14}}>
+              <label style={labelS}>Context API Endpoint</label>
+              <input value={ctxApiUrl} onChange={function(e){setCtxApiUrl(e.target.value);}} style={inputS} placeholder="https://payments-svc/api/context/account-type"
+                onFocus={function(e){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={function(e){e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+              <div style={{fontSize:11.5,color:C.t3,marginTop:5}}>For Current and Proposed comparisons, point this to the tailored endpoint built for this activity.</div>
             </div>
           )}
 
           {/* ── ASSIGN MAKERS & CHECKERS (Role-based) ── */}
-          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Assign Makers & Checkers</div>
+          <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`,textTransform:"uppercase",letterSpacing:".06em"}}>Assign Permissions</div>
 
           {/* Maker Permission */}
           <div style={{marginBottom:16}}>
@@ -1821,58 +1975,51 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
             {saveAttempted&&makerPerms.length===0&&<div style={{marginTop:6,fontSize:12,color:C.red}}>At least one Maker Permission is required.</div>}
           </div>
 
-          {/* Checker Permission */}
-          <div style={{marginBottom:8}}>
-            <label style={{fontSize:12.5,fontWeight:500,color:C.text,display:"block",marginBottom:6}}>Checker Permission <span style={{fontSize:11.5,fontWeight:400,color:C.t3}}>Any one of these can approve or decline</span></label>
-            {checkerPerms.length>0&&(
-              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
-                {checkerPerms.map(function(p){
-                  return <span key={p} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 10px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12.5,color:C.text}}>
-                    <code style={{fontSize:12,color:C.t2}}>{p}</code>
-                    <button onClick={function(){setCheckerPerms(function(prev){return prev.filter(function(x){return x!==p;});});}} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:13,lineHeight:1,padding:0}}>x</button>
-                  </span>;
-                })}
+          {/* Dynamic Checker Permission slots */}
+          {Array.from({length:approvalCount}).map(function(_,slotIdx){
+            var slotPerms=Array.isArray(checkerPerms[slotIdx])?checkerPerms[slotIdx]:slotIdx===0&&!Array.isArray((checkerPerms||[])[0])?(checkerPerms||[]):[];
+            var slotIn=(checkerIn||[])[slotIdx]||"";
+            return(
+              <div key={slotIdx} style={{marginBottom:14}}>
+                <label style={{fontSize:12.5,fontWeight:600,color:C.text,display:"block",marginBottom:8}}>Checker {slotIdx+1} Permission <span style={{fontSize:11.5,fontWeight:400,color:C.t3,marginLeft:4}}>Any one of these can approve</span></label>
+                {slotPerms.length>0&&(
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+                    {slotPerms.map(function(p){
+                      return <span key={p} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 10px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12.5,color:C.text}}>
+                        <code style={{fontSize:12,color:C.t2}}>{p}</code>
+                        <button onClick={function(){setCheckerPerms(function(prev){var next=prev.map(function(x,j){return j===slotIdx?(x||[]).filter(function(v){return v!==p;}):x;});return next;});}} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:13,lineHeight:1,padding:0}}>x</button>
+                      </span>;
+                    })}
+                  </div>
+                )}
+                <div style={{display:"flex",gap:8}}>
+                  <div style={{position:"relative",flex:1}}>
+                    <select value={slotIn} onChange={function(e){var v=e.target.value;setCheckerIn(function(prev){var next=[...(prev||[])];next[slotIdx]=v;return next;});}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1.5px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:slotIn?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
+                      <option value="">Select permission...</option>
+                      {ALL_ROLES.filter(function(r){return slotPerms.indexOf(r.key)===-1;}).map(function(r){return <option key={r.key} value={r.key}>{r.key}</option>;})}
+                    </select>
+                    <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </div>
+                  <button onClick={function(){if(slotIn){setCheckerPerms(function(prev){var next=[...(prev||[])];next[slotIdx]=[...(next[slotIdx]||[]),slotIn];return next;});setCheckerIn(function(prev){var next=[...(prev||[])];next[slotIdx]="";return next;});}}} style={{padding:"8px 14px",background:slotIn?"#111827":C.grayB,color:slotIn?"#fff":C.t3,border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:slotIn?"pointer":"not-allowed",flexShrink:0}}>+ Add</button>
+                </div>
               </div>
-            )}
-            <div style={{display:"flex",gap:8}}>
-              <div style={{position:"relative",flex:1}}>
-                <select value={checkerIn} onChange={function(e){setCheckerIn(e.target.value);}} style={{width:"100%",padding:"8px 32px 8px 12px",border:`1.5px solid ${saveAttempted&&checkerPerms.length===0?C.red:C.grayB}`,borderRadius:7,fontSize:13,color:checkerIn?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}} onFocus={function(e){e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={function(e){e.currentTarget.style.boxShadow="none";}}>
-                  <option value="">Select permission...</option>
-                  {ALL_ROLES.filter(function(r){return checkerPerms.indexOf(r.key)===-1;}).map(function(r){return <option key={r.key} value={r.key}>{r.key}</option>;})}
-                </select>
-                <svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-              </div>
-              <button onClick={function(){if(checkerIn){setCheckerPerms(function(p){return[...p,checkerIn];});setCheckerIn("");}}} style={{padding:"8px 14px",background:checkerIn?"#111827":C.grayB,color:checkerIn?"#fff":C.t3,border:"none",borderRadius:7,fontSize:13,fontWeight:500,cursor:checkerIn?"pointer":"not-allowed",flexShrink:0}}>+ Add</button>
-            </div>
-            {saveAttempted&&checkerPerms.length===0&&<div style={{marginTop:6,fontSize:12,color:C.red}}>At least one Checker Permission is required.</div>}
-          </div>
+            );
+          })}
         </div>
-        {/* Config Lock message — edit mode only */}
-        {isEditMode&&isRestricted&&saveBlocked&&(
-          <div style={{margin:"0 20px 0",padding:"10px 14px",background:C.redL,border:`1px solid ${C.redB}`,borderRadius:7,fontSize:12.5,color:C.redT,display:"flex",alignItems:"center",gap:8}}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Changes cannot be saved while an active request exists for this activity.
-          </div>
-        )}
         <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <span style={{fontSize:12,color:C.t3}}>
-            {isEditMode&&isRestricted?(
-              <span style={{display:"flex",alignItems:"center",gap:5,color:C.t3}}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Active requests exist — Save is blocked
-              </span>
-            ):section&&modalId?(
+            {section&&modalId?(
               <span style={{display:"flex",alignItems:"center",gap:12}}>
                 <span style={{color:C.greenT}}>✓ {diffRows.length} diff · {ctxRows.filter(r=>r.label).length} ctx queries</span>
-                <span style={{color:makerPerms.length>0&&checkerPerms.length>0?C.greenT:saveAttempted&&(makerPerms.length===0||checkerPerms.length===0)?C.red:C.t3}}>
-                  {makerPerms.length>0&&checkerPerms.length>0?"✓ maker + checker permissions set":makerPerms.length===0?"add maker permission":"add checker permission"}
+                <span style={{color:makerPerms.length>0?C.greenT:saveAttempted&&makerPerms.length===0?C.red:C.t3}}>
+                  {makerPerms.length>0?"✓ maker + checker permissions set":makerPerms.length===0?"add maker permission":"permissions set"}
                 </span>
               </span>
             ):"Fill in domain and modal ID to configure diff fields"}
           </span>
           <div style={{display:"flex",gap:8}}>
             <Btn variant="outline" onClick={onClose}>Cancel</Btn>
-            <button onClick={handleSaveActivity} style={{padding:"7px 18px",background:isEditMode&&isRestricted?C.grayB:section&&makerPerms.length>0&&checkerPerms.length>0?"#111827":C.grayB,color:section&&makerPerms.length>0&&checkerPerms.length>0?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:section&&makerPerms.length>0&&checkerPerms.length>0?"pointer":"not-allowed",transition:"background .15s"}}>
+            <button onClick={handleSaveActivity} style={{padding:"7px 18px",background:section&&makerPerms.length>0?"#111827":C.grayB,color:section&&makerPerms.length>0?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:section&&makerPerms.length>0?"pointer":"not-allowed",transition:"background .15s"}}>
               {isEditMode?"Save Changes":"Save Activity"}
             </button>
           </div>
@@ -1882,20 +2029,714 @@ function CreateActivityModal({onClose,onSave=null,initialData=null,isRestricted=
   );
 }
 
+
+/* ═══════════════════════════════════════════════════════
+   SERVICE ENDPOINTS VIEW + MODAL
+═══════════════════════════════════════════════════════ */
+
+const INIT_SERVICE_ENDPOINTS=[
+  {id:"sep_001",serviceName:"payments",baseUrl:"http://be-payments:8080",defaultHeaders:[{k:"X-Internal-Token",v:"{{ctx.token}}"}]},
+  {id:"sep_002",serviceName:"kyc",baseUrl:"http://be-kyc:8081",defaultHeaders:[]},
+  {id:"sep_003",serviceName:"communication",baseUrl:"http://be-comm:8082",defaultHeaders:[{k:"X-Api-Key",v:"{{ctx.api_key}}"}]},
+  {id:"sep_004",serviceName:"auth",baseUrl:"http://be-auth:4401",defaultHeaders:[]},
+];
+
+
+function ServiceEndpointViewModal({ep,onClose}){
+  const row=(label,val)=>(
+    <div style={{padding:"10px 0",borderBottom:`1px solid ${C.border}`,display:"flex",gap:16}}>
+      <div style={{fontSize:12.5,color:C.t3,width:160,flexShrink:0}}>{label}</div>
+      <div style={{fontSize:13,color:C.text,flex:1}}>{val}</div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
+      <div style={{background:C.bg,borderRadius:10,width:520,maxHeight:"80vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>Service Endpoint</span>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:C.t3,lineHeight:1}}>x</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"4px 20px 20px"}}>
+          {row("Service Name",<code style={{fontFamily:"monospace",fontSize:13,color:C.blue}}>{ep.serviceName}</code>)}
+          {row("Base URL",<code style={{fontFamily:"monospace",fontSize:12.5,color:C.t2}}>{ep.baseUrl}</code>)}
+          {row("Default Headers",(ep.defaultHeaders||[]).length===0?<span style={{color:C.t3}}>None</span>:(
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {ep.defaultHeaders.map(function(h,i){return(
+                <div key={i} style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:4,fontSize:12,fontFamily:"monospace"}}>
+                  <span style={{fontWeight:600,color:C.text}}>{h.k}</span>
+                  <span style={{color:C.t3}}>:</span>
+                  <span style={{color:C.t2}}>{h.v}</span>
+                </div>
+              );})}
+            </div>
+          ))}
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Close</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ApiDefViewModal({def,endpoints,onClose}){
+  const ep=endpoints.find(function(e){return e.id===def.serviceEndpointId;})||null;
+  const row=(label,val)=>(
+    <div style={{padding:"10px 0",borderBottom:`1px solid ${C.border}`,display:"flex",gap:16}}>
+      <div style={{fontSize:12.5,color:C.t3,width:160,flexShrink:0}}>{label}</div>
+      <div style={{fontSize:13,color:C.text,flex:1,wordBreak:"break-all"}}>{val}</div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
+      <div style={{background:C.bg,borderRadius:10,width:680,maxHeight:"88vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <div>
+            <span style={{fontSize:15,fontWeight:600,color:C.text}}>{def.name}</span>
+            <span style={{marginLeft:10,padding:"2px 8px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:4,fontSize:11.5,color:C.t2,fontFamily:"monospace"}}>{def.operationType}</span>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:C.t3,lineHeight:1}}>x</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"4px 20px 20px"}}>
+          {def.description&&row("Description",def.description)}
+          {def.operationType==="http_api"&&<>
+            {row("Service Endpoint",ep?<code style={{fontFamily:"monospace",fontSize:12.5,color:C.blue}}>{ep.serviceName}</code>:<span style={{color:C.t3}}>—</span>)}
+            {row("Method",<MethodBadge m={def.method}/>)}
+            {row("URL Template",<code style={{fontFamily:"monospace",fontSize:12.5,color:C.t2}}>{ep?ep.baseUrl+def.urlTemplate:def.urlTemplate}</code>)}
+            {row("Auth Type",<span style={{fontFamily:"monospace",fontSize:12.5}}>{def.authType}</span>)}
+            {row("Timeout",def.timeoutMs+"ms")}
+            {(def.authDetails||[]).length>0&&row("Auth Details",(
+              <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                {def.authDetails.map(function(a,i){return(
+                  <div key={i} style={{fontSize:12,fontFamily:"monospace",color:C.t2}}>
+                    <span style={{fontWeight:600,color:C.text}}>{a.keyName}</span> : {a.keyValue} <span style={{color:C.t3}}>({a.placement})</span>
+                  </div>
+                );})}
+              </div>
+            ))}
+            {(def.fields||[]).length>0&&row("Fields",(
+              <table style={{width:"100%",borderCollapse:"collapse",border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+                <thead><tr style={{background:C.bg2}}>
+                  {["Type","Field Key","Source Value","Data Type","Req"].map(function(h){return <th key={h} style={{padding:"6px 10px",fontSize:11,fontWeight:600,color:C.t2,textAlign:"left",borderBottom:`1px solid ${C.border}`}}>{h}</th>;})}
+                </tr></thead>
+                <tbody>{def.fields.map(function(f,i){return(
+                  <tr key={i} style={{borderBottom:i<def.fields.length-1?`1px solid ${C.border}`:"none"}}>
+                    <td style={{padding:"6px 10px",fontSize:12,fontFamily:"monospace",color:C.t2}}>{f.type}</td>
+                    <td style={{padding:"6px 10px",fontSize:12,fontFamily:"monospace",fontWeight:600,color:C.text}}>{f.fieldKey}</td>
+                    <td style={{padding:"6px 10px",fontSize:12,fontFamily:"monospace",color:C.t2}}>{f.value}</td>
+                    <td style={{padding:"6px 10px",fontSize:12,fontFamily:"monospace",color:C.t2}}>{f.dataType}</td>
+                    <td style={{padding:"6px 10px",textAlign:"center"}}>{f.isRequired?<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>:<span style={{color:C.t3,fontSize:12}}>—</span>}</td>
+                  </tr>
+                );})}</tbody>
+              </table>
+            ))}
+          </>}
+          {def.operationType==="workflow_step"&&<>
+            {row("Workflow Name",<code style={{fontFamily:"monospace",fontSize:12.5,color:C.blue}}>{def.workflowName}</code>)}
+            {row("Step Names",(def.workflowStepNames||[]).length===0?<span style={{color:C.t3}}>None</span>:(
+              <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                {def.workflowStepNames.map(function(s,i){return <span key={i} style={{padding:"2px 8px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:4,fontSize:12,fontFamily:"monospace",color:C.t2}}>{s}</span>;})}
+              </div>
+            ))}
+          </>}
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Close</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ServiceEndpointModal({ep,onClose,onSave}){
+  const isEdit=ep!=null;
+  const [serviceName,setServiceName]=useState(isEdit?ep.serviceName:"");
+  const [baseUrl,setBaseUrl]=useState(isEdit?ep.baseUrl:"");
+  const [headers,setHeaders]=useState(isEdit?(ep.defaultHeaders||[]):[]);
+  const [errors,setErrors]=useState({});
+
+  const addHeader=()=>setHeaders(function(h){return[...h,{k:"",v:""}];});
+  const removeHeader=(i)=>setHeaders(function(h){return h.filter(function(_,j){return j!==i;});});
+  const updateHeader=(i,field,val)=>setHeaders(function(h){return h.map(function(row,j){return j===i?{...row,[field]:val}:row;});});
+
+  const handleSave=()=>{
+    var err={};
+    if(!serviceName.trim())err.serviceName="Service name is required";
+    if(!baseUrl.trim())err.baseUrl="Base URL is required";
+    if(Object.keys(err).length>0){setErrors(err);return;}
+    onSave({serviceName:serviceName.trim(),baseUrl:baseUrl.trim(),defaultHeaders:headers.filter(function(h){return h.k.trim();})});
+  };
+
+  const inputS={width:"100%",padding:"8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const labelS={fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"};
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
+      <div style={{background:C.bg,borderRadius:10,width:560,maxHeight:"88vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>{isEdit?"Edit Service Endpoint":"New Service Endpoint"}</span>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:C.t3,lineHeight:1}}>x</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div>
+              <label style={labelS}>Service Name <span style={{color:C.red}}>*</span></label>
+              <input value={serviceName} onChange={e=>setServiceName(e.target.value)} placeholder="e.g. payments" style={{...inputS,fontFamily:"monospace"}}
+                onFocus={e=>{if(!isEdit){e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}}
+                onBlur={e=>{e.currentTarget.style.borderColor=errors.serviceName?C.red:C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+              
+              {errors.serviceName&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.serviceName}</div>}
+            </div>
+            <div>
+              <label style={labelS}>Base URL <span style={{color:C.red}}>*</span></label>
+              <input value={baseUrl} onChange={e=>setBaseUrl(e.target.value)} placeholder="http://be-payments:8080" style={{...inputS,fontFamily:"monospace"}}
+                onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}}
+                onBlur={e=>{e.currentTarget.style.borderColor=errors.baseUrl?C.red:C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+              {errors.baseUrl&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.baseUrl}</div>}
+            </div>
+          </div>
+          <div>
+            <label style={labelS}>Default Headers <span style={{fontSize:11.5,fontWeight:400,color:C.t3}}>(Optional)</span></label>
+            <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+              {headers.length>0&&headers.map(function(row,i){return(
+                <div key={i} style={{display:"grid",gridTemplateColumns:"28px 1fr 1fr 32px",alignItems:"stretch",borderBottom:i<headers.length-1?`1px solid ${C.border}`:"none"}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",background:C.bg2,borderRight:`1px solid ${C.border}`,fontSize:10,fontWeight:700,color:C.t3,letterSpacing:".04em"}}>K</div>
+                  <input value={row.k} onChange={e=>updateHeader(i,"k",e.target.value)} placeholder="Header-Name" style={{padding:"8px 10px",border:"none",borderRight:`1px solid ${C.border}`,outline:"none",fontSize:12.5,color:C.text,background:C.bg,fontFamily:"monospace"}}/>
+                  <input value={row.v} onChange={e=>updateHeader(i,"v",e.target.value)} placeholder={"value or {{ctx.*}}"} style={{padding:"8px 10px",border:"none",outline:"none",fontSize:12.5,color:C.text,background:C.bg,fontFamily:"monospace"}}/>
+                  <button onClick={()=>removeHeader(i)} style={{background:"none",border:"none",borderLeft:`1px solid ${C.border}`,cursor:"pointer",color:C.t3,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  </button>
+                </div>
+              );})}
+              <div style={{padding:"8px 12px",background:headers.length>0?C.bg2:C.bg}}>
+                <button onClick={addHeader} style={{background:"none",border:`1px solid ${C.grayB}`,borderRadius:5,padding:"5px 12px",fontSize:12.5,cursor:"pointer",color:C.t2}}>+ Add row</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <Btn variant="dark" onClick={handleSave}>Save</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GMCServiceEndpointsView(){
+  const [endpoints,setEndpoints]=useState(INIT_SERVICE_ENDPOINTS);
+  const [showModal,setShowModal]=useState(false);
+  const [showView,setShowView]=useState(false);
+  const [selEp,setSelEp]=useState(null);
+  const [searchQ,setSearchQ]=useState("");
+  const [toast,setToast]=useState(null);
+
+  const handleSave=(data)=>{
+    if(selEp){
+      setEndpoints(function(prev){return prev.map(function(e){return e.id===selEp.id?{...e,...data}:e;});});
+      setToast("Service endpoint updated.");
+    } else {
+      var newId="sep_"+Math.random().toString(36).substring(2,7);
+      setEndpoints(function(prev){return[...prev,{id:newId,...data}];});
+      setToast("Service endpoint created.");
+    }
+    setShowModal(false);setSelEp(null);
+  };
+
+  var filtered=endpoints.filter(function(ep){
+    var q=searchQ.toLowerCase();
+    var matchQ=!q||ep.serviceName.toLowerCase().includes(q)||ep.baseUrl.toLowerCase().includes(q);
+    return matchQ;
+  });
+
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>Service Endpoints</div>
+          <div style={{fontSize:12.5,color:C.t3}}>GMC {">"} Service Endpoints</div>
+        </div>
+        <Btn variant="dark" onClick={()=>{setSelEp(null);setShowModal(true);}}>+ Add Endpoint</Btn>
+      </div>
+      <div style={{padding:"0 24px 12px",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,height:34,maxWidth:360}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Search by service name or URL..." style={{border:"none",outline:"none",fontSize:13,width:280,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS}>Service Name</th>
+            <th style={thS}>Base URL</th>
+            <th style={thS}>Default Headers</th>
+            <th style={thSL}>Actions</th>
+          </tr></thead>
+          <tbody>
+            {filtered.map(function(ep){
+              return(
+                <tr key={ep.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={function(){setSelEp(ep);setShowView(true);}}>
+                  <td style={{...tdS,fontWeight:600,fontFamily:"monospace",fontSize:12.5}}>{ep.serviceName}</td>
+                  <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{ep.baseUrl}</td>
+                  <td style={tdS} onClick={e=>e.stopPropagation()}>
+                    {(ep.defaultHeaders||[]).length===0
+                      ?<span style={{color:C.t3,fontSize:12}}>—</span>
+                      :<div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                        {ep.defaultHeaders.map(function(h,i){return(
+                          <span key={i} style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:4,fontSize:11.5,fontFamily:"monospace",color:C.t2}}>
+                            <span style={{fontWeight:600,color:C.text}}>{h.k}</span>
+                            <span style={{color:C.t3}}>:</span>
+                            <span>{h.v}</span>
+                          </span>
+                        );})}
+                      </div>
+                    }
+                  </td>
+                  <td style={{...tdS,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
+                    <DotMenu items={[
+                      ["View",C.blue,function(){setSelEp(ep);setShowView(true);}],
+                      ["Edit",C.blue,function(){setSelEp(ep);setShowModal(true);}],
+                    ]}/>
+                  </td>
+                </tr>
+              );
+            })}
+            {filtered.length===0&&<tr><td colSpan={4} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No service endpoints found</td></tr>}
+          </tbody>
+        </table>
+      </div>
+      {showModal&&<ServiceEndpointModal ep={selEp} onClose={()=>{setShowModal(false);setSelEp(null);}} onSave={handleSave}/>}
+      {showView&&selEp&&<ServiceEndpointViewModal ep={selEp} onClose={()=>{setShowView(false);setSelEp(null);}}/>}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   API DEFINITIONS VIEW + MODAL
+═══════════════════════════════════════════════════════ */
+
+const METHOD_COLORS={
+  GET:{bg:"#dcfce7",c:"#15803d",b:"#bbf7d0"},
+  POST:{bg:"#dbeafe",c:"#1d4ed8",b:"#bfdbfe"},
+  PUT:{bg:"#fef9c3",c:"#92400e",b:"#fde68a"},
+  PATCH:{bg:"#ffedd5",c:"#c2410c",b:"#fed7aa"},
+  DELETE:{bg:"#fee2e2",c:"#b91c1c",b:"#fecaca"},
+};
+
+function MethodBadge({m}){
+  var s=METHOD_COLORS[m]||{bg:C.grayL,c:C.gray,b:C.grayB};
+  return <span style={{display:"inline-flex",padding:"2px 8px",borderRadius:20,fontSize:11.5,fontWeight:700,background:s.bg,color:s.c,border:`1px solid ${s.b}`,letterSpacing:".04em"}}>{m}</span>;
+}
+
+const INIT_API_DEFS=[
+  {id:"apd_001",name:"freeze_consumer_account",description:"Freezes a consumer account in the Payments service",operationType:"http_api",serviceEndpointId:"sep_001",method:"POST",urlTemplate:"/consumers/private/v1/account/freeze",authType:"none",authDetails:[],timeoutMs:10000,fields:[
+    {type:"body",fieldKey:"account_id",value:"{{ctx.target_id}}",dataType:"string",dataFormat:"uuid",isRequired:true,description:"Target consumer account ID",sortOrder:1},
+    {type:"body",fieldKey:"reason",value:"{{ctx.reason}}",dataType:"string",dataFormat:"",isRequired:true,description:"Freeze reason from maker",sortOrder:2},
+    {type:"header",fieldKey:"X-Request-Id",value:"{{ctx.request_id}}",dataType:"string",dataFormat:"uuid",isRequired:true,description:"GMC request ID for traceability",sortOrder:3},
+  ]},
+  {id:"apd_002",name:"block_consumer_account",description:"Blocks a consumer account permanently",operationType:"http_api",serviceEndpointId:"sep_001",method:"POST",urlTemplate:"/consumers/private/v1/account/block",authType:"none",authDetails:[],timeoutMs:10000,fields:[
+    {type:"body",fieldKey:"account_id",value:"{{ctx.target_id}}",dataType:"string",dataFormat:"uuid",isRequired:true,description:"Target consumer account ID",sortOrder:1},
+    {type:"body",fieldKey:"reason",value:"{{ctx.reason}}",dataType:"string",dataFormat:"",isRequired:true,description:"Block reason",sortOrder:2},
+  ]},
+  {id:"apd_003",name:"get_account_type_context",description:"Returns current and proposed account type limits for context queries",operationType:"http_api",serviceEndpointId:"sep_001",method:"GET",urlTemplate:"/account-types/private/v1/context",authType:"none",authDetails:[],timeoutMs:5000,fields:[
+    {type:"query",fieldKey:"current_type_id",value:"{{ctx.current_type_id}}",dataType:"string",dataFormat:"",isRequired:true,description:"Current account type ID",sortOrder:1},
+    {type:"query",fieldKey:"proposed_type_id",value:"{{ctx.proposed_type_id}}",dataType:"string",dataFormat:"",isRequired:true,description:"Proposed account type ID",sortOrder:2},
+  ]},
+  {id:"apd_004",name:"update_kyc_status",description:"Updates KYC status via the KYC service",operationType:"http_api",serviceEndpointId:"sep_002",method:"PATCH",urlTemplate:"/kyc/private/v1/status",authType:"api_key",authDetails:[{keyName:"X-Api-Key",keyValue:"{{ctx.kyc_api_key}}",placement:"header"}],timeoutMs:8000,fields:[
+    {type:"body",fieldKey:"user_id",value:"{{ctx.target_id}}",dataType:"string",dataFormat:"uuid",isRequired:true,description:"User ID",sortOrder:1},
+    {type:"body",fieldKey:"status",value:"{{ctx.new_status}}",dataType:"string",dataFormat:"",isRequired:true,description:"New KYC status",sortOrder:2},
+  ]},
+];
+
+function ApiDefModal({def,endpoints,onClose,onSave}){
+  const isEdit=def!=null;
+  const [name,setName]=useState(isEdit?def.name:"");
+  const [description,setDescription]=useState(isEdit?(def.description||""):"");
+  const [operationType,setOperationType]=useState(isEdit?(def.operationType||"http_api"):"http_api");
+  const [serviceEndpointId,setServiceEndpointId]=useState(isEdit?(def.serviceEndpointId||""):"");
+  const [method,setMethod]=useState(isEdit?(def.method||"POST"):"POST");
+  const [urlTemplate,setUrlTemplate]=useState(isEdit?(def.urlTemplate||""):"");
+  const [authType,setAuthType]=useState(isEdit?(def.authType||"none"):"none");
+  const [authDetails,setAuthDetails]=useState(isEdit?(def.authDetails||[]):[]);
+  const [timeoutMs,setTimeoutMs]=useState(isEdit?(def.timeoutMs||10000):10000);
+  const [fields,setFields]=useState(isEdit?(def.fields||[]):[]);
+  const [workflowName,setWorkflowName]=useState(isEdit?(def.workflowName||""):"");
+  const [workflowStepNames,setWorkflowStepNames]=useState(isEdit?(def.workflowStepNames||[]):[]);
+  const [stepInput,setStepInput]=useState("");
+  const [errors,setErrors]=useState({});
+
+  const selEp=endpoints.find(function(e){return e.id===serviceEndpointId;})||null;
+  const previewUrl=selEp?selEp.baseUrl+urlTemplate:"(select a service endpoint first)";
+
+  const addAuthRow=()=>setAuthDetails(function(a){return[...a,{keyName:"",keyValue:"",placement:"header"}];});
+  const removeAuthRow=(i)=>setAuthDetails(function(a){return a.filter(function(_,j){return j!==i;});});
+  const updateAuth=(i,field,val)=>setAuthDetails(function(a){return a.map(function(r,j){return j===i?{...r,[field]:val}:r;});});
+
+  const addField=()=>setFields(function(f){return[...f,{type:"body",fieldKey:"",value:"",dataType:"string",dataFormat:"",isRequired:false,description:"",sortOrder:f.length+1}];});
+  const removeField=(i)=>setFields(function(f){return f.filter(function(_,j){return j!==i;});});
+  const updateField=(i,field,val)=>setFields(function(f){return f.map(function(r,j){return j===i?{...r,[field]:val}:r;});});
+
+  const addStep=()=>{if(stepInput.trim()){setWorkflowStepNames(function(s){return[...s,stepInput.trim()];});setStepInput("");}};
+  const removeStep=(i)=>setWorkflowStepNames(function(s){return s.filter(function(_,j){return j!==i;});});
+
+  const handleSave=()=>{
+    var err={};
+    if(!name.trim())err.name="Name is required";
+    if(operationType==="http_api"){
+      if(!serviceEndpointId)err.serviceEndpointId="Service endpoint is required";
+      if(!urlTemplate.trim())err.urlTemplate="URL template is required";
+    } else {
+      if(!workflowName.trim())err.workflowName="Workflow name is required";
+    }
+    if(Object.keys(err).length>0){setErrors(err);return;}
+    onSave({name:name.trim(),description:description.trim(),operationType,serviceEndpointId,method,urlTemplate:urlTemplate.trim(),authType,authDetails,timeoutMs:Number(timeoutMs),fields,workflowName:workflowName.trim(),workflowStepNames});
+  };
+
+  const inputS2={width:"100%",padding:"8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none"};
+  const selS2={width:"100%",padding:"8px 32px 8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:C.text,background:C.bg,outline:"none",appearance:"none",WebkitAppearance:"none",cursor:"pointer"};
+  const labelS2={fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"};
+  const sectionHdr={fontSize:11,fontWeight:700,color:C.t2,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12,paddingBottom:6,borderBottom:`1px solid ${C.border}`};
+  const focusOn=e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;};
+  const focusOff=e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";};
+  const Chevron=()=><svg style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>;
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
+      <div style={{background:C.bg,borderRadius:10,width:720,maxHeight:"92vh",display:"flex",flexDirection:"column",boxShadow:"0 4px 24px rgba(0,0,0,.18)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text}}>{isEdit?"Edit API Definition":"New API Definition"}</span>
+          <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:C.t3,lineHeight:1}}>x</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px"}}>
+
+          {/* Common fields */}
+          <div style={{marginBottom:20}}>
+            <div style={sectionHdr}>Basic Details</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:14}}>
+              <div>
+                <label style={labelS2}>Name <span style={{color:C.red}}>*</span></label>
+                <input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. freeze_consumer_account" style={{...inputS2,fontFamily:"monospace"}} onFocus={focusOn} onBlur={focusOff}/>
+                
+                {errors.name&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.name}</div>}
+              </div>
+              <div>
+                <label style={labelS2}>Operation Type <span style={{color:C.red}}>*</span></label>
+                <div style={{position:"relative"}}>
+                  <select value={operationType} onChange={e=>setOperationType(e.target.value)} style={selS2} onFocus={focusOn} onBlur={focusOff}>
+                    <option value="http_api">http_api</option>
+                    <option value="workflow_step">workflow_step</option>
+                  </select>
+                  <Chevron/>
+                </div>
+                
+              </div>
+            </div>
+            <div>
+              <label style={labelS2}>Description <span style={{fontSize:11.5,fontWeight:400,color:C.t3}}>(Optional)</span></label>
+              <textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="What does this operation do?" style={{...inputS2,resize:"vertical",minHeight:60,fontFamily:"inherit"}} onFocus={focusOn} onBlur={focusOff}/>
+            </div>
+          </div>
+
+          {/* http_api config */}
+          {operationType==="http_api"&&(
+            <div style={{marginBottom:20}}>
+              <div style={sectionHdr}>HTTP Configuration</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:14}}>
+                <div>
+                  <label style={labelS2}>Service Endpoint <span style={{color:C.red}}>*</span></label>
+                  <div style={{position:"relative"}}>
+                    <select value={serviceEndpointId} onChange={e=>setServiceEndpointId(e.target.value)} style={selS2} onFocus={focusOn} onBlur={focusOff}>
+                      <option value="">Select service endpoint...</option>
+                      {endpoints.map(function(e){return <option key={e.id} value={e.id}>{e.serviceName}</option>;})}
+                    </select>
+                    <Chevron/>
+                  </div>
+                  {errors.serviceEndpointId&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.serviceEndpointId}</div>}
+                </div>
+                <div>
+                  <label style={labelS2}>Method <span style={{color:C.red}}>*</span></label>
+                  <div style={{position:"relative"}}>
+                    <select value={method} onChange={e=>setMethod(e.target.value)} style={selS2} onFocus={focusOn} onBlur={focusOff}>
+                      {["GET","POST","PUT","PATCH","DELETE"].map(function(m){return <option key={m}>{m}</option>;})}
+                    </select>
+                    <Chevron/>
+                  </div>
+                </div>
+              </div>
+              <div style={{marginBottom:14}}>
+                <label style={labelS2}>URL Template <span style={{color:C.red}}>*</span></label>
+                <input value={urlTemplate} onChange={e=>setUrlTemplate(e.target.value)} placeholder="/resource/private/v1/action" style={{...inputS2,fontFamily:"monospace"}} onFocus={focusOn} onBlur={focusOff}/>
+                {errors.urlTemplate&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.urlTemplate}</div>}
+                <div style={{marginTop:6,padding:"8px 12px",background:C.bg2,borderRadius:5,fontSize:12,fontFamily:"monospace",color:C.t2,border:`1px solid ${C.border}`}}>
+                  Preview: {previewUrl}
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:14}}>
+                <div>
+                  <label style={labelS2}>Auth Type <span style={{color:C.red}}>*</span></label>
+                  <div style={{position:"relative"}}>
+                    <select value={authType} onChange={e=>setAuthType(e.target.value)} style={selS2} onFocus={focusOn} onBlur={focusOff}>
+                      {["none","bearer","api_key","basic"].map(function(a){return <option key={a}>{a}</option>;})}
+                    </select>
+                    <Chevron/>
+                  </div>
+                </div>
+                <div>
+                  <label style={labelS2}>Timeout (ms) <span style={{color:C.red}}>*</span></label>
+                  <input type="number" value={timeoutMs} onChange={e=>setTimeoutMs(e.target.value)} style={inputS2} onFocus={focusOn} onBlur={focusOff}/>
+                </div>
+              </div>
+              {authType!=="none"&&(
+                <div style={{marginBottom:14}}>
+                  <label style={labelS2}>Auth Details</label>
+                  <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+                    {authDetails.map(function(row,i){return(
+                      <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 110px 32px",borderBottom:i<authDetails.length-1?`1px solid ${C.border}`:"none"}}>
+                        <input value={row.keyName} onChange={e=>updateAuth(i,"keyName",e.target.value)} placeholder="Key name" style={{padding:"8px 10px",border:"none",borderRight:`1px solid ${C.border}`,outline:"none",fontSize:12.5,fontFamily:"monospace",color:C.text,background:C.bg}}/>
+                        <input value={row.keyValue} onChange={e=>updateAuth(i,"keyValue",e.target.value)} placeholder={"value or {{ctx.*}}"} style={{padding:"8px 10px",border:"none",borderRight:`1px solid ${C.border}`,outline:"none",fontSize:12.5,fontFamily:"monospace",color:C.text,background:C.bg}}/>
+                        <div style={{position:"relative",borderRight:`1px solid ${C.border}`}}>
+                          <select value={row.placement} onChange={e=>updateAuth(i,"placement",e.target.value)} style={{width:"100%",height:"100%",padding:"8px 24px 8px 8px",border:"none",outline:"none",fontSize:12,color:C.text,background:C.bg,appearance:"none",WebkitAppearance:"none",cursor:"pointer"}}>
+                            <option value="header">header</option>
+                            <option value="query">query</option>
+                          </select>
+                          <svg style={{position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <button onClick={()=>removeAuthRow(i)} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                        </button>
+                      </div>
+                    );})}
+                    <div style={{padding:"8px 12px",background:authDetails.length>0?C.bg2:C.bg}}>
+                      <button onClick={addAuthRow} style={{background:"none",border:`1px solid ${C.grayB}`,borderRadius:5,padding:"5px 12px",fontSize:12.5,cursor:"pointer",color:C.t2}}>+ Add row</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Fields repeater */}
+              <div>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                  <label style={labelS2}>Fields</label>
+                  <button onClick={addField} style={{background:"none",border:`1px solid ${C.grayB}`,borderRadius:5,padding:"4px 10px",fontSize:12,cursor:"pointer",color:C.t2}}>+ Add field</button>
+                </div>
+                {fields.length===0?(
+                  <div style={{padding:"16px",textAlign:"center",border:`1px dashed ${C.grayB}`,borderRadius:6,color:C.t3,fontSize:13}}>No fields defined yet. Click + Add field to start.</div>
+                ):(
+                  <div style={{border:`1px solid ${C.border}`,borderRadius:6,overflow:"hidden"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse"}}>
+                      <thead><tr style={{background:C.bg2}}>
+                        {["Type","Field Key","Source Value","Data Type","Req",""].map(function(h,i){return <th key={i} style={{padding:"7px 10px",fontSize:11,fontWeight:600,color:C.t2,textAlign:"left",borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap"}}>{h}</th>;})}
+                      </tr></thead>
+                      <tbody>{fields.map(function(f,i){return(
+                        <tr key={i} style={{borderBottom:i<fields.length-1?`1px solid ${C.border}`:"none"}}>
+                          <td style={{padding:"6px 8px"}}>
+                            <div style={{position:"relative"}}>
+                              <select value={f.type} onChange={e=>updateField(i,"type",e.target.value)} style={{padding:"5px 22px 5px 7px",border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12,color:C.text,background:C.bg,appearance:"none",WebkitAppearance:"none",cursor:"pointer",outline:"none"}}>
+                                {["header","body","path","query"].map(function(t){return <option key={t}>{t}</option>;})}
+                              </select>
+                              <svg style={{position:"absolute",right:5,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                            </div>
+                          </td>
+                          <td style={{padding:"6px 8px"}}><input value={f.fieldKey} onChange={e=>updateField(i,"fieldKey",e.target.value)} placeholder="field_key" style={{width:"100%",padding:"5px 7px",border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12,fontFamily:"monospace",color:C.text,background:C.bg,outline:"none"}}/></td>
+                          <td style={{padding:"6px 8px"}}><input value={f.value} onChange={e=>updateField(i,"value",e.target.value)} placeholder={"{{ctx.*}}"} style={{width:"100%",padding:"5px 7px",border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12,fontFamily:"monospace",color:C.text,background:C.bg,outline:"none"}}/></td>
+                          <td style={{padding:"6px 8px"}}>
+                            <div style={{position:"relative"}}>
+                              <select value={f.dataType} onChange={e=>updateField(i,"dataType",e.target.value)} style={{padding:"5px 22px 5px 7px",border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12,color:C.text,background:C.bg,appearance:"none",WebkitAppearance:"none",cursor:"pointer",outline:"none"}}>
+                                {["string","integer","number","boolean","object","array"].map(function(t){return <option key={t}>{t}</option>;})}
+                              </select>
+                              <svg style={{position:"absolute",right:5,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                            </div>
+                          </td>
+                          <td style={{padding:"6px 8px",textAlign:"center"}}>
+                            <input type="checkbox" checked={f.isRequired} onChange={e=>updateField(i,"isRequired",e.target.checked)} style={{accentColor:C.blue,width:14,height:14,cursor:"pointer"}}/>
+                          </td>
+                          <td style={{padding:"6px 8px",textAlign:"center"}}>
+                            <button onClick={()=>removeField(i)} style={{background:"none",border:"none",cursor:"pointer",color:C.t3}}>
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );})}</tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* workflow_step config */}
+          {operationType==="workflow_step"&&(
+            <div style={{marginBottom:20}}>
+              <div style={sectionHdr}>Workflow Configuration</div>
+              <div style={{marginBottom:14}}>
+                <label style={labelS2}>Workflow Name <span style={{color:C.red}}>*</span></label>
+                <input value={workflowName} onChange={e=>setWorkflowName(e.target.value)} placeholder="e.g. kyc_review_flow" style={{...inputS2,fontFamily:"monospace"}} onFocus={focusOn} onBlur={focusOff}/>
+                {errors.workflowName&&<div style={{fontSize:12,color:C.red,marginTop:4}}>{errors.workflowName}</div>}
+              </div>
+              <div>
+                <label style={labelS2}>Workflow Step Names</label>
+                <div style={{display:"flex",gap:8,marginBottom:8}}>
+                  <input value={stepInput} onChange={e=>setStepInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){addStep();}}} placeholder="step_name" style={{...inputS2,fontFamily:"monospace",flex:1}}
+                    onFocus={focusOn} onBlur={focusOff}/>
+                  <Btn variant="outline" onClick={addStep}>Add</Btn>
+                </div>
+                {workflowStepNames.length>0&&(
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {workflowStepNames.map(function(s,i){return(
+                      <span key={i} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"3px 10px",background:C.grayL,border:`1px solid ${C.grayB}`,borderRadius:5,fontSize:12.5,fontFamily:"monospace",color:C.text}}>
+                        {s}
+                        <button onClick={()=>removeStep(i)} style={{background:"none",border:"none",cursor:"pointer",color:C.t3,fontSize:14,lineHeight:1,padding:0}}>x</button>
+                      </span>
+                    );})}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
+          <Btn variant="outline" onClick={onClose}>Cancel</Btn>
+          <Btn variant="dark" onClick={handleSave}>Save</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GMCApiDefsView({endpoints}){
+  const [defs,setDefs]=useState(INIT_API_DEFS);
+  const [showModal,setShowModal]=useState(false);
+  const [showView,setShowView]=useState(false);
+  const [selDef,setSelDef]=useState(null);
+  const [searchQ,setSearchQ]=useState("");
+  const [showFilters,setShowFilters]=useState(false);
+  const [methodFilter,setMethodFilter]=useState("");
+  const [serviceFilter,setServiceFilter]=useState("");
+  const [toast,setToast]=useState(null);
+
+  var filtered=defs.filter(function(d){
+    var q=searchQ.toLowerCase();
+    var matchQ=!q||d.name.toLowerCase().includes(q)||(d.description||"").toLowerCase().includes(q);
+    var matchM=!methodFilter||d.method===methodFilter;
+    var matchS=!serviceFilter||d.serviceEndpointId===serviceFilter;
+    return matchQ&&matchM&&matchS;
+  });
+
+  const handleSave=(data)=>{
+    if(selDef){
+      setDefs(function(prev){return prev.map(function(d){return d.id===selDef.id?{...d,...data}:d;});});
+      setToast("API definition updated.");
+    } else {
+      var newId="apd_"+Math.random().toString(36).substring(2,7);
+      setDefs(function(prev){return[...prev,{id:newId,...data}];});
+      setToast("API definition created.");
+    }
+    setShowModal(false);setSelDef(null);
+  };
+
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",padding:"20px 24px 12px",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:22,fontWeight:700,color:C.text,lineHeight:1.2,marginBottom:4}}>API Definitions</div>
+          <div style={{fontSize:12.5,color:C.t3}}>GMC {">"} API Definitions</div>
+        </div>
+        <Btn variant="dark" onClick={()=>{setSelDef(null);setShowModal(true);}}>+ New API Definition</Btn>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:10,padding:"0 24px 10px",flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",border:`1px solid ${C.grayB}`,borderRadius:6,background:C.bg,height:34}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"0 10px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Search by name or description..." style={{border:"none",outline:"none",fontSize:13,width:260,color:C.text,background:"transparent"}}/>
+          </div>
+        </div>
+        <button onClick={()=>setShowFilters(function(f){return !f;})} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 14px",border:`1px solid ${C.grayB}`,borderRadius:6,background:showFilters?"#f8faff":C.bg,color:showFilters?C.blue:C.t2,fontSize:12.5,cursor:"pointer",fontWeight:showFilters?500:400,height:34}}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 6h22M5 12h14M9 18h6"/></svg>
+          {showFilters?"Hide Filters":"Show Filters"}
+        </button>
+      </div>
+      {showFilters&&(
+        <div style={{display:"flex",gap:16,padding:"0 24px 12px",alignItems:"flex-end",flexShrink:0}}>
+          <div style={{minWidth:160}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Method</div>
+            <div style={{position:"relative"}}>
+              <select value={methodFilter} onChange={e=>setMethodFilter(e.target.value)} style={{width:"100%",padding:"8px 28px 8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:methodFilter?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All Methods</option>
+                {["GET","POST","PUT","PATCH","DELETE"].map(function(m){return <option key={m}>{m}</option>;})}
+              </select>
+              <svg style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style={{minWidth:200}}>
+            <div style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6}}>Service Endpoint</div>
+            <div style={{position:"relative"}}>
+              <select value={serviceFilter} onChange={e=>setServiceFilter(e.target.value)} style={{width:"100%",padding:"8px 28px 8px 10px",border:`1px solid ${C.grayB}`,borderRadius:6,fontSize:13,color:serviceFilter?C.text:C.t3,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">All Services</option>
+                {endpoints.map(function(ep){return <option key={ep.id} value={ep.id}>{ep.serviceName}</option>;})}
+              </select>
+              <svg style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",pointerEvents:"none"}} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.t3} strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{flex:1,overflowY:"auto",padding:"0 24px"}}>
+        <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <thead><tr>
+            <th style={thS}>Name</th>
+            <th style={thS}>Service</th>
+            <th style={thS}>Method</th>
+            <th style={thS}>URL Template</th>
+            <th style={thS}>Auth</th>
+            <th style={thS}>Timeout</th>
+            <th style={thSL}>Actions</th>
+          </tr></thead>
+          <tbody>
+            {filtered.map(function(d){
+              var ep=endpoints.find(function(e){return e.id===d.serviceEndpointId;})||null;
+              return(
+                <tr key={d.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg} onClick={function(){setSelDef(d);setShowView(true);}}>
+                  <td style={{...tdS,fontWeight:600,fontFamily:"monospace",fontSize:12.5}}>{d.name}</td>
+                  <td style={{...tdS,fontSize:12.5,color:C.t2}}>{ep?ep.serviceName:"—"}</td>
+                  <td style={tdS}>{d.operationType==="http_api"?<MethodBadge m={d.method}/>:<span style={{fontSize:12,color:C.t2,fontFamily:"monospace"}}>workflow</span>}</td>
+                  <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2,maxWidth:240,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.operationType==="http_api"?d.urlTemplate:"—"}</td>
+                  <td style={{...tdS,fontSize:12,color:C.t2}}>{d.operationType==="http_api"?d.authType:"—"}</td>
+                  <td style={{...tdS,fontSize:12,color:C.t2}}>{d.operationType==="http_api"?d.timeoutMs+"ms":"—"}</td>
+                  <td style={{...tdS,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
+                    <DotMenu items={[
+                      ["View",C.blue,function(){setSelDef(d);setShowView(true);}],
+                      ["Edit",C.blue,function(){setSelDef(d);setShowModal(true);}],
+                    ]}/>
+                  </td>
+                </tr>
+              );
+            })}
+            {filtered.length===0&&<tr><td colSpan={7} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No API definitions found</td></tr>}
+          </tbody>
+        </table>
+      </div>
+      {showModal&&<ApiDefModal def={selDef} endpoints={endpoints} onClose={()=>{setShowModal(false);setSelDef(null);}} onSave={handleSave}/>}
+      {showView&&selDef&&<ApiDefViewModal def={selDef} endpoints={endpoints} onClose={()=>{setShowView(false);setSelDef(null);}}/>}
+      {toast&&<Toast2 msg={toast} onClose={()=>setToast(null)}/>}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════
    GMC CONFIGS VIEW
 ═══════════════════════════════════════ */
 const ACTIVITY_CONFIGS=[
-  {id:"ACT_CT_001",  name:"Manage Template Edit",         modalId:"edit-template-modal",section:"Communication",   queries:"3 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerRole:"communication:manage",checkerRole:"communication:manage",diffFields:["body","subject","notifType","client","status","validity","iconUrl"],ctxProviders:["comm_template_reach","comm_template_last_modified","comm_delivery_failure_rate"]},
-  {id:"ACT_PAY_001",name:"Account Type ID Change",       modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerRole:"payments:manage",checkerRole:"payments:manage",diffFields:["accountTypeId"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_account_age"]},
-  {id:"ACT_PAY_002",name:"Freeze Account",               modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 5 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerRole:"payments:manage",checkerRole:"payments:manage",diffFields:["accountStatus"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_PAY_003",name:"Manual Treasury Transfer",     modalId:"edit-fee-modal",section:"Payments",        queries:"8 diff, 5 ctx", sla:"8 hrs",warn:"70% (336 min)",status:"Active",approvalCount:2,makerRole:"payments:manage",checkerRole:"payments:manage",diffFields:["srcGroup","srcAccount","dstGroup","dstAccount","amount","channel","desc","proof"],ctxProviders:["pay_fee_impact","pay_account_age","pay_transaction_volume_30d","pay_open_transactions","pay_account_limits"]},
-  {id:"ACT_PAY_004",name:"Edit Account Type",            modalId:"edit-limit-modal",section:"Payments",        queries:"5 diff, 6 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerRole:"payments:manage",checkerRole:"payments:manage",diffFields:["accountName","accountGroup","walletLimit","dailyOutgoing","monthlyIncoming"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_PAY_005",name:"Edit Account Type Constraint", modalId:"edit-fee-modal",section:"Payments",        queries:"4 diff, 5 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerRole:"payments:manage",checkerRole:"payments:manage",diffFields:["maxAmount","minAmount","destGroups","moneyMovement"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
-  {id:"ACT_KYC_001",name:"Block Customer Account",       modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerRole:"kyc:manage",checkerRole:"kyc:manage",diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_002",name:"Reset Customer MPIN",          modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerRole:"kyc:manage",checkerRole:"kyc:manage",diffFields:["mpinStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_003",name:"Freeze Customer Account",      modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerRole:"kyc:manage",checkerRole:"kyc:manage",diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
-  {id:"ACT_KYC_004",name:"Force Logout Customer",        modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"2 hrs",warn:"80% (96 min)", status:"Active",approvalCount:1,makerRole:"kyc:manage",checkerRole:"kyc:manage",diffFields:["sessionStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_CT_001",  name:"Manage Template Edit",         modalId:"edit-template-modal",section:"Communication",   queries:"3 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["communication:manage"],checkerPerms:[["communication:manage"]],diffFields:["body","subject","notifType","client","status","validity","iconUrl"],ctxProviders:["comm_template_reach","comm_template_last_modified","comm_delivery_failure_rate"]},
+  {id:"ACT_PAY_001",name:"Account Type ID Change",       modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 4 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["accountTypeId"],ctxType:"tailored",ctxApiUrl:"https://payments-svc/api/context/account-type",ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_account_age"]},
+  {id:"ACT_PAY_002",name:"Freeze Account",               modalId:"edit-limit-modal",section:"Payments",        queries:"1 diff, 5 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["accountStatus"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_PAY_003",name:"Manual Treasury Transfer",     modalId:"edit-fee-modal",section:"Payments",        queries:"8 diff, 5 ctx", sla:"8 hrs",warn:"70% (336 min)",status:"Active",approvalCount:2,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"],["payments:manage"]],diffFields:["srcGroup","srcAccount","dstGroup","dstAccount","amount","channel","desc","proof"],ctxProviders:["pay_fee_impact","pay_account_age","pay_transaction_volume_30d","pay_open_transactions","pay_account_limits"]},
+  {id:"ACT_PAY_004",name:"Edit Account Type",            modalId:"edit-limit-modal",section:"Payments",        queries:"5 diff, 6 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage","payments:admin"],checkerPerms:[["payments:manage"]],diffFields:["accountName","accountGroup","walletLimit","dailyOutgoing","monthlyIncoming"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_PAY_005",name:"Edit Account Type Constraint", modalId:"edit-fee-modal",section:"Payments",        queries:"4 diff, 5 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["payments:manage"],checkerPerms:[["payments:manage"]],diffFields:["maxAmount","minAmount","destGroups","moneyMovement"],ctxProviders:["pay_account_limits","pay_transaction_volume_30d","pay_open_transactions","pay_fee_impact","pay_account_age"]},
+  {id:"ACT_KYC_001",name:"Block Customer Account",       modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"],["kyc:manage"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_002",name:"Reset Customer MPIN",          modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"4 hrs",warn:"80% (192 min)",status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["mpinStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_003",name:"Freeze Customer Account",      modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"6 hrs",warn:"75% (270 min)",status:"Active",approvalCount:2,makerPerms:["kyc:manage","kyc:admin"],checkerPerms:[["kyc:manage"],["kyc:manage","kyc:admin"]],diffFields:["accountStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
+  {id:"ACT_KYC_004",name:"Force Logout Customer",        modalId:"edit-kyc-rules-modal",section:"Customers & KYC", queries:"1 diff, 3 ctx", sla:"2 hrs",warn:"80% (96 min)", status:"Active",approvalCount:1,makerPerms:["kyc:manage"],checkerPerms:[["kyc:manage"]],diffFields:["sessionStatus"],ctxProviders:["kyc_customer_details","kyc_last_login","kyc_previous_actions"]},
 ];
 const ROLE_CONFIGS=[];
 
@@ -1930,22 +2771,20 @@ function ActivityViewModal({act,onClose}){
           {row("SLA",act.sla)}
           {row("Warning At",act.warn)}
           {row("Maker Permission",(act.makerPerms||[]).join(", ")||"—")}
-          {row("Checker Permission",(act.checkerPerms||[]).join(", ")||"—")}
-          <div style={{padding:"9px 0",borderBottom:`1px solid ${C.border}`}}>
-            <div style={{fontSize:12.5,color:C.t3,marginBottom:8}}>Diff Fields ({(act.diffFields||[]).length})</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-              {(act.diffFields||[]).map((f,i)=><span key={i} style={{fontSize:12,background:C.bg2,border:`1px solid ${C.border}`,borderRadius:4,padding:"2px 8px",color:C.t2,fontFamily:"monospace"}}>{f}</span>)}
-            </div>
-          </div>
+          {row("Checker Permission",(act.checkerPerms||[]).map(function(s){return Array.isArray(s)?s.join(", "):s;}).join(" | ")||"—")}
           <div style={{padding:"9px 0"}}>
-            <div style={{fontSize:12.5,color:C.t3,marginBottom:8}}>Context Queries ({(act.ctxProviders||[]).length} selected)</div>
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {(act.ctxProviders||[]).map((p,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:12.5,color:C.text}}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                {PROVIDER_LABELS[p]||p}
-                <code style={{fontSize:11,color:C.t3,marginLeft:4}}>{p}</code>
-              </div>)}
-            </div>
+            <div style={{fontSize:12.5,color:C.t3,marginBottom:8}}>Context Type — {act.ctxType==="tailored"?"Tailored Additional Context":"Generic Additional Context"}</div>
+            {act.ctxType==="tailored"?(
+              <code style={{fontSize:12,background:C.bg2,padding:"4px 8px",borderRadius:4,color:C.t2,display:"inline-block"}}>{act.ctxApiUrl||"—"}</code>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {(act.ctxProviders||[]).map((p,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:12.5,color:C.text}}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {PROVIDER_LABELS[p]||p}
+                  <code style={{fontSize:11,color:C.t3,marginLeft:4}}>{p}</code>
+                </div>)}
+              </div>
+            )}
           </div>
         </div>
         <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"flex-end"}}>
@@ -2051,7 +2890,7 @@ function GMCConfigsView({logs=[]}){
                 <option value="">All</option>
                 <option value="Communication">Communication</option>
                 <option value="Payments">Payments</option>
-                <option value="Customers & KYC">Customers & KYC</option>
+                <option value="Customers & KYC">Customers {"&"} KYC</option>
                 <option value="Admin">Admin</option>
                 <option value="Platform">Platform</option>
               </select>
@@ -2066,22 +2905,21 @@ function GMCConfigsView({logs=[]}){
         <table style={{width:"100%",borderCollapse:"collapse"}}>
           <thead><tr>
             <th style={thS}>Activity ID</th><th style={thS}>Activity / Flow Name</th>
-            <th style={thS}>Section</th><th style={thS}>Maker Role</th>
-            <th style={thS}>Checker Role</th><th style={thS}>SLA</th>
+            <th style={thS}>Section</th><th style={thS}>SLA</th><th style={thS}>Warning At</th>
             <th style={thS}>Status</th>
             <th style={thSL}>Actions</th>
           </tr></thead>
           <tbody>{filtered.length===0
-            ?<tr><td colSpan={8} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No activities found</td></tr>
+            ?<tr><td colSpan={7} style={{...tdS,textAlign:"center",color:C.t3,padding:"40px"}}>No activities found</td></tr>
             :filtered.map(a=>(
             <tr key={a.id} style={{background:C.bg,cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.background=C.bg2} onMouseLeave={e=>e.currentTarget.style.background=C.bg}
               onClick={()=>{setSelAct(a);setActModal("view");}}>
               <td style={{...tdS,fontFamily:"monospace",fontSize:12,color:C.t2}}>{a.id}</td>
               <td style={{...tdS,fontWeight:500}}>{a.name}</td>
               <td style={tdS}>{a.section}</td>
-              <td style={tdS}><code style={{fontSize:11.5,background:C.bg2,padding:"2px 6px",borderRadius:4,color:C.t2}}>{a.makerRole||"—"}</code></td>
-              <td style={tdS}><code style={{fontSize:11.5,background:C.bg2,padding:"2px 6px",borderRadius:4,color:C.t2}}>{a.checkerRole||"—"}</code></td>
+
               <td style={{...tdS,color:C.t2}}>{a.sla}</td>
+              <td style={{...tdS,fontSize:12,color:C.t2}}>{a.warn}</td>
               <td style={tdS}><Badge v={a.status}/></td>
               <td style={{...tdS,textAlign:"right"}} onClick={e=>e.stopPropagation()}>
                 <DotMenu items={[
@@ -2366,7 +3204,7 @@ function ConsumerDetail({consumer,onClose,onLogAdd,onOpenLog}){
               <div style={{fontSize:12.5,color:C.t3,lineHeight:1.5,marginBottom:20}}>Please wait for the existing request to be completed (approved, declined, or withdrawn) before submitting a new one.</div>
               <div style={{display:"flex",gap:8,justifyContent:"center"}}>
                 <Btn variant="outline" onClick={()=>setShowDuplicateGuard(false)}>Close</Btn>
-                <Btn variant="dark" onClick={()=>{setShowDuplicateGuard(false);if(onOpenLog){onOpenLog("REQ_1202");}}}>View in GMC Logs</Btn>
+                <Btn variant="dark" onClick={()=>{setShowDuplicateGuard(false);if(onOpenLog){onOpenLog("REQ_1202");}}}>View in GMC Tickets</Btn>
               </div>
             </div>
           </div>
@@ -2452,7 +3290,7 @@ function ConsumerDetail({consumer,onClose,onLogAdd,onOpenLog}){
 
         {/* Account Type Limits & Eligibility */}
         <div style={sectionStyle}>
-          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:4}}>Account Type Limits & Eligibility</div>
+          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:4}}>Account Type Limits {"&"} Eligibility</div>
           <div style={{fontSize:12,color:C.t3,marginBottom:16}}>Transaction Limits</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px 40px",marginBottom:20}}>
             {[["Wallet Balance Limit",consumer.walletLimit],["Daily Outgoing Limit",consumer.dailyOutgoing],["Monthly Incoming Limit",consumer.monthlyIncoming]].map(([l,v])=>(
@@ -2712,7 +3550,7 @@ function CreateManualTransferModal({onClose,onLogAdd,onToast}){
           ):(
             <div onClick={()=>setProofFile("Screenshot_2026-05-26_proof.png")} style={{border:`1.5px dashed ${C.grayB}`,borderRadius:8,padding:"32px",textAlign:"center",cursor:"pointer",color:C.t3}} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.background="#f8faff";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.background="transparent";}}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{margin:"0 auto 8px",display:"block"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <div style={{fontSize:13,marginBottom:6}}>Drag & drop file here</div>
+              <div style={{fontSize:13,marginBottom:6}}>Drag {"&"} drop file here</div>
               <div style={{fontSize:12,marginBottom:10,color:C.t3}}>— or —</div>
               <button style={{padding:"7px 20px",background:"#111827",color:"#fff",border:"none",borderRadius:6,fontSize:12.5,cursor:"pointer",display:"flex",alignItems:"center",gap:6,margin:"0 auto"}}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -2866,7 +3704,7 @@ function AccountTypeDetail({at,onClose,onLogAdd}){
         {/* Limits */}
         <div style={sectionStyle}>
           <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:2}}>Account Type Limits</div>
-          <div style={{fontSize:12.5,color:C.t3,marginBottom:16}}>Configured balance & transaction ceilings</div>
+          <div style={{fontSize:12.5,color:C.t3,marginBottom:16}}>Configured balance {"&"} transaction ceilings</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px 48px"}}>
             <div><div style={{fontSize:12.5,color:C.t2,marginBottom:3}}>Wallet Balance Limit</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>₱ {at.walletLimit.replace("₱","").trim()}</div></div>
             <div><div style={{fontSize:12.5,color:C.t2,marginBottom:3}}>Monthly Incoming Limit</div><div style={{fontSize:14,fontWeight:600,color:C.text}}>₱ {at.monthlyIncoming.replace("₱","").trim()}</div></div>
@@ -3188,7 +4026,7 @@ function RiskProfileView({customer,onClose,onLogAdd}){
     {l:"Current Violation Count",v:String(customer.violations)},
   ];
 
-  const handleActionSubmit=(action,reason,context,atts=[])=>{
+  const handleActionSubmit=(action,domainReason,domainContext,atts=[],gmcReason="")=>{
     const diffMap={
       /* ACT_KYC_001 — Block: single changed field only */
       "Block":[
@@ -3210,7 +4048,9 @@ function RiskProfileView({customer,onClose,onLogAdd}){
     const actMap={"Block":"ACT_KYC_001","Freeze":"ACT_KYC_003","Force Logout":"ACT_KYC_004","Reset MPIN":"ACT_KYC_002"};
     const flowMap={"Block":"Block Customer Account","Freeze":"Freeze Customer Account","Force Logout":"Force Logout Customer","Reset MPIN":"Reset Customer MPIN"};
     const newId=`REQ_${1250+Math.floor(Math.random()*90)}`;
-    onLogAdd({id:newId,activityId:actMap[action],flowName:flowMap[action],domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:fmtDate(),status:"Pending",targetId:`KYC_${customer.id.replace("*","")}`,category:"Customers & KYC",action:flowMap[action],reason,context,atts,diff:diffMap[action]||[],ctxData,checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null});
+    /* domainReason/domainContext = filled in the Customers & KYC action screen */
+    /* gmcReason = filled separately in the GMC submission modal that follows it */
+    onLogAdd({id:newId,activityId:actMap[action],flowName:flowMap[action],domain:"Customers & KYC",maker:"Utkarsh Giri",submittedBy:{userId:"usr_001",name:"Utkarsh Giri"},date:fmtDate(),status:"Pending",targetId:`KYC_${customer.id.replace("*","")}`,category:"Customers & KYC",action:flowMap[action],reason:gmcReason||domainReason,context:domainContext,domainReason,atts,diff:diffMap[action]||[],ctxData,checkerRemark:"",checkerName:"",checkerDate:"",targetTemplateId:null});
     setActiveAction(null);setToast(`Request ${newId} submitted for approval. Checker has been notified.`);
   };
 
@@ -3283,7 +4123,7 @@ function RiskProfileView({customer,onClose,onLogAdd}){
       </div>
       {/* Action modals */}
       {activeAction&&activeAction!=="Reset MPIN"&&(
-        <CustomerActionModal action={activeAction} onClose={()=>setActiveAction(null)} onSubmit={(reason,ctx)=>handleActionSubmit(activeAction,reason,ctx)}/>
+        <CustomerActionModal action={activeAction} onClose={()=>setActiveAction(null)} onSubmit={(reason,ctx,atts,gmcReason)=>handleActionSubmit(activeAction,reason,ctx,atts,gmcReason)}/>
       )}
       {activeAction==="Reset MPIN"&&(
         <ResetMPINModal onClose={()=>setActiveAction(null)} onSubmit={(reason,ctx,atts)=>handleActionSubmit("Reset MPIN",reason,ctx,atts)}/>
@@ -3300,30 +4140,19 @@ function CustomerActionModal({action,onClose,onSubmit}){
     "Force Logout":["User Request - Lost or Stolen Device","User Request - Suspected Unauthorized Access","Active Security Threat - Account Takeover","Technical Support - Resolve Session Issue","Other"],
   };
   const [reason,setReason]=useState("");
-  const [ctx,setCtx]=useState("");
-  const [step,setStep]=useState(1);
+  const [context,setContext]=useState("");
+  const [showGMC,setShowGMC]=useState(false);
   const reasons=REASONS[action]||[];
-  const canConfirm=reason&&ctx;
+  const canConfirm=reason&&context.trim();
   const inputStyle={width:"100%",padding:"9px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none",cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
-  if(step===2){
-    return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
-        <div style={{background:C.bg,borderRadius:8,width:420,padding:"24px",boxShadow:"0 8px 32px rgba(0,0,0,.2)"}}>
-          <div style={{textAlign:"center",marginBottom:16}}>
-            <div style={{width:40,height:40,borderRadius:"50%",background:C.blueL,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px"}}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:6}}>Are you sure?</div>
-            <div style={{fontSize:13,color:C.t2,lineHeight:1.5}}>This will {action==="Block"?"block":action==="Freeze"?"freeze":"log out"} the customer's account after Checker review.</div>
-          </div>
-          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-            <Btn variant="outline" onClick={()=>setStep(1)}>Cancel</Btn>
-            <Btn variant="dark" onClick={()=>onSubmit(reason,ctx)}>Confirm</Btn>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
+  const diff=[{field:"Account Status",old:"Active",nw:action==="Block"?"Blocked":action==="Freeze"?"Frozen":"Active",changed:true}];
+  if(action==="Force Logout")diff[0]={field:"Session Status",old:"Active",nw:"Force Logged Out",changed:true};
+
+  const handleGMCConfirm=(gmcReason)=>{
+    onSubmit(reason,context,[],gmcReason);
+  };
+
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
       <div style={{background:C.bg,borderRadius:8,width:480,display:"flex",flexDirection:"column",boxShadow:"0 8px 32px rgba(0,0,0,.2)",overflow:"hidden"}}>
@@ -3344,15 +4173,16 @@ function CustomerActionModal({action,onClose,onSubmit}){
           </div>
           <div style={{marginBottom:16}}>
             <label style={{fontSize:12.5,fontWeight:500,color:C.text,marginBottom:6,display:"block"}}>Context <span style={{color:C.red}}>*</span></label>
-            <textarea value={ctx} onChange={e=>setCtx(e.target.value)} placeholder="e.g. Added supporting link from internal audit..." style={{width:"100%",minHeight:80,border:`1px solid ${C.grayB}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
+            <textarea value={context} onChange={e=>setContext(e.target.value)} placeholder="e.g. Added supporting link from internal audit..." style={{width:"100%",minHeight:80,border:`1px solid ${C.grayB}`,borderRadius:7,padding:"9px 12px",fontSize:13,color:C.text,background:C.bg,outline:"none",resize:"vertical",fontFamily:"inherit"}} onFocus={e=>{e.currentTarget.style.borderColor=C.blue;e.currentTarget.style.boxShadow=`0 0 0 3px ${C.blueL}`;}} onBlur={e=>{e.currentTarget.style.borderColor=C.grayB;e.currentTarget.style.boxShadow="none";}}/>
             <div style={{fontSize:11.5,color:C.t3,marginTop:4}}>Please include all the evidences and links in this context. This may be used for audit purposes in the future.</div>
           </div>
         </div>
         <div style={{padding:"12px 20px",borderTop:`1px solid ${C.border}`,display:"flex",gap:8,justifyContent:"flex-end"}}>
           <Btn variant="outline" onClick={onClose}>Cancel</Btn>
-          <button disabled={!canConfirm} onClick={()=>canConfirm&&setStep(2)} style={{padding:"7px 20px",background:canConfirm?"#111827":C.grayB,color:canConfirm?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:canConfirm?"pointer":"not-allowed"}}>Confirm</button>
+          <button disabled={!canConfirm} onClick={()=>canConfirm&&setShowGMC(true)} style={{padding:"7px 20px",background:canConfirm?"#111827":C.grayB,color:canConfirm?"#fff":C.t3,border:"none",borderRadius:6,fontSize:13,fontWeight:500,cursor:canConfirm?"pointer":"not-allowed"}}>Continue</button>
         </div>
       </div>
+      {showGMC&&<GMCReasoningModal diff={diff} onConfirm={handleGMCConfirm} onCancel={()=>setShowGMC(false)}/>}
     </div>
   );
 }
@@ -3367,22 +4197,12 @@ function ResetMPINModal({onClose,onSubmit}){
   const [selfie,setSelfie]=useState(null);
   const canConfirm=supportId&&reason&&verified&&idCard&&photo&&selfie;
 
+  const handleGMCConfirm=(gmcReason)=>{
+    onSubmit(gmcReason,`Support Ticket: ${supportId}. Reason: ${reason}`,[{name:idCard,size:"1.2 MB"},{name:photo,size:"980 KB"},{name:selfie,size:"540 KB"}]);
+  };
+
   if(step===2){
-    return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.45)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
-        <div style={{background:C.bg,borderRadius:8,width:420,padding:"24px",boxShadow:"0 8px 32px rgba(0,0,0,.2)",textAlign:"center"}}>
-          <div style={{width:40,height:40,borderRadius:"50%",background:C.blueL,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px"}}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:6}}>Are you sure?</div>
-          <div style={{fontSize:13,color:C.t2,lineHeight:1.5,marginBottom:16}}>This will reset the customer's MPIN after Checker review.</div>
-          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-            <Btn variant="outline" onClick={()=>setStep(1)}>Cancel</Btn>
-            <Btn variant="dark" onClick={()=>onSubmit(reason,`Support Ticket: ${supportId}`,[{name:idCard,size:"1.2 MB"},{name:photo,size:"980 KB"},{name:selfie,size:"540 KB"}])}>Confirm</Btn>
-          </div>
-        </div>
-      </div>
-    );
+    return <GMCReasoningModal diff={[{field:"MPIN Status",old:"Active",nw:"Reset Initiated",changed:true}]} onConfirm={handleGMCConfirm} onCancel={()=>setStep(1)}/>;
   }
 
   const inputStyle={width:"100%",padding:"9px 12px",border:`1px solid ${C.grayB}`,borderRadius:7,fontSize:13,color:C.text,background:C.bg,outline:"none"};
@@ -3450,7 +4270,8 @@ function ResetMPINModal({onClose,onSubmit}){
 }
 
 function App(){
-  const [page,setPage]=useState("gmc-logs");
+  const [page,setPage]=useState("gmc-tickets");
+  const [serviceEndpoints,setServiceEndpoints]=useState(INIT_SERVICE_ENDPOINTS);
   const [openLogId,setOpenLogId]=useState(null);
   const [templates,setTemplates]=useState(INIT_TEMPLATES);
   const [logs,setLogs]=useState(ALL_INIT_LOGS);
@@ -3468,13 +4289,15 @@ function App(){
       <Sidebar page={page} onPage={setPage} pendingCount={pendingCount}/>
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:C.bg,position:"relative"}}>
         {page==="manage-template"&&<ManageTemplateView templates={templates} onTemplateUpdate={handleTemplateUpdate} onLogAdd={handleLogAdd}/>}
-        {page==="gmc-logs"&&<GMCLogsView logs={logs} setLogs={setLogs} templates={templates} setTemplates={setTemplates} initialOpenId={openLogId} onInitialOpenConsumed={()=>setOpenLogId(null)}/>}
+        {page==="gmc-tickets"&&<GMCTicketsView logs={logs} setLogs={setLogs} templates={templates} setTemplates={setTemplates} initialOpenId={openLogId} onInitialOpenConsumed={()=>setOpenLogId(null)}/>}
         {page==="gmc-configs"&&<GMCConfigsView logs={logs}/>}
-        {page==="pay-consumers"&&<ConsumersView onLogAdd={handleLogAdd} onPage={setPage} onOpenLog={(id)=>{setOpenLogId(id);setPage("gmc-logs");}}/>}
+        {page==="gmc-api-defs"&&<GMCApiDefsView endpoints={serviceEndpoints}/>}
+        {page==="gmc-service-eps"&&<GMCServiceEndpointsView/>}
+        {page==="pay-consumers"&&<ConsumersView onLogAdd={handleLogAdd} onPage={setPage} onOpenLog={(id)=>{setOpenLogId(id);setPage("gmc-tickets");}}/>}
         {page==="pay-manual-transfer"&&<ManualTransferView onLogAdd={handleLogAdd}/>}
         {page==="pay-account-types"&&<AccountTypesView onLogAdd={handleLogAdd}/>}
         {page==="kyc-customers"&&<KycCustomersView onLogAdd={handleLogAdd}/>}
-        {page!=="manage-template"&&page!=="gmc-logs"&&page!=="gmc-configs"&&page!=="pay-consumers"&&page!=="pay-manual-transfer"&&page!=="pay-account-types"&&page!=="kyc-customers"&&(
+        {page!=="manage-template"&&page!=="gmc-tickets"&&page!=="gmc-configs"&&page!=="gmc-api-defs"&&page!=="gmc-service-eps"&&page!=="pay-consumers"&&page!=="pay-manual-transfer"&&page!=="pay-account-types"&&page!=="kyc-customers"&&(
           <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:C.t3,fontSize:13,flexDirection:"column",gap:8}}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             <span>Select a section from the sidebar</span>
@@ -3488,6 +4311,4 @@ function App(){
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
-</html><script>
-// This marker helps us locate where to inject new code
-</script>
+</html>
